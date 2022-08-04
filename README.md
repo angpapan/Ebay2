@@ -18,3 +18,15 @@ Run project from Rider/VS or run:
 ## Start UI (as https)
     ng serve --ssl
 
+
+
+
+
+# Known Issues
+
+* Στο navbar του welcome page να αλλάζει το login button ανάλογα με την κατάσταση του χρήστη.
+* Το κανονικό navbar έχει θέμα με το Logout (δεν αφαιρεί αμέσως το εικονίδιο χρήστη)
+* Ημιτελές welcome page
+* Το register guard θέλει φτιάξιμο (να μην μπορεί να πάει συνδεδεμένος χρήστης)
+* Στο register form να αλλάξει το alert με swal
+* Τα services του UI έχουν hardcoded το καθένα το url του api. Να υπάρχει ένα κοινό, για εύκολη αλλαγή θύρας.
