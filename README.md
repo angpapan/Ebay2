@@ -1,3 +1,5 @@
+# How to execute
+
 ## Init UI
     cd EbayUI
     npm i
