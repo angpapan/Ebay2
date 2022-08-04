@@ -1,0 +1,14 @@
+*
+!Controllers/
+!Data/*
+!Dtos/*
+!Helpers/*
+!Models/*
+!Profiles/*
+!Services/*
+!appsettings.Development.json
+!appsettings.json
+!Program.cs
+!.gitignore
+!Properties/*
+!EbayAPI.csproj

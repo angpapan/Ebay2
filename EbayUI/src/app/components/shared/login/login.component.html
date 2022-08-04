@@ -1,0 +1,41 @@
+<!--<div class="position-absolute top-50 start-50 translate-middle">-->
+<div class="d-flex align-items-center justify-content-center card border-secondary text-dark bg-light text-center mx-auto mt-3" style="max-width: 20rem;">
+    <div class="card-header text-center">SIGN IN</div>
+
+  <div class="card-body">
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="text-center">
+
+      <div class="input-group mb-3 text-start">
+        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+        <input type="text" id="username" class="form-control" placeholder="Username"
+               formControlName="username" required>
+      </div>
+
+      <div class="input-group mb-3 text-start">
+        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+        <input type="password" id="password" class="form-control" placeholder="Password"
+               formControlName="password" required>
+      </div>
+
+
+      <button class="btn btn-primary mb-3" type="submit">Sign in</button>
+
+    </form>
+
+
+    <div class="loginbox-signup">
+      <a routerLink="/register">Don't have an account? Create one</a>
+    </div>
+
+    <div class="loginbox-or mt-3">
+      <div class="or-line"></div>
+      <div class="or">OR</div>
+    </div>
+
+    <div class="loginbox-signup">
+      <a routerLink="/home">Continue as Guest</a>
+    </div>
+  </div>
+  </div>
+<!--</div>-->

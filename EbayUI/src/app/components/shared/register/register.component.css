@@ -1,0 +1,70 @@
+::-webkit-scrollbar {
+  width: 6px
+}
+
+.nav-tabs .nav-link.active {
+  border-color: transparent;
+  border-bottom: 4px solid #0d6efd !important
+}
+
+.nav-fill .nav-item .nav-link,
+.nav-justified .nav-item .nav-link {
+  width: 100%;
+  color: #000
+}
+
+.nav-tabs .nav-link {
+  border-top-left-radius: 0rem !important;
+  border-top-right-radius: 0rem !important
+}
+
+.nav-tabs .nav-link.active {
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600
+}
+
+.nav-link {
+  font-size: 12px;
+  padding: 2px;
+  /*background-color: #fff*/
+}
+
+.nav-link:hover {
+  border: none
+}
+
+.nav-link:focus {
+  outline: none
+}
+
+/*.tab-pane {*/
+/*  min-width: 100%;*/
+/*}*/
+
+/*.tab-content > .tab-pane {*/
+/*  display: block;*/
+/*  visibility: hidden;*/
+/*}*/
+
+/*.tab-content > .active {*/
+/*  visibility: visible;*/
+/*}*/
+
+
+
+
+.tab-content {
+  display: flex;
+}
+
+.tab-content > .tab-pane {
+  display: block;
+  visibility: hidden;
+  margin-right: -100%;
+  width: 100%;
+}
+
+.tab-content > .active {
+  visibility: visible;
+}

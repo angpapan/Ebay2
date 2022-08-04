@@ -1,0 +1,10 @@
+.carousel-image{
+  max-height: 30vh;
+}
+
+.carousel-caption {
+  /*background-color: rgba(0, 0, 0, 0.5);*/
+  /*background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7));*/
+  background-image: radial-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0));
+  /*border-radius: 100%;*/
+}

@@ -1,0 +1,24 @@
+<div class="align-items-start justify-content-start card text-dark bg-light text-start h-100">
+  <div class="card-header text-start w-100">
+    <b>Profile Information</b>
+    <span *ngIf="role === 'admin' && !user.enabled" class="text-end float-end">
+      <span class="text-danger">
+        This user is not verified
+      </span>
+      <button class="btn btn-warning ms-5" (click)="verifyUser()">Verify</button>
+    </span>
+  </div>
+  <div class="card-body w-100">
+    <app-user-details-line title='Username' [value]="user.username"></app-user-details-line>
+    <app-user-details-line title='First Name' [value]="user.firstName"></app-user-details-line>
+    <app-user-details-line title='Last Name' [value]="user.lastName"></app-user-details-line>
+    <app-user-details-line title='Email' [value]="user.email"></app-user-details-line>
+    <app-user-details-line title='Phone Number' [value]="user.phoneNumber"></app-user-details-line>
+    <app-user-details-line title='Country' [value]="user.country"></app-user-details-line>
+    <app-user-details-line title='City' [value]="user.city"></app-user-details-line>
+    <app-user-details-line title='Street' [value]="user.street"></app-user-details-line>
+    <app-user-details-line title='StreetNumber' [value]="makeString(user.streetNumber)"></app-user-details-line>
+    <app-user-details-line title='Postal Code' [value]="user.postalCode"></app-user-details-line>
+    <app-user-details-line title='VAT Number' [value]="user.vatNumber"></app-user-details-line>
+  </div>
+</div>

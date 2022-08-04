@@ -1,0 +1,57 @@
+<nav
+  class="navbar navbar-expand navbar-light bg-white border-bottom box-shadow m-0 p-0 align-middle"
+>
+  <div class="container">
+    <div
+      class="navbar-collapse collapse d-sm-inline-flex justify-content-center"
+      [ngClass]="{ show: isExpanded }"
+    >
+      <ul class="navbar-nav flex-grow">
+        <li
+          class="nav-item"
+          [routerLinkActive]="['link-active']"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a class="nav-link text-dark" [routerLink]="['/home']">Home</a>
+        </li>
+        <li class="nav-item" [routerLinkActive]="['link-active']">
+          <div class="dropdown">
+            <a class="nav-link text-dark" [routerLink]="['/']" >Holidays</a>
+            <div class="dropdown-menu">
+              <div class="row">
+                <div class="col-6">
+                  <ul>
+                    <li><h6 class="dropdown-header">Dropdown header</h6></li>
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </div>
+                <div class="col">
+                  <ul>
+                    <li><a class="dropdown-item" href="#">Actions</a></li>
+                    <li><a class="dropdown-item" href="#">Another actions</a></li>
+                    <li><a class="dropdown-item" href="#">Something else heres</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </li>
+        <li class="nav-item" [routerLinkActive]="['link-active']">
+
+          <div class="dropdown">
+            <a class="nav-link text-dark" [routerLink]="['/']">Tools</a>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+              <li><a class="dropdown-item" href="#">Actionnnnnn</a></li>
+              <li><a class="dropdown-item" href="#">Another actionnnnnnn</a></li>
+              <li><a class="dropdown-item" href="#">Something else hereeeee</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
