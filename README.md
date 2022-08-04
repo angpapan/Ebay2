@@ -5,7 +5,9 @@
     npm i
 
 ## Build EbayAPI
-Run project from Rider/VS
+Run project from Rider/VS or run:
+
+    dotnet build
 
 ## Create db 
 (check credentials in EbayAPI/appsettings.json)  
