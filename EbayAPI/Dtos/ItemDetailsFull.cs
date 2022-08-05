@@ -20,5 +20,6 @@ public class ItemDetails
     public List<ItemsCategories>? ItemCategories {get; set;} = null;
     public List<Image>? Images {get; set;} = null;
     public List<Bid>? Bids {get; set;} = null;
+    public List<UserVisitedItems>? VisitedByUsers {get; set;} = null;
     
 }
