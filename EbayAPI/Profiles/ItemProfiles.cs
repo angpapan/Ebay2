@@ -11,7 +11,7 @@ public class ItemProfile : Profile
     {
         CreateMap<Item, ItemDetails>();
         
-        CreateMap<Item, ItemDetailsWithBids>();
+        CreateMap<Item, ItemDetailsFull>();
         
     }
 }
