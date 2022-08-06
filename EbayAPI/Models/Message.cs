@@ -11,7 +11,7 @@ namespace EbayAPI.Models
         public string Body { get; set; }
         
         [Required]
-        public DateTime TimeSent { get; set; }
+        public DateTime TimeSent { get; set; } = DateTime.Now;
 
         [Required] 
         public bool SenderDelete { get; set; } = false;

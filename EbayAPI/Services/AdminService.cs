@@ -20,8 +20,11 @@ public class AdminService
         _mapper = mapper;
     }
 
-
-    // enabling a newly registered user
+    /// <summary>
+    /// enabling a newly registered user 
+    /// </summary>
+    /// <param name="username"></param>
+    /// <exception cref="BadHttpRequestException"></exception>
     public async Task EnableUser(string username)
     {
         User user = _dbContext.Users
@@ -33,13 +36,14 @@ public class AdminService
 
         user.Enabled = true;
         
-        // δεν χρειάζονται
-        // _dbContext.Users.Attach(user);
-        // _dbContext.Entry(user).Property(x => x.Enabled).isModified = true;
         await _dbContext.SaveChangesAsync();
     }
 
-    // return all users with details so admin can have access on them
+    /// <summary>
+    /// return all users with details so admin can have access on them 
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
     public async Task<PagedList<User>> GetAllUsers(UserListQueryParameters parameters)
     {
         IQueryable<User> users = _dbContext.Users;
