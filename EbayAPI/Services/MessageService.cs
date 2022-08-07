@@ -6,6 +6,7 @@ using AutoMapper;
 using EbayAPI.Dtos.MessageDtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using HostingEnvironmentExtensions = Microsoft.Extensions.Hosting.HostingEnvironmentExtensions;
 
 namespace EbayAPI.Services;
 public class MessageService
@@ -68,7 +69,7 @@ public class MessageService
     /// <param name="user">The user to get inbox of</param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public async Task<PagedList<Message>> GetUserInboxAsync(User? user, QueryPagingParameters parameters)
+    public async Task<PagedList<Message>> GetUserInboxAsync(User? user, MessageQueryParameters parameters)
     {
         if (user == null)
         {
@@ -77,9 +78,15 @@ public class MessageService
 
         IQueryable<Message> messages = _dbContext.Messages
             .Include(m => m.Sender)
-            .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false)
-            .OrderByDescending(m => m.TimeSent);
+            .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false);
 
+        if (!string.IsNullOrWhiteSpace(parameters.search))
+        {
+            messages = messages.Where(m => m.Sender.Username.Contains(parameters.search));
+        }
+        
+        messages = messages.OrderByDescending(m => m.TimeSent);
+        
         PagedList<Message> messagePage =
             PagedList<Message>.ToPagedList(messages, parameters.PageNumber, parameters.PageSize);
         
@@ -95,7 +102,7 @@ public class MessageService
     /// <param name="user">The user to get outbox of</param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedAccessException"></exception>
-    public async Task<PagedList<Message>> GetUserOutboxAsync(User? user, QueryPagingParameters parameters)
+    public async Task<PagedList<Message>> GetUserOutboxAsync(User? user, MessageQueryParameters parameters)
     {
         if (user == null)
         {
@@ -104,8 +111,14 @@ public class MessageService
 
         IQueryable<Message> messages = _dbContext.Messages
             .Include(m => m.Receiver)
-            .Where(m => m.SenderId == user.UserId && m.SenderDelete == false)
-            .OrderByDescending(m => m.TimeSent);
+            .Where(m => m.SenderId == user.UserId && m.SenderDelete == false);
+            
+        if (!string.IsNullOrWhiteSpace(parameters.search))
+        {
+            messages = messages.Where(m => m.Receiver.Username.Contains(parameters.search));
+        }
+        
+        messages = messages.OrderByDescending(m => m.TimeSent);
 
         PagedList<Message> messagePage =
             PagedList<Message>.ToPagedList(messages, parameters.PageNumber, parameters.PageSize);

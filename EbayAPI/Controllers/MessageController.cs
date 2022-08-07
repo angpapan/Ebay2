@@ -60,7 +60,7 @@ namespace EbayAPI.Controllers
         /// Gets the user's received messages in pages
         /// </summary>
         [HttpGet("inbox", Name = "Inbox")]
-        public async Task<List<MessageInboxDto>> Inbox([FromQuery] QueryPagingParameters parameters)
+        public async Task<List<MessageInboxDto>> Inbox([FromQuery] MessageQueryParameters parameters)
         {
             User? sender  = (User?)HttpContext.Items["User"];
             
@@ -87,7 +87,7 @@ namespace EbayAPI.Controllers
         /// Gets the user's sent messages in pages
         /// </summary>
         [HttpGet("outbox", Name = "Outbox")]
-        public async Task<List<MessageOutboxDto>> Outbox([FromQuery] QueryPagingParameters parameters)
+        public async Task<List<MessageOutboxDto>> Outbox([FromQuery] MessageQueryParameters parameters)
         {
             User? user  = (User?)HttpContext.Items["User"];
             
