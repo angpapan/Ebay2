@@ -1,0 +1,34 @@
+<div class="align-items-start justify-content-start card text-dark bg-light text-start h-100">
+  <div class="card-header text-start w-100">
+    <b>Messages</b>
+  </div>
+  <div class="card-body w-100">
+    <table datatable [dtOptions]="dtOptions" class="table table-border table-hover table-striped">
+      <thead class="table-secondary">
+      <tr>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Creation Date</th>
+        <th>Verified</th>
+      </tr>
+      </thead>
+      <tbody *ngIf="users?.length != 0">
+      <tr *ngFor="let user of users" style="cursor: pointer;" routerLink="{{'/users/' + user.username}}">
+        <td>{{user.username}}</td>
+        <td>{{user.firstName}}</td>
+        <td>{{user.lastName}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.dateCreated | date:'mediumDate'}}</td>
+        <td class="text-danger">{{user.enabled ? '' : 'Not Verified'}}</td>
+      </tr>
+      </tbody>
+      <tbody *ngIf="users?.length == 0">
+      <tr>
+        <td colspan="3" class="no-data-available">No data!</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -35,6 +35,9 @@ import { RegisterPageComponent } from './components/pages/register-page/register
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import {NotVerifiedGuard} from "./guards/not-verified.guard";
 import {LoginGuard} from "./guards/login.guard";
+import { MessagesMainComponent } from './components/pages/messages-main/messages-main.component';
+import { MessagesNavComponent } from './components/pages/messages-main/messages-nav/messages-nav.component';
+import { MessageListComponent } from './components/pages/messages-main/message-list/message-list.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +60,9 @@ import {LoginGuard} from "./guards/login.guard";
     ItemBoxComponent,
     RegisterPageComponent,
     LoginPageComponent,
+    MessagesMainComponent,
+    MessagesNavComponent,
+    MessageListComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -73,6 +79,7 @@ import {LoginGuard} from "./guards/login.guard";
       {path: 'register', component: RegisterPageComponent},
       {path: 'not-verified', component: PendingVerificationComponent, canActivate:[NotVerifiedGuard]},
       {path: 'home', component: HomeComponent},
+      {path: 'messages', component: MessagesMainComponent},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
