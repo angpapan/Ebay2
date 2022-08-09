@@ -1,0 +1,68 @@
+<app-container xmlns="http://www.w3.org/1999/html">
+  <div class="row mb-4 mt-3">
+    <div class="align-items-start justify-content-start card text-dark bg-light text-start h-100 w-100">
+      <div class="card-header w-100">
+        <span class="text-start">
+          <b>{{message.subject}}</b>
+        </span>
+        <span class="text-end float-end">
+          <button type="button" class="btn btn-primary">Reply<i class="bi bi-reply-fill ms-2"></i></button>
+        </span>
+      </div>
+      <div class="card-body w-100">
+        <div class="row">
+          <div class="col-auto"><strong>From: </strong></div>
+          <div class="col-auto">
+            <a [routerLink]="['/users', message.usernameFrom]">
+              {{message.usernameFrom}}
+            </a>
+          </div>
+          <hr/>
+        </div>
+        <div class="row">
+          <div class="col-auto"><strong>To: </strong></div>
+          <div class="col-auto">
+            <a [routerLink]="['/users', message.usernameTo]">
+              {{message.usernameTo}}
+            </a>
+          </div>
+          <hr/>
+        </div>
+        <div class="row">
+          <div class="col-auto"><strong>Subject: </strong></div>
+          <div class="col-auto">{{message.subject}}</div>
+          <hr/>
+        </div>
+        <div class="row">
+          <div class="col-auto"><strong>Time Sent: </strong></div>
+          <div class="col-auto">{{message.timeSent | date:'medium'}}</div>
+          <hr/>
+        </div>
+
+        <div *ngIf="message.replyForId !== undefined && message.replyForId !== null" class="row">
+          <span [routerLink]="['messages', message.replyForId]">
+            In reply of {{message.replyForSubject}}
+          </span>
+          <hr/>
+        </div>
+
+        <div class="row mt-4 mb-5 ms-5" style="min-height: 20vh">
+          {{message.body}}
+        </div>
+      </div>
+      <div class="card-footer w-100">
+        <span class="text-start">
+          <button type="button" class="btn btn-secondary" routerLink="/messages"><i class="bi bi-arrow-left-circle me-2"></i> Back to Messages</button>
+        </span>
+
+        <span *ngIf="message.receiverRead !== undefined && message.receiverRead !== null"
+              class="text-end float-end align-items-center"
+              style="font-size: 0.8rem">
+          Message read from {{message.usernameTo}} on:  {{message.receiverRead | date:'medium' }}
+        </span>
+
+      </div>
+    </div>
+
+  </div>
+</app-container>

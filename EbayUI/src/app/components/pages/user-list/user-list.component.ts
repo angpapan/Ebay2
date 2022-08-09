@@ -31,7 +31,7 @@ export class UserListComponent implements OnInit {
         console.log(dataTablesParameters);
 
         let req: UserListRequest = new UserListRequest();
-        req.pageNumber = dataTablesParameters.start+1;
+        req.pageNumber = (dataTablesParameters.start / dataTablesParameters.length) + 1;
         req.pageSize = dataTablesParameters.length;
         const ordering = dataTablesParameters.order;
         const orderColumn = dataTablesParameters.columns[ordering[0].column].data + ' ' + ordering[0].dir;

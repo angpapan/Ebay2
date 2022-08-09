@@ -1,28 +1,42 @@
-import {Component, Input, OnInit, SimpleChanges, OnChanges} from '@angular/core';
-import {UserListItem} from "../../../../model/UserListItem";
-import {AdminService} from "../../../../Services/admin.service";
-import {UserListRequest} from "../../../../model/UserListRequest";
+import {Component, Input, OnInit, SimpleChanges, OnDestroy, ViewChild, OnChanges, AfterViewInit} from '@angular/core';
 import {PaginationResponseHeader} from "../../../../model/PaginationResponseHeader";
+import {MessageListResponse} from "../../../../model/messages/MessageListResponse";
+import {MessageService} from "../../../../Services/message.service";
+import {InboxRequest} from "../../../../model/messages/InboxRequest";
+import {OutboxRequest} from "../../../../model/messages/OutboxRequest";
+import {Observable, Subject} from "rxjs";
+import {HttpResponse} from "@angular/common/http";
+import {DataTableDirective} from "angular-datatables";
+import {ADTSettings} from "angular-datatables/src/models/settings";
 
 @Component({
   selector: 'app-message-list',
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css']
 })
-export class MessageListComponent implements OnInit {
+export class MessageListComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   @Input() selectedMenu: string;
 
-
+  @ViewChild(DataTableDirective, {static: false})
+  dtElement: DataTableDirective;
   dtOptions: DataTables.Settings = {};
-  users: UserListItem[] = [];
-  // searchDelay: 10000,
+  dtTrigger: Subject<ADTSettings> = new Subject<ADTSettings>();
 
-  constructor(private adminService: AdminService) { }
+  messages: MessageListResponse[] = [];
+
+  constructor(private messageService: MessageService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     console.log(changes);
-    if(changes['selectedMenu'].previousValue !== changes['selectedMenu'].currentValue){
-      alert(1);
+    if(changes['selectedMenu'].previousValue !== undefined && changes['selectedMenu'].previousValue !== changes['selectedMenu'].currentValue){
+      this.selectedMenu = changes['selectedMenu'].currentValue;
+      this.messages = [];
+
+      // rerender datatable
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.destroy();
+        this.dtTrigger.next(this.dtOptions);
+      })
     }
   }
 
@@ -33,28 +47,38 @@ export class MessageListComponent implements OnInit {
       pagingType: 'full_numbers',
       serverSide: true,
       processing: true,
-      order:[[4, "desc"]],
+      order:[[2, "desc"]],
       ajax: (dataTablesParameters: any, callback) => {
-        console.log(dataTablesParameters);
+        let req: InboxRequest | OutboxRequest;
+        if(that.selectedMenu === 'inbox'){
+          req = new InboxRequest();
+        }
+        else if(that.selectedMenu === 'outbox'){
+          req = new OutboxRequest();
+        }
+        else {
+          return;
+        }
 
-        let req: UserListRequest = new UserListRequest();
-        req.pageNumber = dataTablesParameters.start+1;
+        req.pageNumber = (dataTablesParameters.start / dataTablesParameters.length) + 1;
         req.pageSize = dataTablesParameters.length;
-        const ordering = dataTablesParameters.order;
-        const orderColumn = dataTablesParameters.columns[ordering[0].column].data + ' ' + ordering[0].dir;
-        req.orderBy = orderColumn;
         const searchValue = dataTablesParameters.search.value;
         if(searchValue !== undefined && searchValue !== null && searchValue !== "")
           req.search = searchValue;
 
-        that.adminService.getAllUsers(req).subscribe({
+        let obs: Observable<HttpResponse<MessageListResponse[]>> =
+          (that.selectedMenu === 'inbox') ?
+            this.messageService.getInbox(req) :
+            this.messageService.getOutbox(req);
+
+        obs.subscribe({
           next: resp => {
             console.log(resp.headers.get('X-pagination'));
             console.log(resp);
             let pagination: PaginationResponseHeader = JSON.parse(resp.headers.get('X-pagination')!);
             console.log(pagination);
 
-            that.users = resp.body!;
+            this.messages = resp.body!;
 
             callback({
               recordsTotal: pagination.TotalCount,
@@ -66,8 +90,15 @@ export class MessageListComponent implements OnInit {
           }
         });
       },
-      columns: [{ data: 'username' }, { data: 'firstName' }, { data: 'lastName' },
-        { data: 'email' }, { data: 'dateCreated' }, { data: 'enabled' }]
+      columns: [{ data: 'usernameFrom' }, { data: 'subject' }, { data: 'timeSent' }]
     };
+  }
+
+  ngAfterViewInit(): void {
+    this.dtTrigger.next(this.dtOptions);
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 }
