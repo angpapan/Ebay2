@@ -2,7 +2,7 @@ using EbayAPI.Models;
 
 namespace EbayAPI.Dtos;
 
-public class ItemDetails
+public class ItemDetailsFull
 {
     
     [Required] public int ItemId { get; set; }
@@ -17,7 +17,7 @@ public class ItemDetails
     public decimal? Latitude { get; set; } = null;
     public decimal? Longitude { get; set; } = null;
     [Required] public int SellerId { get; set; }
-    public List<ItemsCategories>? ItemCategories {get; set;} = null;
+    public List<Category>? Categories {get; set;} = null;
     public List<Image>? Images {get; set;} = null;
     public List<Bid>? Bids {get; set;} = null;
     
