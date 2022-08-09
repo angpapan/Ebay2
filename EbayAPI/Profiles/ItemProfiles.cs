@@ -24,9 +24,9 @@ public class ItemProfile : Profile
                 s => s.VisitedByUsers, o => o.DoNotValidate())
             ;
 
-                CreateMap<Item, ItemDetailsFull>()
-                    .ForMember(d=>d.Categories, 
-                        o=>o.MapFrom(s=>s.ItemCategories.Select(i=>i.Category).ToList()));
+        CreateMap<Item, ItemDetailsFull>()
+            .ForMember(d=>d.Categories, 
+                o=>o.MapFrom(s=>s.ItemCategories.Select(i=>i.Category).ToList()));
 
 
         CreateMap<ItemDetails, ItemDetailsSimple>()
@@ -40,5 +40,9 @@ public class ItemProfile : Profile
 
 
         CreateMap<Category, CategoryBasics>();
+
+        CreateMap<BidRequest, Bid>()
+            .ForMember(d => d.Time,
+                o => o.MapFrom(s=>new DateTime()));
     }
 }

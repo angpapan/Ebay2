@@ -37,9 +37,12 @@ public class ItemService
             
         if( userRequests == null || (userRequests.RoleId != Roles.Administrator && userRequests.UserId != item.SellerId) )
             throw new KeyNotFoundException($"unauthorized access to item {id} for role {userRequests.RoleId} and userid {userRequests.UserId}!");
-            
-        return _mapper.Map<ItemDetailsFull>(item);
-        
+
+        var toR = _mapper.Map<ItemDetailsFull>(item); 
+        toR.Bids = _dbContext.Bids.Where(i => i.ItemId == item.ItemId).ToList();
+
+        return toR;
+
     }
     
     
