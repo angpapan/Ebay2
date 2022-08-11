@@ -60,7 +60,7 @@ namespace EbayAPI.Controllers
         /// Gets the user's received messages in pages
         /// </summary>
         [HttpGet("inbox", Name = "Inbox")]
-        public async Task<List<MessageInboxDto>> Inbox([FromQuery] MessageQueryParameters parameters)
+        public async Task<List<MessageListDto>> Inbox([FromQuery] MessageQueryParameters parameters)
         {
             User? sender  = (User?)HttpContext.Items["User"];
             
@@ -78,7 +78,7 @@ namespace EbayAPI.Controllers
             
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
             
-            List<MessageInboxDto> inbox = _mapper.Map<List<MessageInboxDto>>(msgs);
+            List<MessageListDto> inbox = _mapper.Map<List<MessageListDto>>(msgs);
             return inbox;
         }
         
@@ -87,7 +87,7 @@ namespace EbayAPI.Controllers
         /// Gets the user's sent messages in pages
         /// </summary>
         [HttpGet("outbox", Name = "Outbox")]
-        public async Task<List<MessageOutboxDto>> Outbox([FromQuery] MessageQueryParameters parameters)
+        public async Task<List<MessageListDto>> Outbox([FromQuery] MessageQueryParameters parameters)
         {
             User? user  = (User?)HttpContext.Items["User"];
             
@@ -105,7 +105,7 @@ namespace EbayAPI.Controllers
             
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
             
-            List<MessageOutboxDto> outbox = _mapper.Map<List<MessageOutboxDto>>(msgs);
+            List<MessageListDto> outbox = _mapper.Map<List<MessageListDto>>(msgs);
             return outbox;
         }
         
@@ -147,6 +147,14 @@ namespace EbayAPI.Controllers
             await _messageService.DeleteMessageForUserAsync(user, id);
             
             return Ok("Message deleted successfully.");
+        }
+        
+        [HttpGet("stats", Name = "MessageStatistics")]
+        public async Task<MessageStatsDto> MessageStats()
+        {
+            User? user  = (User?)HttpContext.Items["User"];
+            
+            return await _messageService.GetUserStatsAsync(user);
         }
     }
 }

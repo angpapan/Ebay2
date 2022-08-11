@@ -39,6 +39,7 @@ import { MessagesMainComponent } from './components/pages/messages-main/messages
 import { MessagesNavComponent } from './components/pages/messages-main/messages-nav/messages-nav.component';
 import { MessageListComponent } from './components/pages/messages-main/message-list/message-list.component';
 import { MessageViewComponent } from './components/pages/message-view/message-view.component';
+import { MessageSendComponent } from './components/pages/message-send/message-send.component';
 
 @NgModule({
   declarations: [
@@ -65,11 +66,13 @@ import { MessageViewComponent } from './components/pages/message-view/message-vi
     MessagesNavComponent,
     MessageListComponent,
     MessageViewComponent,
+    MessageSendComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     RouterModule.forRoot([
       // { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -82,6 +85,7 @@ import { MessageViewComponent } from './components/pages/message-view/message-vi
       {path: 'not-verified', component: PendingVerificationComponent, canActivate:[NotVerifiedGuard]},
       {path: 'home', component: HomeComponent},
       {path: 'messages', component: MessagesMainComponent},
+      {path: 'messages/send', component: MessageSendComponent},
       {path: 'messages/:id', component: MessageViewComponent},
       {path: '**', redirectTo: ''}
     ]),

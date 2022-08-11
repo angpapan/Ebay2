@@ -13,19 +13,17 @@ public class MessageProfile : Profile
         CreateMap<SendMessageDto, Message>();
         
         
-        CreateMap<Message, MessageInboxDto>()
+        CreateMap<Message, MessageListDto>()
             .ForMember(dest => dest.UsernameFrom,
                 opt =>
                     opt.MapFrom(src => src.Sender.Username))
+            .ForMember(dest => dest.UsernameTo,
+                opt =>
+                    opt.MapFrom(src => src.Receiver.Username))
             .ForMember(dest => dest.isRead,
                 opt =>
                     opt.MapFrom(src => src.ReceiverRead != null));
 
-        CreateMap<Message, MessageOutboxDto>()
-            .ForMember(dest => dest.UsernameTo,
-                opt =>
-                    opt.MapFrom(src => src.Receiver.Username));
-        
         CreateMap<Message, MessageDetailsDto>()
             .ForMember(dest => dest.UsernameFrom,
                 opt =>

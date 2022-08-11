@@ -1,4 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {MessagesStats} from "../../../../model/messages/MessagesStats";
+import {MessageService} from "../../../../Services/message.service";
 
 @Component({
   selector: 'app-messages-nav',
@@ -7,14 +9,26 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 })
 export class MessagesNavComponent implements OnInit {
   @Output() selection = new EventEmitter<string>();
+  stats: MessagesStats;
 
-  constructor() { }
+  constructor(private messageService: MessageService) { }
+
+
 
   ngOnInit(): void {
+    this.getStats();
+  }
+
+  getStats() {
+    this.messageService.getStats().subscribe({
+      next: value => {
+        this.stats = value;
+      }
+    })
   }
 
   selectMenu(value: string) {
-    console.log(value);
+    this.getStats();
     this.selection.emit(value);
   }
 

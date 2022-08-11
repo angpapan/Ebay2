@@ -1,6 +1,6 @@
 namespace EbayAPI.Dtos.MessageDtos;
 
-public class MessageInboxDto
+public class MessageListDto
 {
     [Required]
     public int MessageId { get; set; }
@@ -10,6 +10,12 @@ public class MessageInboxDto
     /// </summary>
     [Required]
     public string UsernameFrom { get; set; }
+    
+    /// <summary>
+    /// The user that received the message
+    /// </summary>
+    [Required]
+    public string UsernameTo { get; set; }
     
     /// <summary>
     /// Message subject

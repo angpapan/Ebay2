@@ -8,6 +8,8 @@ import {Observable, Subject} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {DataTableDirective} from "angular-datatables";
 import {ADTSettings} from "angular-datatables/src/models/settings";
+import {SwalService} from "../../../../Services/swal.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-message-list',
@@ -24,7 +26,7 @@ export class MessageListComponent implements OnInit, OnDestroy, OnChanges, After
 
   messages: MessageListResponse[] = [];
 
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService, private swalService: SwalService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     console.log(changes);
@@ -47,6 +49,7 @@ export class MessageListComponent implements OnInit, OnDestroy, OnChanges, After
       pagingType: 'full_numbers',
       serverSide: true,
       processing: true,
+      searchDelay: 1000,
       order:[[2, "desc"]],
       ajax: (dataTablesParameters: any, callback) => {
         let req: InboxRequest | OutboxRequest;
@@ -90,7 +93,7 @@ export class MessageListComponent implements OnInit, OnDestroy, OnChanges, After
           }
         });
       },
-      columns: [{ data: 'usernameFrom' }, { data: 'subject' }, { data: 'timeSent' }]
+      columns: [{ data: 'usernameFrom' }, { data: 'subject' }, { data: 'timeSent' }, {data: '', orderable: false}]
     };
   }
 
@@ -100,5 +103,27 @@ export class MessageListComponent implements OnInit, OnDestroy, OnChanges, After
 
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
+  }
+
+  deleteMessage(id: number){
+    Swal.fire({
+      ...this.swalService.BootstrapOptions,
+      icon: 'question',
+      html: 'Do you want to delete this message?'
+    }).then(resp => {
+      if(resp.isConfirmed){
+        this.messageService.deleteMessage(id).subscribe({
+          next: (resp) => {
+            Swal.fire({
+              ...this.swalService.BootstrapConfirmOnlyOptions,
+              icon: 'success',
+              html: String(resp)
+            });
+
+            this.messages = this.messages.filter(m => m.messageId !== id);
+          }
+        })
+      }
+    });
   }
 }

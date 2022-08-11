@@ -78,11 +78,13 @@ public class MessageService
 
         IQueryable<Message> messages = _dbContext.Messages
             .Include(m => m.Sender)
+            .Include(m=>m.Receiver)
             .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false);
 
         if (!string.IsNullOrWhiteSpace(parameters.search))
         {
-            messages = messages.Where(m => m.Sender.Username.Contains(parameters.search));
+            messages = messages.Where(m => m.Sender.Username.Contains(parameters.search) || 
+                                           m.Subject.Contains(parameters.search));
         }
         
         messages = messages.OrderByDescending(m => m.TimeSent);
@@ -111,11 +113,13 @@ public class MessageService
 
         IQueryable<Message> messages = _dbContext.Messages
             .Include(m => m.Receiver)
+            .Include(m => m.Sender)
             .Where(m => m.SenderId == user.UserId && m.SenderDelete == false);
             
         if (!string.IsNullOrWhiteSpace(parameters.search))
         {
-            messages = messages.Where(m => m.Receiver.Username.Contains(parameters.search));
+            messages = messages.Where(m => m.Receiver.Username.Contains(parameters.search) || 
+                                           m.Subject.Contains(parameters.search));
         }
         
         messages = messages.OrderByDescending(m => m.TimeSent);
@@ -207,6 +211,30 @@ public class MessageService
         }
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<MessageStatsDto> GetUserStatsAsync(User? user)
+    {
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("Please login to continue.");
+        }
+        
+        MessageStatsDto ret = new MessageStatsDto();
+
+        ret.InboxTotal = await _dbContext.Messages
+            .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false)
+            .CountAsync();
+        
+        ret.InboxNew = await _dbContext.Messages
+            .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false && m.ReceiverRead == null)
+            .CountAsync();
+        
+        ret.OutboxTotal = await _dbContext.Messages
+            .Where(m => m.SenderId == user.UserId && m.SenderDelete == false)
+            .CountAsync();
+
+        return ret;
     }
 
 

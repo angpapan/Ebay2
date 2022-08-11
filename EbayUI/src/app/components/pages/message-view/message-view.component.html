@@ -1,12 +1,28 @@
-<app-container xmlns="http://www.w3.org/1999/html">
+<app-container>
   <div class="row mb-4 mt-3">
-    <div class="align-items-start justify-content-start card text-dark bg-light text-start h-100 w-100">
+    <div class="align-items-start justify-content-start card text-dark bg-light text-start h-100 w-100 ps-0 pe-0">
       <div class="card-header w-100">
         <span class="text-start">
-          <b>{{message.subject}}</b>
-        </span>
-        <span class="text-end float-end">
-          <button type="button" class="btn btn-primary">Reply<i class="bi bi-reply-fill ms-2"></i></button>
+          <div class="hstack gap-2">
+            <b>{{message.subject}}</b>
+
+
+            <span *ngIf="message.replyForId !== undefined && message.replyForId !== null" class="hstack gap-0">
+              <span class="ms-5">(In reply of:</span>
+              <a [routerLink]="['messages', message.replyForId]">
+                {{message.replyForSubject}}
+              </a>
+              <span>)</span>
+            </span>
+
+            <span class="text-end float-end ms-auto">
+              <button (click)="deleteMessage()" type="button" class="btn btn-danger">Delete<i class="bi bi-trash3 ms-2"></i></button>
+            </span>
+
+            <span *ngIf="userUsername !== message.usernameFrom" class="text-end float-end">
+              <button [routerLink]="['/messages/send']" [state]="{ inReplyOf }" type="button" class="btn btn-primary">Reply<i class="bi bi-reply-fill ms-2"></i></button>
+            </span>
+          </div>
         </span>
       </div>
       <div class="card-body w-100">
@@ -39,14 +55,7 @@
           <hr/>
         </div>
 
-        <div *ngIf="message.replyForId !== undefined && message.replyForId !== null" class="row">
-          <span [routerLink]="['messages', message.replyForId]">
-            In reply of {{message.replyForSubject}}
-          </span>
-          <hr/>
-        </div>
-
-        <div class="row mt-4 mb-5 ms-5" style="min-height: 20vh">
+        <div class="row mt-4 mb-5 ms-5" style="min-height: 20vh; white-space: pre-line">
           {{message.body}}
         </div>
       </div>
