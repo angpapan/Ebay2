@@ -93,10 +93,10 @@ namespace EbayAPI.Controllers
 
         [HttpPost("register", Name="Register")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateUser(UserRegister reg)
+        public async Task<AuthenticateResponse> CreateUser(UserRegister reg)
         {
             await _userService.Register(reg);
-            return Ok("Successful Registration. Please wait for your account to be approved!");
+            return _userService.Authenticate(new AuthenticateRequest(reg.Username, reg.Password));
         }
     }
 }
