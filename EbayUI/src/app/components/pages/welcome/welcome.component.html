@@ -45,8 +45,12 @@
 
     <div class="justify-content-end">
 
-      <button type="button" class="btn btn-primary me-4" routerLink="/login">
+      <button *ngIf="!loggedIn" type="button" class="btn btn-primary me-4" routerLink="/login">
         Login
+      </button>
+
+      <button *ngIf="loggedIn" type="button" class="btn btn-primary me-4" routerLink="/home">
+        Proceed to Home Page
       </button>
 
 
