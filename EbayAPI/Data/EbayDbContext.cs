@@ -51,9 +51,30 @@ public class EbayAPIDbContext : DbContext
             }
     );
 
-    modelBuilder.Entity<Category>().HasData(
-            new Category { CategoryId = 1, Name = "Holidays"}
+        modelBuilder.Entity<Category>().HasData(
+            new Category { CategoryId = 1, Name = "Holidays" },
+            new Category { CategoryId = 2, Name = "Clothes" },
+            new Category { CategoryId = 3, Name = "Electronic"},
+            new Category { CategoryId = 4, Name = "Vehicle"},
+            new Category { CategoryId = 5, Name = "House"}
             // TODO ::: get categories from dataset
         );
+
+    modelBuilder.Entity<Item>().HasData(
+            new Item {
+                ItemId = 132,
+                Name = "Hat",
+                BuyPrice = 15,
+                FirstBid = 12,
+                Location = "Athens",
+                Country = "Greece",
+                Description = "A very nice red hat",
+                Ends = new DateTime(2022-03-02),
+                Latitude = new decimal(1.3),
+                Longitude = new decimal(1.6),
+                SellerId = 1
+            }
+    );
     }
+    
 }

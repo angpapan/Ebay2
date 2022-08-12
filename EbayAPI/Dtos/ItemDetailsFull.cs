@@ -2,7 +2,7 @@ using EbayAPI.Models;
 
 namespace EbayAPI.Dtos;
 
-public class ItemDetails
+public class ItemDetailsFull
 {
     
     [Required] public int ItemId { get; set; }
@@ -20,5 +20,6 @@ public class ItemDetails
     [Required] public int SellerId { get; set; }
     public List<string>? Categories {get; set;} = null;
     public List<Image>? Images {get; set;} = null;
+    public List<Bid>? Bids {get; set;} = null;
     
 }
