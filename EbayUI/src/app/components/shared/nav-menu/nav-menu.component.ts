@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from "../../../Services/authentication.service";
 import {Router} from "@angular/router";
 import {storageItems} from "../../../model/storageItems";
@@ -8,12 +8,17 @@ import {storageItems} from "../../../model/storageItems";
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
-export class NavMenuComponent {
+export class NavMenuComponent implements OnInit {
   isExpanded = false;
-  loggedIn = true;
+  loggedIn: boolean;
   username: string | null = localStorage.getItem(storageItems.Username);
 
   constructor(private authSerive: AuthenticationService, private router: Router) {}
+
+  ngOnInit() {
+    let token: string | null = localStorage.getItem(storageItems.Token);
+    this.loggedIn = token !== undefined && token !== null && token !== "";
+  }
 
   collapse() {
     this.isExpanded = false;
@@ -27,8 +32,6 @@ export class NavMenuComponent {
     const role: string | undefined | null = localStorage.getItem(storageItems.Role);
     this.authSerive.logout();
     this.loggedIn = false;
-    if( role === "admin"){
-      this.router.navigate(['/home']);
-    }
+    this.router.navigate(['/home']);
   }
 }

@@ -25,7 +25,7 @@ Run project from Rider/VS or run:
 # Known Issues
 
 * Στο navbar του welcome page να αλλάζει το login button ανάλογα με την κατάσταση του χρήστη. -- fixed
-* Το κανονικό navbar έχει θέμα με το Logout (δεν αφαιρεί αμέσως το εικονίδιο χρήστη)
+* Το κανονικό navbar έχει θέμα με το Logout (δεν αφαιρεί αμέσως το εικονίδιο χρήστη) -- fixed
 * Ημιτελές welcome page -- fixed
 * Το register guard θέλει φτιάξιμο (να μην μπορεί να πάει συνδεδεμένος χρήστης)
 * Στο register form να αλλάξει το alert με swal -- fixed
