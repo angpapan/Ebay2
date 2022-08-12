@@ -46,14 +46,13 @@ namespace EbayAPI.Controllers
         public async Task<IActionResult> CreateAuction([FromBody]ItemAddition newItem)
         {
             User? seller = (User?) HttpContext.Items["User"];
-            if (newItem.CategoriesId == null)
-                return Ok("Empty cat!");
+            
             int newId = await _itemService.InsertItem(seller.UserId,newItem);
             
             return Ok($"A new auction has been created successful for item with id : {newId}!");
         }
 
-        [HttpPost("/category/{id}", Name = "GetItemsByCategory")]
+        [HttpPost("/category/{id:int}", Name = "GetItemsByCategory")]
         [AllowAnonymous]
         public async Task<List<ItemDetailsSimple>> GetItemsByCategory(int id)
         {
@@ -61,12 +60,22 @@ namespace EbayAPI.Controllers
             return await _itemService.GetItemsByCategoryId(id);
         }
 
+        
         [HttpPost("/user/{username}", Name = "GetItemsByUsername")]
         [AllowAnonymous]
         public async Task<List<ItemDetailsSimple>>? GetItemsByUserName(string username)
         {
             //:: todo -> make it paged
             return await _itemService.GetItemsByUsername(username);
+        }
+        
+        
+        [HttpGet("/price", Name = "GetItemsByPrice")]
+        [AllowAnonymous]
+        public async Task<List<ItemDetailsSimple>>? GetItemsByPrice([FromQuery] decimal start, decimal end)
+        {
+            //:: todo -> make it paged
+            return await _itemService.GetItemsByPrice(start,end);
         }
 
 

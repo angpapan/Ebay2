@@ -15,18 +15,12 @@ public class ItemProfile : Profile
 
 
         CreateMap<Item, ItemDetails>()
-            .ForSourceMember(
-                s => s.Bids,
-                o => o.DoNotValidate())
-            .ForSourceMember(
-                s => s.ItemCategories, o => o.DoNotValidate())
-            .ForSourceMember(
-                s => s.VisitedByUsers, o => o.DoNotValidate())
-            ;
+            .ForMember(dest=>dest.Categories , opt => opt.MapFrom(
+                src => src.ItemCategories.Select(c=>c.Category).Select(n=>n.Name).ToList()));
 
         CreateMap<Item, ItemDetailsFull>()
-            .ForMember(d=>d.Categories, 
-                o=>o.MapFrom(s=>s.ItemCategories.Select(i=>i.Category).ToList()));
+            .ForMember(dest=>dest.Categories , opt => opt.MapFrom(
+                src => src.ItemCategories.Select(c=>c.Category).Select(n=>n.Name).ToList()));
 
 
         CreateMap<ItemDetails, ItemDetailsSimple>()
