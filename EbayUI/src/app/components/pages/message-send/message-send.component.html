@@ -1,0 +1,87 @@
+<app-container>
+  <div class="row mb-4 mt-3">
+    <div class="align-items-start justify-content-start card text-dark bg-light text-start h-100 w-100 ps-0 pe-0">
+      <div class="card-header w-100">
+        <span class="text-start">
+          <b>New message</b>
+        </span>
+        <span class="text-end float-end">
+          <button type="button" class="btn btn-primary" (click)="onSubmit()">Send<i class="bi bi-send-fill ms-2"></i></button>
+        </span>
+      </div>
+      <div class="card-body w-100">
+
+        <div *ngIf="inReplyOf !== undefined" class="mb-3">
+          <div class="row mb-2">
+            <div class="col-auto">
+              <strong>Reply To: </strong>
+            </div>
+            <div class="col-auto">
+              <a [routerLink]="['/messages', inReplyOf.messageId]">{{inReplyOf.messageSubject}}</a>
+            </div>
+          </div>
+          <hr/>
+        </div>
+
+        <form [formGroup]="sendForm" class="row needs-validation" novalidate>
+          <div class="col-md-12 mb-3">
+            <div class="input-group has-validation">
+              <span class="input-group-text"><strong>To: </strong></span>
+              <input type="text" class="form-control" placeholder="User to send the message" aria-label="Username" formControlName="receiverUsername"
+                     [ngClass]="{ 'is-invalid': receiverUsername?.invalid && (receiverUsername?.dirty || receiverUsername?.touched) }"
+                     required />
+            </div>
+
+            <div *ngIf="receiverUsername?.invalid && (receiverUsername?.dirty || receiverUsername?.touched)" class="text-danger">
+              <div *ngIf="receiverUsername?.errors?.['required']">
+                Username is required.
+              </div>
+              <div *ngIf="receiverUsername?.errors?.['existingUsername']">
+                The specified username does not exist.
+              </div>
+            </div>
+          </div>
+          <hr/>
+
+          <div class="col-md-12 mb-3">
+            <div class="input-group has-validation">
+              <span class="input-group-text"><strong>Subject: </strong></span>
+              <input type="text" class="form-control" placeholder="Message subject" aria-label="Subject" formControlName="subject"
+                     [ngClass]="{ 'is-invalid': subject?.invalid && (subject?.dirty || subject?.touched) }"
+                     required />
+
+            </div>
+            <div *ngIf="subject?.invalid && (subject?.dirty || subject?.touched)" class="text-danger">
+              <div *ngIf="subject?.errors?.['required']">
+                Subject is required.
+              </div>
+            </div>
+          </div>
+          <hr/>
+
+          <div class="col-md-12 mb-2">
+              <textarea rows="20" type="text" class="form-control" placeholder="Message text" aria-label="body" formControlName="body"
+                     [ngClass]="{ 'is-invalid': body?.invalid && (body?.dirty || body?.touched) }"
+                        required></textarea>
+
+              <div *ngIf="body?.invalid && (body?.dirty || body?.touched)" class="text-danger">
+                <div *ngIf="body?.errors?.['required']">
+                  Message text is required.
+                </div>
+              </div>
+          </div>
+
+
+
+        </form>
+      </div>
+
+      <div class="card-footer w-100">
+        <span class="text-start">
+          <button type="button" class="btn btn-secondary" routerLink="/messages"><i class="bi bi-arrow-left-circle me-2"></i> Back to Messages</button>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</app-container>

@@ -3,7 +3,7 @@ using EbayAPI.Dtos;
 using EbayAPI.Models;
 using NuGet.Protocol;
 
-namespace Ebay.Profiles;
+namespace EbayAPI.Profiles;
 
 public class UserProfile : Profile
 {

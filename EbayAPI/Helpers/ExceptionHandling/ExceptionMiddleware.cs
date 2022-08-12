@@ -29,6 +29,10 @@ public class ExceptionMiddleware
         {
             await HandleExceptionAsync(httpContext, ex, (int)HttpStatusCode.NotFound);
         }
+        catch (NotSupportedException ex)
+        {
+            await HandleExceptionAsync(httpContext, ex, (int)HttpStatusCode.Forbidden);
+        }
         catch (Exception ex)
         {
             await HandleExceptionAsync(httpContext, ex);

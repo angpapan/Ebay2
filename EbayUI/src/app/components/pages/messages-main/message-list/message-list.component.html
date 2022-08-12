@@ -1,0 +1,38 @@
+<div class="align-items-start justify-content-start card text-dark bg-light text-start h-100">
+  <div class="card-header text-start w-100">
+    <div class="hstack gap-0">
+      <span class="text-start"><b>Messages</b></span>
+      <span class="text-end float-end ms-auto">
+        <button type="button" routerLink="/messages/send" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Compose</button>
+      </span>
+
+    </div>
+  </div>
+  <div class="card-body w-100">
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-border table-hover table-striped">
+      <thead class="table-secondary">
+      <tr>
+        <th style="width: 20%">{{selectedMenu === 'inbox' ? 'From' : 'To'}}</th>
+        <th style="width: 50%">Subject</th>
+        <th style="width: 25%">Time Sent</th>
+        <th style="width:5%"></th>
+      </tr>
+      </thead>
+      <tbody *ngIf="messages?.length! > 0">
+      <tr *ngFor="let message of messages" style="cursor: pointer;"
+          [style]="{'font-weight': (!message.isRead && selectedMenu === 'inbox') ? 'bold' : 'none'}"
+      >
+        <td routerLink="{{'/messages/' + message.messageId}}">{{selectedMenu === 'inbox' ? message.usernameFrom : message.usernameTo}}</td>
+        <td routerLink="{{'/messages/' + message.messageId}}">{{message.subject}}</td>
+        <td routerLink="{{'/messages/' + message.messageId}}">{{message.timeSent | date: 'medium' }}</td>
+        <td class="text-center text-danger"><i class="bi bi-trash3" (click)="deleteMessage(message.messageId)"></i></td>
+      </tr>
+      </tbody>
+      <tbody *ngIf="messages?.length == 0">
+      <tr>
+        <td colspan="4" class="no-data-available">There are no messages!</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<app-container>
+  <div class="row mb-4 mt-3">
+    <div class="col-md-2">
+      <app-messages-nav (selection)="getSelection($event)"></app-messages-nav>
+    </div>
+    <div class="col-md-10">
+      <app-message-list [selectedMenu]="selectedMenu"></app-message-list>
+    </div>
+  </div>
+</app-container>
+

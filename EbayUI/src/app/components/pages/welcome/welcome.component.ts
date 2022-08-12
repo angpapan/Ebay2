@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {storageItems} from "../../../model/storageItems";
 
 @Component({
   selector: 'app-welcome',
@@ -7,8 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WelcomeComponent implements OnInit {
 
-  isExpanded = false;
-  // loggedIn = true;
+  isExpanded: boolean = false;
+  loggedIn: boolean;
 
   collapse() {
     this.isExpanded = false;
@@ -19,6 +20,8 @@ export class WelcomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    let token: string | null = localStorage.getItem(storageItems.Token);
+    this.loggedIn = token !== undefined && token !== null && token !== "";
   }
 
 }

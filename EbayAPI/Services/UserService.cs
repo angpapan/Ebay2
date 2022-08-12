@@ -73,9 +73,9 @@ public class UserService
         if (reg.Password != reg.VerifyPassword)
             throw new BadHttpRequestException("Password do not match.");
 
-        reg.Password = GlobalService.ComputeSha256Hash(reg.Password);
-        
         User usr = _mapper.Map<User>(reg);
+        usr.Password = GlobalService.ComputeSha256Hash(reg.Password);
+        
         _dbContext.Users.Add(usr);
         await _dbContext.SaveChangesAsync();
     }

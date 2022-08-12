@@ -27,7 +27,7 @@ export class UserService {
   }
 
   registerUser(reg: UserRegisterRequest): Observable<HttpResponse<AuthenticationResponse>> {
-    return this.http.post<AuthenticationResponse>('https://localhost:7179/user/register', reg, { observe: 'response'});
+    return this.http.post<AuthenticationResponse>(this.usersUrl + '/register', reg, { observe: 'response'});
   }
 
   checkUsernameExistence(username: string): Observable<boolean> {

@@ -35,6 +35,12 @@ import { RegisterPageComponent } from './components/pages/register-page/register
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import {NotVerifiedGuard} from "./guards/not-verified.guard";
 import {LoginGuard} from "./guards/login.guard";
+import { MessagesMainComponent } from './components/pages/messages-main/messages-main.component';
+import { MessagesNavComponent } from './components/pages/messages-main/messages-nav/messages-nav.component';
+import { MessageListComponent } from './components/pages/messages-main/message-list/message-list.component';
+import { MessageViewComponent } from './components/pages/message-view/message-view.component';
+import { MessageSendComponent } from './components/pages/message-send/message-send.component';
+import {EnabledGuard} from "./guards/enabled.guard";
 
 @NgModule({
   declarations: [
@@ -57,11 +63,17 @@ import {LoginGuard} from "./guards/login.guard";
     ItemBoxComponent,
     RegisterPageComponent,
     LoginPageComponent,
+    MessagesMainComponent,
+    MessagesNavComponent,
+    MessageListComponent,
+    MessageViewComponent,
+    MessageSendComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     RouterModule.forRoot([
       // { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -70,9 +82,12 @@ import {LoginGuard} from "./guards/login.guard";
       {path: 'users', component: UserListComponent, canActivate: [AuthGuard, AdminGuard]},
       {path: 'users/:username', component: UserComponent, canActivate: [AuthGuard]},
       {path: 'login', component: LoginPageComponent, canActivate:[LoginGuard]},
-      {path: 'register', component: RegisterPageComponent},
+      {path: 'register', component: RegisterPageComponent, canActivate:[LoginGuard]},
       {path: 'not-verified', component: PendingVerificationComponent, canActivate:[NotVerifiedGuard]},
       {path: 'home', component: HomeComponent},
+      {path: 'messages', component: MessagesMainComponent, canActivate:[AuthGuard, EnabledGuard]},
+      {path: 'messages/send', component: MessageSendComponent, canActivate:[AuthGuard, EnabledGuard]},
+      {path: 'messages/:id', component: MessageViewComponent, canActivate:[AuthGuard, EnabledGuard]},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,

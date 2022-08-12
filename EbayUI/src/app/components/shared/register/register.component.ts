@@ -11,6 +11,9 @@ import {map} from "rxjs/operators";
 import {UserService} from "../../../Services/user.service";
 import {UserRegisterRequest} from "../../../model/UserRegisterRequest";
 import {Router} from "@angular/router";
+import {SwalService} from "../../../Services/swal.service";
+import Swal from "sweetalert2";
+import {storageItems} from "../../../model/storageItems";
 // import {passwordsMatchValidator} from "./passwords-match-validator.directive";
 
 @Component({
@@ -26,7 +29,8 @@ export class RegisterComponent implements OnInit {
 
 
 
-  constructor(private userService : UserService, private router: Router) { }
+  constructor(private userService : UserService, private router: Router,
+              private swalSevice: SwalService) { }
 
   ngOnInit(): void {
     this.registerForm = new UntypedFormGroup({
@@ -125,21 +129,24 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if(this.registerForm?.invalid){
-      alert("Invalid form!");
+      Swal.fire({
+        ...this.swalSevice.BootstrapConfirmOnlyOptions,
+        icon: 'error',
+        html: 'The form is invalid. Please check the fields again.'
+      })
       return;
     }
 
     let reg: UserRegisterRequest = this.registerForm!.value;
 
-    console.log(reg);
-
-    let success: boolean = false;
-
     let that = this;
     this.userService.registerUser(reg).subscribe({
       next(response) {
-        console.log(response);
-        success = true;
+        console.log(response.body);
+        localStorage.setItem(storageItems.Token, <string>response.body?.token);
+        localStorage.setItem(storageItems.Username, <string>response.body?.username);
+        localStorage.setItem(storageItems.Role, <string>response.body?.role);
+        localStorage.setItem(storageItems.Enabled, String(<boolean>response.body?.enabled));
       },
       error(error) {
         console.log(error)
