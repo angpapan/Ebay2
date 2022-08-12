@@ -85,7 +85,7 @@ export class MessageListComponent implements OnInit, OnDestroy, OnChanges, After
 
             callback({
               recordsTotal: pagination.TotalCount,
-              // recordsDisplay: 10,
+              // recordsDisplay: pagination.PageSize,
               // draw: pagination.CurrentPage,
               recordsFiltered: pagination.TotalCount,
               data: []

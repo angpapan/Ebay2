@@ -18,7 +18,7 @@
         <th style="width:5%"></th>
       </tr>
       </thead>
-      <tbody *ngIf="messages?.length != 0">
+      <tbody *ngIf="messages?.length! > 0">
       <tr *ngFor="let message of messages" style="cursor: pointer;"
           [style]="{'font-weight': (!message.isRead && selectedMenu === 'inbox') ? 'bold' : 'none'}"
       >
@@ -30,7 +30,7 @@
       </tbody>
       <tbody *ngIf="messages?.length == 0">
       <tr>
-        <td colspan="4" class="no-data-available">No data!</td>
+        <td colspan="4" class="no-data-available">There are no messages!</td>
       </tr>
       </tbody>
     </table>

@@ -9,7 +9,7 @@ import {MessageService} from "../../../../Services/message.service";
 })
 export class MessagesNavComponent implements OnInit {
   @Output() selection = new EventEmitter<string>();
-  stats: MessagesStats;
+  stats: MessagesStats | undefined;
 
   constructor(private messageService: MessageService) { }
 
