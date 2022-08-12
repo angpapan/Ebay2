@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NotVerifiedGuard } from './not-verified.guard';
+import { EnabledGuard } from './enabled.guard';
 
-describe('NotVerifiedGuard', () => {
-  let guard: NotVerifiedGuard;
+describe('EnabledGuard', () => {
+  let guard: EnabledGuard;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    guard = TestBed.inject(NotVerifiedGuard);
+    guard = TestBed.inject(EnabledGuard);
   });
 
   it('should be created', () => {
