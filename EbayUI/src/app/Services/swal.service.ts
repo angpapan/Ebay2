@@ -15,7 +15,7 @@ export class SwalService {
     },
     buttonsStyling: false,
     showCancelButton: true,
-    cancelButtonText: 'Ακύρωση',
+    cancelButtonText: 'Cancel',
     heightAuto: false,
   }
 
