@@ -12,6 +12,9 @@ namespace EbayAPI.Models
 
         [Required, Column(TypeName = "DECIMAL(19, 2)")]
         public decimal FirstBid {get; set;}
+        
+        [Required, Column(TypeName = "DECIMAL(19, 2)")]
+        public decimal Price { get; set; }
 
         [StringLength(500), Required]
         public string Location { get; set; }
