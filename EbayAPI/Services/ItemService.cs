@@ -138,6 +138,44 @@ public class ItemService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task<PagedList<Item>> GetSearchItemsList(ItemListQueryParameters dto)
+    {
+        IQueryable<Item> items = _dbContext.Items
+            .Include(i => i.ItemCategories)
+            .Include(i => i.Images);
+
+        if(dto.MinPrice != null)
+        {
+            items = items.Where(i => i.Price >= dto.MinPrice);
+        }
+
+        if (dto.MaxPrice != null)
+        {
+            items = items.Where(i => i.Price <= dto.MaxPrice);
+        }
+
+        if(dto.Locations != null)
+        {
+            items = items.Where(i => dto.Locations.Contains(i.Country));
+        }
+
+        if(dto.Categories != null)
+        {
+            items = items
+                .Where(i => i.ItemCategories
+                    .Select(ic => ic.CategoryId).ToList()
+                    .Any(c => dto.Categories.Contains(c)));
+        }
+
+        QuerySortHelper<Item> it = new QuerySortHelper<Item>();
+        items = it.QuerySort(items, dto.OrderBy);
+
+        PagedList<Item> itemPage =
+            PagedList<Item>.ToPagedList(items, dto.PageNumber, dto.PageSize);
+
+        return itemPage;
+    }
+
 
 
 }

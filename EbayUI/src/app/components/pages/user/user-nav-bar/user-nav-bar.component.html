@@ -3,43 +3,39 @@
   <div class="card-header text-center"><b>{{user.username}}</b></div>
   <div class="card-body text-center">
     <span *ngIf="user.dateCreated !== undefined && user.dateCreated !== null">
-      <b>Member since:</b><br/>
+      <b>Member since:</b><br />
       {{user.dateCreated | date:'mediumDate'}}
-      <br/><br/>
+      <br /><br />
     </span>
 
     <span *ngIf="showRating == '' || showRating == 'bidder'">
-      <b>bidder Rating:</b><br/>
+      <b>bidder Rating:</b><br />
       <span *ngIf="user!.bidderRatingsNum == 0">
         No rating available
       </span>
       <span *ngIf="user!.bidderRatingsNum != 0">
-        <star-rating
-          [starType]="'svg'"
-          [rating]="user!.bidderRating"
-          [labelText]="user!.bidderRating + '(' + user!.bidderRatingsNum + ')'"
-          labelPosition="right"
-          [showHalfStars]="true"
-          [readOnly]="true"
-        ></star-rating>
+        <star-rating [starType]="'svg'"
+                     [rating]="user!.bidderRating"
+                     [labelText]="user!.bidderRating + '(' + user!.bidderRatingsNum + ')'"
+                     labelPosition="right"
+                     [showHalfStars]="true"
+                     [readOnly]="true"></star-rating>
       </span>
-      <br/>
+      <br />
     </span>
 
     <span *ngIf="showRating == '' || showRating == 'seller'">
-      <b>Seller Rating:</b><br/>
+      <b>Seller Rating:</b><br />
       <span *ngIf="user!.sellerRatingsNum == 0">
         No rating available
       </span>
       <span *ngIf="user!.sellerRatingsNum != 0">
-        <star-rating
-          [starType]="'svg'"
-          [rating]="user!.sellerRating"
-          [labelText]="user!.sellerRating + ' (' + user!.sellerRatingsNum + ')'"
-          labelPosition="right"
-          [showHalfStars]="true"
-          [readOnly]="true"
-        ></star-rating>
+        <star-rating [starType]="'svg'"
+                     [rating]="user!.sellerRating"
+                     [labelText]="user!.sellerRating + ' (' + user!.sellerRatingsNum + ')'"
+                     labelPosition="right"
+                     [showHalfStars]="true"
+                     [readOnly]="true"></star-rating>
       </span>
     </span>
   </div>
