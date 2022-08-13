@@ -1,10 +1,12 @@
 using AutoMapper;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
+using EbayAPI.Helpers;
 using EbayAPI.Models;
 using EbayAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace EbayAPI.Controllers
 {
@@ -77,6 +79,29 @@ namespace EbayAPI.Controllers
             //:: todo -> make it paged
             return await _itemService.GetItemsByPrice(start,end);
         }
+
+
+        [HttpGet("/search", Name = "SearchItems")]
+        [AllowAnonymous]
+        public async Task<List<ItemDetailsSimple>>? SearchItemList([FromQuery] ItemListQueryParameters dto)
+        {
+            PagedList<Item> pageItem = await _itemService.GetSearchItemsList(dto);
+
+            var metadata = new
+            {
+                pageItem.TotalCount,
+                pageItem.PageSize,
+                pageItem.CurrentPage,
+                pageItem.TotalPages,
+                pageItem.HasNext,
+                pageItem.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+            return _mapper.Map<List<ItemDetailsSimple>>(pageItem);
+        }
+
 
 
 
