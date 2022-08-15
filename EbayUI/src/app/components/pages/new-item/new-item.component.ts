@@ -1,7 +1,11 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {Category} from "../../../model/Category";
+import {CategoryService} from "../../../Services/category.service";
+import {Subject} from "rxjs";
+import {DataTableDirective} from "angular-datatables";
 
 @Component({
   selector: 'app-new-item',
@@ -9,10 +13,19 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./new-item.component.css']
 })
 export class NewItemComponent implements OnInit {
+  @ViewChild(DataTableDirective, {static: false})
+  dtElement: DataTableDirective;
+
   newItemForm: FormGroup;
   _images: string[] = [];
+  _categories: Category[] = [];
+  _selectedCategories: Category[] = [];
+  dtOptions: DataTables.Settings;
+  dtTrigger: Subject<any> = new Subject<any>();
+  // dtTrigger2: Subject<any> = new Subject<any>();
 
-  constructor(private http: HttpClient, private currencyPipe: CurrencyPipe) { }
+
+constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, private categoryService: CategoryService) { }
 
   ngOnInit(): void {
     this.newItemForm = new FormGroup({
@@ -64,8 +77,26 @@ export class NewItemComponent implements OnInit {
       'categories': new FormControl(null),
       'images': new FormControl(null),
     });
-  }
 
+    this.dtOptions = {
+      columns: [{
+        title: 'Name',
+        data: 'name'
+      }, {
+        title: 'Add',
+      }]
+    }
+
+
+
+    this.categoryService.getCategories().subscribe({
+      next: (response) => {
+        console.log(response);
+        this._categories = response;
+        this.dtTrigger.next('');
+      }
+    })
+  }
 
   get name() { return this.newItemForm.get('name'); }
   get description() { return this.newItemForm.get('description'); }
@@ -79,7 +110,37 @@ export class NewItemComponent implements OnInit {
   get longitude() { return this.newItemForm.get('longitude'); }
   get categories() { return this.newItemForm.get('categories'); }
 
+  addCategory(cat: Category){
+    console.log(cat);
+    this._categories = this._categories.filter(c => c !== cat);
+    this._selectedCategories = [...this._selectedCategories, cat]
 
+    console.log(this._categories)
+    console.log(this._selectedCategories)
+
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    })
+
+    this.newItemForm.patchValue({
+      categories: this._selectedCategories.map(c => c.categoryId)
+    });
+  }
+
+  removeCategory(cat: Category){
+    this._selectedCategories = this._selectedCategories.filter(c => c !== cat);
+    this._categories = [...this._categories, cat]
+
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    })
+
+    this.newItemForm.patchValue({
+      categories: this._selectedCategories.map(c => c.categoryId)
+    });
+  }
   //sendRequest = () => {
   //  const formData = new FormData();
   //  for (const key of Object.keys(this.newItemForm.value)) {

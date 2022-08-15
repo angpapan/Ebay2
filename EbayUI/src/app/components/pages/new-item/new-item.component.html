@@ -349,19 +349,82 @@
       </div>
     </div>
 
-    <div class="col-lg-5">
+    <div class="col-lg-4">
       <label for="latitude" class="form-label">Latitude <span class="text-muted">(optional)</span></label>
       <input type="number" step="any" class="form-control" id="latitude" formControlName="latitude" placeholder="Latitude" />
     </div>
 
-    <div class="col-lg-5">
+    <div class="col-lg-4">
       <label for="longitude" class="form-label">Longitude <span class="text-muted">(optional)</span></label>
       <input type="number" step="any" class="form-control" id="longitude" formControlName="longitude" placeholder="Longitude" />
     </div>
 
     <div class="col-lg-2 align-bottom mt-auto">
-      <button class="btn btn-primary">Get my coordinates</button>
+      <button type="button" class="btn btn-primary">Get my coordinates</button>
     </div>
+
+    <div class="col-lg-2 align-bottom mt-auto">
+      <button type="button" class="btn btn-primary">Choose from map</button>
+    </div>
+
+
+    <!-- CATEGORIES -->
+    <div class="col-lg-6">
+      <label>Categories</label>
+      <table id="categories-table" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table row-border hover">
+        <thead>
+        <tr>
+          <th style="width: 90%">Name</th>
+          <th style="width: 10%">Add</th>
+        </tr>
+        </thead>
+        <tbody *ngIf="_categories.length > 0">
+        <tr *ngFor="let category of _categories">
+          <td>{{category.name}}</td>
+          <td class="text-center text-success"><i class="bi bi-plus-square" style="cursor:pointer" (click)="addCategory(category)"></i></td>
+        </tr>
+        </tbody>
+        <tbody *ngIf="_categories.length == 0">
+        <tr class="text-center">
+          <td colspan="3" class="no-data-available">No categories found</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="col-lg-1"></div>
+
+
+    <div class="col-lg-5">
+      <label>Selected Categories</label>
+      <table id="selected-categories-table" class="table row-border hover">
+        <thead>
+        <tr>
+          <th style="width: 90%">Name</th>
+          <th style="width: 10%">Remove</th>
+        </tr>
+        </thead>
+        <tbody *ngIf="_selectedCategories?.length != 0">
+        <tr *ngFor="let category of _selectedCategories">
+          <td>{{category.name}}</td>
+          <td class="text-center text-danger"><i class="bi bi-dash-square"  style="cursor:pointer" (click)="removeCategory(category)"></i></td>
+        </tr>
+        </tbody>
+        <tbody *ngIf="_selectedCategories?.length == 0">
+        <tr class="text-center">
+          <td colspan="3" class="no-data-available">There are no seleceted categories</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+    <!-- CATEGORIES END -->
+
+
+
 
 
 
