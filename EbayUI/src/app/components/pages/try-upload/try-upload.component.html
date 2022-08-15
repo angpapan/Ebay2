@@ -1,0 +1,33 @@
+<h1>Angular 13 Multiple Image Upload with Preview - ItSolutionStuff.com</h1>
+
+<form [formGroup]="myForm" (ngSubmit)="submit()">
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input formControlName="name"
+           id="name"
+           type="text"
+           class="form-control">
+    <div *ngIf="f['name'].touched && f['name'].invalid" class="alert alert-danger">
+      <div *ngIf="f['name'].errors && f['name'].errors['required']">Name is required.</div>
+      <div *ngIf="f['name'].errors && f['name'].errors['minlength']">Name should be 3 character.</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="file">File</label>
+    <input formControlName="file"
+           id="file"
+           type="file"
+           class="form-control"
+           multiple=""
+           (change)="onFileChange($event)">
+    <div *ngIf="f['file'].touched && f['file'].invalid" class="alert alert-danger">
+      <div *ngIf="f['file'].errors && f['file'].errors['required']">File is required.</div>
+    </div>
+  </div>
+
+  <img *ngFor='let url of images' [src]="url" height="150" width="200px" style="margin: 3px;"> <br />
+
+  <button class="btn btn-primary" [disabled]="myForm.invalid" type="submit">Submit</button>
+</form>
