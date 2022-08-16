@@ -32,6 +32,11 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         if (user == null)
             throw new UnauthorizedAccessException("Please login to gain access.");
 
+        // not enabled
+        if(!user.Enabled)
+            throw new UnauthorizedAccessException("You are not verified yet. Please wait " +
+                                                  "for an administrator to approve your account.");
+        
         // logged in but doesn't have permission to access
         if (AllowedRoles.Length != 0 && !AllowedRoles.Contains(user.RoleId))
             throw new UnauthorizedAccessException("Unauthorized access.");
