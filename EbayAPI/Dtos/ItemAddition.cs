@@ -16,5 +16,5 @@ public class ItemAddition
     public decimal? Latitude { get; set; } = null;
     public decimal? Longitude { get; set; } = null;
     public List<int>? CategoriesId {get; set;} = null;
-    public List<Image>? Images {get; set;} = null;
+    public List<IFormFile>? Images {get; set;} = null;
 }

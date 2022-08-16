@@ -7,6 +7,7 @@ using EbayAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using EbayAPI.Helpers.Authorize;
 
 namespace EbayAPI.Controllers
 {
@@ -80,7 +81,9 @@ namespace EbayAPI.Controllers
             return await _itemService.GetItemsByPrice(start,end);
         }
 
-
+        /// <summary>
+        /// Get items in paged lists
+        /// </summary>
         [HttpGet("/search", Name = "SearchItems")]
         [AllowAnonymous]
         public async Task<List<ItemDetailsSimple>>? SearchItemList([FromQuery] ItemListQueryParameters dto)
@@ -101,31 +104,17 @@ namespace EbayAPI.Controllers
 
             return _mapper.Map<List<ItemDetailsSimple>>(pageItem);
         }
-
-        [HttpPost("upload-images"), DisableRequestSizeLimit]
-        public async Task<IActionResult> Upload([FromForm] ItemAddition dto)
+        
+        /// <summary>
+        /// Create a new item for sale
+        /// </summary>
+        [HttpPost(""), DisableRequestSizeLimit]
+        [Helpers.Authorize.Authorize(Roles.User)]
+        public async Task<IActionResult> CreateItem([FromForm] ItemAddition dto)
         {
-            var a = dto;
-            var formCollection = await Request.ReadFormAsync();
-
-
-            //var folderName = Path.Combine("StaticFiles", "Images");
-            //var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-            //if (files.Any(f => f.Length == 0))
-            //{
-            //    return BadRequest();
-            //}
-            //foreach (var file in files)
-            //{
-            //    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-            //    var fullPath = Path.Combine(pathToSave, fileName);
-            //    var dbPath = Path.Combine(folderName, fileName); //you can add this path to a list and then return all dbPaths to the client if require
-            //    using (var stream = new FileStream(fullPath, FileMode.Create))
-            //    {
-            //        file.CopyTo(stream);
-            //    }
-            //}
-            return Ok("All the files are successfully uploaded.");
+            User? seller = (User?) HttpContext.Items["User"];
+            await _itemService.CreateItemAsync(dto, seller);
+            return Ok("Success!");
         }
 
 

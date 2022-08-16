@@ -176,6 +176,20 @@ public class ItemService
         return itemPage;
     }
 
+    public async Task CreateItemAsync(ItemAddition dto, User? seller)
+    {
+        if (seller == null)
+        {
+            throw new UnauthorizedAccessException("Please login to sell an item.");
+        }
+
+        Item item = _mapper.Map<Item>(dto);
+
+        item.SellerId = seller.UserId;
+                
+        // TODO add categories and images
+    }
+
 
 
 }
