@@ -6,6 +6,8 @@ import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../Services/category.service";
 import {Subject} from "rxjs";
 import {DataTableDirective} from "angular-datatables";
+import Swal from "sweetalert2";
+import {SwalService} from "../../../Services/swal.service";
 
 @Component({
   selector: 'app-new-item',
@@ -17,7 +19,8 @@ export class NewItemComponent implements OnInit {
   dtElement: DataTableDirective;
 
   newItemForm: FormGroup;
-  _images: string[] = [];
+  _images: File[] = [];
+  _imagesPreview: string[] = [];
   _categories: Category[] = [];
   _selectedCategories: Category[] = [];
   dtOptions: DataTables.Settings;
@@ -25,7 +28,8 @@ export class NewItemComponent implements OnInit {
   // dtTrigger2: Subject<any> = new Subject<any>();
 
 
-constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, private categoryService: CategoryService) { }
+constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
+            private categoryService: CategoryService, private swalService: SwalService) { }
 
   ngOnInit(): void {
     this.newItemForm = new FormGroup({
@@ -41,12 +45,7 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, privat
         ],
       }
       ),
-      'buyPrice': new FormControl('', {
-        validators: [
-          Validators.required,
-        ],
-      }
-      ),
+      'buyPrice': new FormControl(''),
       'firstBid': new FormControl("", {
         validators: [
           Validators.required,
@@ -65,17 +64,21 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, privat
         ],
       }
       ),
-      'started': new FormControl(null),
+      'started': new FormControl(''),
       'ends': new FormControl("", {
         validators: [
           Validators.required,
         ],
       }
       ),
-      'latitude': new FormControl(null),
-      'longitude': new FormControl(null),
-      'categories': new FormControl(null),
-      'images': new FormControl(null),
+      'latitude': new FormControl(''),
+      'longitude': new FormControl(''),
+      'categoriesId': new FormControl('', {
+        validators: [
+          Validators.required
+        ]
+      }),
+      'images': new FormControl(''),
     });
 
     this.dtOptions = {
@@ -108,7 +111,8 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, privat
   get ends() { return this.newItemForm.get('ends'); }
   get latitude() { return this.newItemForm.get('latitude'); }
   get longitude() { return this.newItemForm.get('longitude'); }
-  get categories() { return this.newItemForm.get('categories'); }
+  get categoriesId() { return this.newItemForm.get('categoriesId'); }
+  get images() { return this.newItemForm.get('images'); }
 
   addCategory(cat: Category){
     console.log(cat);
@@ -117,83 +121,36 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, privat
 
     console.log(this._categories)
     console.log(this._selectedCategories)
-
-    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.destroy();
-      this.dtTrigger.next(this.dtOptions);
-    })
+    if(this._categories.length > 0)
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.destroy();
+        this.dtTrigger.next(this.dtOptions);
+      })
 
     this.newItemForm.patchValue({
-      categories: this._selectedCategories.map(c => c.categoryId)
+      categoriesId: this._selectedCategories.map(c => c.categoryId)
     });
+
+    this.categoriesId?.updateValueAndValidity();
   }
 
   removeCategory(cat: Category){
+  console.log(this.categoriesId);
     this._selectedCategories = this._selectedCategories.filter(c => c !== cat);
     this._categories = [...this._categories, cat]
 
-    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.destroy();
-      this.dtTrigger.next(this.dtOptions);
-    })
+    if(this._categories.length > 0)
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.destroy();
+        this.dtTrigger.next(this.dtOptions);
+      })
 
     this.newItemForm.patchValue({
-      categories: this._selectedCategories.map(c => c.categoryId)
+      categoriesId: this._selectedCategories.map(c => c.categoryId)
     });
+
+    this.categoriesId?.updateValueAndValidity();
   }
-  //sendRequest = () => {
-  //  const formData = new FormData();
-  //  for (const key of Object.keys(this.newItemForm.value)) {
-  //    const value = this.newItemForm.value[key];
-  //    if(value !== null)
-  //      formData.append(key, value);
-  //  }
-
-  //  this.http.post('https://localhost:7088/item/upload-images', formData, { reportProgress: true, observe: 'events' })
-  //    .subscribe(
-  //      {
-  //        next: (event) => {
-  //          if (event.type === HttpEventType.UploadProgress)
-  //            this.progress = Math.round(100 * event.loaded / event.total!);
-  //          else if (event.type === HttpEventType.Response) {
-  //            this.message = 'Upload success.';
-  //            //this.onUploadFinished.emit(event.body);
-  //          }
-  //        },
-  //        error: (err: HttpErrorResponse) => console.log(err)
-  //      });
-  //}
-
-  //uploadFile = (files: any) => {
-  //  if (files.length === 0) {
-  //    return;
-  //  }
-  //  let filesToUpload: File[] = files;
-
-  //  console.log(filesToUpload);
-  //  const formData = new FormData();
-
-  //  Array.from(filesToUpload).map((file, index) => {
-  //    console.log(file, file.name, index);
-  //    return formData.append('file' + index, file, file.name);
-  //  });
-
-  //  //console.log(formData.entries);
-
-  //  this.http.post('https://localhost:7088/item/upload-images', formData, { reportProgress: true, observe: 'events' })
-  //    .subscribe(
-  //      {
-  //        next: (event) => {
-  //          if (event.type === HttpEventType.UploadProgress)
-  //            this.progress = Math.round(100 * event.loaded / event.total!);
-  //          else if (event.type === HttpEventType.Response) {
-  //            this.message = 'Upload success.';
-  //            //this.onUploadFinished.emit(event.body);
-  //          }
-  //        },
-  //        error: (err: HttpErrorResponse) => console.log(err)
-  //      });
-  //}
 
   transformAmount(element: any) {
     console.log(element);
@@ -219,30 +176,90 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe, privat
 
   onFileChange(event: any) {
     if (event.target.files && event.target.files[0]) {
+      console.log(event.target.files);
       var filesAmount = event.target.files.length;
       for (let i = 0; i < filesAmount; i++) {
-        var reader = new FileReader();
 
-        reader.onload = (event: any) => {
-          //console.log(event.target.result);
-          this._images.push(event.target.result);
+        console.log('FILE OUTSIDE:', event.target.files[i]);
+        this._images.push(event.target.files[i]);
 
-          this.newItemForm.patchValue({
-            images: this._images
-          });
-        }
-
-        reader.readAsDataURL(event.target.files[i]);
+        this.newItemForm.patchValue({
+          images: this._images
+        });
+        this.images?.updateValueAndValidity();
       }
+
+      this.loadImagesPreview();
     }
   }
 
+  loadImagesPreview() {
+    this._imagesPreview = [];
+    let that = this;
+    for(let i=0; i < this._images.length; i++){
+      var reader = new FileReader();
+
+      reader.onload = (event: any) => {
+        //console.log(event.target.result);
+        console.log('FILE INSIDE:', event);
+        that._imagesPreview.push(event.target.result);
+      }
+
+      reader.readAsDataURL(this._images[i]);
+
+    }
+  }
+
+  removeImage(index: number) {
+    this._images.splice(index+1, 1);
+    this.newItemForm.patchValue({
+      images: this._images
+    });
+    this.images?.updateValueAndValidity();
+
+    this.loadImagesPreview();
+  }
+
   submit() {
-    console.log(this.newItemForm.value);
-    this.http.post('https://localhost:7088/item/upload-images', this.newItemForm.value)
+    if(this.newItemForm?.invalid){
+      Swal.fire({
+        ...this.swalService.BootstrapConfirmOnlyOptions,
+        icon: 'error',
+        html: 'The form is invalid. Please check the fields again.'
+      })
+      return;
+    }
+
+    this.firstBid?.setValue(this.firstBid.value.replace(/[^\d.-]/g, ''));
+    this.buyPrice?.setValue(this.buyPrice.value.replace(/[^\d.-]/g, ''));
+
+    let formData: any = new FormData();
+    formData.append("name", this.name?.value);
+    formData.append("description", this.description?.value);
+    formData.append("location", this.location?.value);
+    formData.append("buyPrice", this.buyPrice?.value);
+    formData.append("firstBid", this.firstBid?.value);
+    formData.append("country", this.country?.value);
+    formData.append("started", this.started?.value);
+    formData.append("ends", this.ends?.value);
+    formData.append("latitude", this.latitude?.value);
+    formData.append("longitude", this.longitude?.value);
+    for(let cat of this.categoriesId?.value){
+      formData.append("categoriesId", cat);
+    }
+   Array.from(this.images?.value).map((file: any, index) => {
+     console.log(file, file.name, index);
+     return formData.append('images', file, file.name);
+   });
+
+    this.http.post('https://localhost:7088/item', formData) // this.newItemForm.value
       .subscribe(res => {
         console.log(res);
         alert('Uploaded Successfully.');
       })
   }
+
+  // TODO destroy trigger (ngOnDestroy)
+  // TODO make latitude & longitude word
+  // TODO fix start date (swal question or switch)
 }

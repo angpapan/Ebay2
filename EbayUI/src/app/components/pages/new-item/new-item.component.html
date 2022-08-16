@@ -31,19 +31,6 @@
       </div>
     </div>
 
-    <div class="col-lg-6">
-      <label for="buyPrice" class="form-label">Buy Price</label>
-      <input type="text" class="form-control" id="buyPrice" formControlName="buyPrice" placeholder="The price that the item can be instantly bought"
-             (blur)="transformAmount($event)"
-             [ngClass]="{ 'is-invalid': buyPrice?.invalid && (buyPrice?.dirty || buyPrice?.touched) }"
-             required />
-
-      <div *ngIf="buyPrice?.invalid && (buyPrice?.dirty || buyPrice?.touched)" class="text-danger">
-        <div *ngIf="buyPrice?.errors?.['required']">
-          Buy Price is required.
-        </div>
-      </div>
-    </div>
 
     <div class="col-lg-6">
       <label for="firstBid" class="form-label">Minimum Price</label>
@@ -58,6 +45,13 @@
         </div>
       </div>
     </div>
+
+    <div class="col-lg-6">
+      <label for="buyPrice" class="form-label">Buy Price <span class="text-muted">(optional)</span></label>
+      <input type="text" class="form-control" id="buyPrice" formControlName="buyPrice" placeholder="The price that the item can be instantly bought"
+             (blur)="transformAmount($event)" />
+    </div>
+
 
     <div class="col-lg-6">
       <label for="country" class="form-label">Country</label>
@@ -397,7 +391,9 @@
 
 
     <div class="col-lg-5">
-      <label>Selected Categories</label>
+      <label>Selected Categories
+        <span *ngIf="categoriesId?.invalid" class="text-danger">(select at least one)</span>
+      </label>
       <table id="selected-categories-table" class="table row-border hover">
         <thead>
         <tr>
@@ -429,15 +425,23 @@
 
 
     <div class="col-lg-12">
-      <label for="file">File</label>
+      <label for="file">Images <span class="text-muted">(optional)</span></label>
       <input id="file"
              type="file"
              class="form-control"
              multiple=""
+             placeholder="ampou"
              (change)="onFileChange($event)">
     </div>
 
-    <img *ngFor='let url of _images' [src]="url" height="150" width="200px" style="margin: 3px;"> <br />
+    <div class="col-lg-2" *ngFor="let url of _imagesPreview; index as i;" style="max-height:20vh;max-width:20vh;">
+      <div class="card h-100 w-100">
+        <img [src]="url" alt="image" class="card-img-top h-100 w-100"/>
+        <div class="card-footer text-center align-text-bottom">
+          <i class="bi bi-trash3 text-danger" style="cursor: pointer" (click)="removeImage(i)"></i>
+        </div>
+      </div>
+    </div>
 
     <button class="btn btn-primary" [disabled]="newItemForm.invalid" type="submit">Submit</button>
 
