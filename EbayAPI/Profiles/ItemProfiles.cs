@@ -32,7 +32,7 @@ public class ItemProfile : Profile
         CreateMap<ItemAddition, Item>()
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.FirstBid))
             .ForSourceMember(src => src.CategoriesId, opt => opt.DoNotValidate())
-            .ForSourceMember(src => src.Images, opt => opt.DoNotValidate());
+            .ForSourceMember(src => src.ImageFiles, opt => opt.DoNotValidate());
 
 
         CreateMap<Category, CategoryBasics>();

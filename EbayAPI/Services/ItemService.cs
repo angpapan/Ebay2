@@ -183,11 +183,37 @@ public class ItemService
             throw new UnauthorizedAccessException("Please login to sell an item.");
         }
 
+        var transaction = _dbContext.Database.BeginTransaction();
         Item item = _mapper.Map<Item>(dto);
 
         item.SellerId = seller.UserId;
-                
-        // TODO add categories and images
+        _dbContext.Items.Add(item);
+        await _dbContext.SaveChangesAsync();
+
+        foreach (int category in dto.CategoriesId)
+        {
+            ItemsCategories ic = new ItemsCategories();
+            ic.CategoryId = category;
+            ic.ItemId = item.ItemId;
+            _dbContext.ItemsCategories.Add(ic);
+        }
+
+        foreach (IFormFile image in dto.ImageFiles)
+        {
+            Image im = new Image();
+            im.ImageType = image.ContentType;
+            im.ItemId = item.ItemId;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.CopyTo(ms);
+                im.ImageBytes = ms.ToArray();
+            }
+
+            _dbContext.Images.Add(im);
+        }
+
+        await _dbContext.SaveChangesAsync();
+        await transaction.CommitAsync();
     }
 
 

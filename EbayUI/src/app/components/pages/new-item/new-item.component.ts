@@ -1,5 +1,4 @@
 import { CurrencyPipe } from '@angular/common';
-import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {Category} from "../../../model/Category";
@@ -8,13 +7,14 @@ import {Subject} from "rxjs";
 import {DataTableDirective} from "angular-datatables";
 import Swal from "sweetalert2";
 import {SwalService} from "../../../Services/swal.service";
+import {ItemService} from "../../../Services/item.service";
 
 @Component({
   selector: 'app-new-item',
   templateUrl: './new-item.component.html',
   styleUrls: ['./new-item.component.css']
 })
-export class NewItemComponent implements OnInit {
+export class NewItemComponent implements OnInit, OnDestroy {
   @ViewChild(DataTableDirective, {static: false})
   dtElement: DataTableDirective;
 
@@ -25,11 +25,14 @@ export class NewItemComponent implements OnInit {
   _selectedCategories: Category[] = [];
   dtOptions: DataTables.Settings;
   dtTrigger: Subject<any> = new Subject<any>();
-  // dtTrigger2: Subject<any> = new Subject<any>();
 
 
-constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
+constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe,
             private categoryService: CategoryService, private swalService: SwalService) { }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.newItemForm = new FormGroup({
@@ -78,7 +81,7 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
           Validators.required
         ]
       }),
-      'images': new FormControl(''),
+      'imageFiles': new FormControl(''),
     });
 
     this.dtOptions = {
@@ -112,7 +115,7 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
   get latitude() { return this.newItemForm.get('latitude'); }
   get longitude() { return this.newItemForm.get('longitude'); }
   get categoriesId() { return this.newItemForm.get('categoriesId'); }
-  get images() { return this.newItemForm.get('images'); }
+  get images() { return this.newItemForm.get('imageFiles'); }
 
   addCategory(cat: Category){
     console.log(cat);
@@ -184,7 +187,7 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
         this._images.push(event.target.files[i]);
 
         this.newItemForm.patchValue({
-          images: this._images
+          imageFiles: this._images
         });
         this.images?.updateValueAndValidity();
       }
@@ -213,7 +216,7 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
   removeImage(index: number) {
     this._images.splice(index+1, 1);
     this.newItemForm.patchValue({
-      images: this._images
+      imageFiles: this._images
     });
     this.images?.updateValueAndValidity();
 
@@ -248,18 +251,33 @@ constructor(private http: HttpClient, private currencyPipe: CurrencyPipe,
       formData.append("categoriesId", cat);
     }
    Array.from(this.images?.value).map((file: any, index) => {
-     console.log(file, file.name, index);
-     return formData.append('images', file, file.name);
+     return formData.append('imageFiles', file, file.name);
    });
 
-    this.http.post('https://localhost:7088/item', formData) // this.newItemForm.value
+    for(let [key, value] of formData.entries()){
+      console.log(key, value);
+    }
+    // return;
+
+    this.itemService.createItem(formData)
       .subscribe(res => {
         console.log(res);
-        alert('Uploaded Successfully.');
+        Swal.fire({
+          ...this.swalService.BootstrapOptions,
+          icon: 'success',
+          html: 'Auction created successfully. Do you want to start the auction now?',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+          preConfirm: () => {
+            return new Promise(() => {
+              // TODO implement observable to promise to start the auction
+            })
+          }
+
+        })
       })
   }
 
-  // TODO destroy trigger (ngOnDestroy)
-  // TODO make latitude & longitude word
+  // TODO make latitude & longitude work
   // TODO fix start date (swal question or switch)
 }
