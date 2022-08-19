@@ -43,6 +43,8 @@ import { MessageSendComponent } from './components/pages/message-send/message-se
 import {EnabledGuard} from "./guards/enabled.guard";
 import { NewItemComponent } from './components/pages/new-item/new-item.component';
 import { TryUploadComponent } from './components/pages/try-upload/try-upload.component';
+import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
+import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +73,9 @@ import { TryUploadComponent } from './components/pages/try-upload/try-upload.com
     MessageViewComponent,
     MessageSendComponent,
     NewItemComponent,
-    TryUploadComponent
+    TryUploadComponent,
+    EditItemComponent,
+    SellerItemListComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

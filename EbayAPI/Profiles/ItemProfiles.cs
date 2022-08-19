@@ -40,5 +40,9 @@ public class ItemProfile : Profile
         CreateMap<BidRequest, Bid>()
             .ForMember(d => d.Time,
                 o => o.MapFrom(s=>new DateTime()));
+
+        CreateMap<Item, SellerItemListResponse>()
+            .ForMember(dest => dest.HasBids,
+                opt => opt.MapFrom(src => src.Bids!.Count > 0));
     }
 }

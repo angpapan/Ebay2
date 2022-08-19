@@ -3,7 +3,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../Services/category.service";
-import {Subject} from "rxjs";
+import {firstValueFrom, Subject} from "rxjs";
 import {DataTableDirective} from "angular-datatables";
 import Swal from "sweetalert2";
 import {SwalService} from "../../../Services/swal.service";
@@ -258,26 +258,28 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
       console.log(key, value);
     }
     // return;
-
-    this.itemService.createItem(formData)
-      .subscribe(res => {
-        console.log(res);
-        Swal.fire({
-          ...this.swalService.BootstrapOptions,
-          icon: 'success',
-          html: 'Auction created successfully. Do you want to start the auction now?',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-          preConfirm: () => {
-            return new Promise(() => {
-              // TODO implement observable to promise to start the auction
-            })
-          }
-
-        })
-      })
+    Swal.fire({
+      ...this.swalService.BootstrapOptions,
+      icon: 'question',
+      html: 'Are you sure you want to create this auction?',
+      preConfirm: () => {
+        return firstValueFrom(this.itemService.createItem(formData));
+      }
+    }).then(response => {
+      console.log(response);
+      if(response.isConfirmed) {
+        if (response!.value) {
+          Swal.fire({
+            ...this.swalService.BootstrapConfirmOnlyOptions,
+            icon: 'success',
+            html: 'Auction created successfully.'
+          }).then(r => {
+            // TODO navigate to user item list
+          });
+        }
+      }
+    })
   }
-
   // TODO make latitude & longitude work
-  // TODO fix start date (swal question or switch)
+
 }
