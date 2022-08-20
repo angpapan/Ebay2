@@ -3,7 +3,7 @@
     class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow "
   >
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/home']">Ebay</a>
+      <a class="navbar-brand text-start" [routerLink]="['/home']" style="min-width: 10vw">Ebay</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -21,7 +21,7 @@
         [ngClass]="{ show: isExpanded }"
       >
         <div class="justify-content-center ms-auto mr-auto">
-          <form class="d-flex" style="min-width: 50vw">
+          <form class="d-flex" style="min-width: 40vw">
             <div class="input-group">
               <input type="text" class="form-control d-flex" aria-label="Text input with dropdown button" style="border: 1px solid grey">
               <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">All Categories</button>
@@ -39,7 +39,7 @@
 
 
       <div
-        class="justify-content-end ms-auto"
+        class=" text-end justify-content-end ms-auto" style="min-width: 10vw"
       >
         <span *ngIf="!loggedIn">
           <button class="btn btn-link" routerLink="/login" role="button">Log In</button>
