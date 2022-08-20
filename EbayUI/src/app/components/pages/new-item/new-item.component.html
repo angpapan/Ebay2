@@ -343,22 +343,21 @@
       </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-5">
       <label for="latitude" class="form-label">Latitude <span class="text-muted">(optional)</span></label>
       <input type="number" step="any" class="form-control" id="latitude" formControlName="latitude" placeholder="Latitude" />
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-5">
       <label for="longitude" class="form-label">Longitude <span class="text-muted">(optional)</span></label>
       <input type="number" step="any" class="form-control" id="longitude" formControlName="longitude" placeholder="Longitude" />
     </div>
 
     <div class="col-lg-2 align-bottom mt-auto">
-      <button type="button" class="btn btn-primary">Get my coordinates</button>
-    </div>
-
-    <div class="col-lg-2 align-bottom mt-auto">
-      <button type="button" class="btn btn-primary">Choose from map</button>
+      <button class="btn btn-primary" type="button" (click)="getCurrentLocation()" [disabled]="gettingCoordinates === true">
+        <span *ngIf="gettingCoordinates === true" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Get my coordinates
+      </button>
     </div>
 
 
@@ -447,21 +446,5 @@
 
   </form>
 
-    <!--<div class="row" style="margin-bottom:15px;">
-      <div class="col-md-3">
-        <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;" multiple>
-        <button type="button" class="btn btn-success" (click)="file.click()">Upload File</button>
-      </div>
-      <div class="col-md-4">
-        <span class="upload" *ngIf="progress > 0">
-          {{progress}}%
-        </span>
-        <span class="upload" *ngIf="message">
-          {{message}}
-        </span>
-      </div>
-    </div>-->
-    <!--<div class="row">
-      <button type="button" (click)="sendRequest()">Send Request</button>
-    </div>-->
+
 </app-container>

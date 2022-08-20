@@ -25,6 +25,7 @@ export class NewItemComponent implements OnInit, OnDestroy {
   _selectedCategories: Category[] = [];
   dtOptions: DataTables.Settings;
   dtTrigger: Subject<any> = new Subject<any>();
+  gettingCoordinates: boolean = false;
 
 
 constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe,
@@ -180,7 +181,7 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
   onFileChange(event: any) {
     if (event.target.files && event.target.files[0]) {
       console.log(event.target.files);
-      var filesAmount = event.target.files.length;
+      const filesAmount = event.target.files.length;
       for (let i = 0; i < filesAmount; i++) {
 
         console.log('FILE OUTSIDE:', event.target.files[i]);
@@ -200,11 +201,10 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
     this._imagesPreview = [];
     let that = this;
     for(let i=0; i < this._images.length; i++){
-      var reader = new FileReader();
+      const reader = new FileReader();
 
       reader.onload = (event: any) => {
         //console.log(event.target.result);
-        console.log('FILE INSIDE:', event);
         that._imagesPreview.push(event.target.result);
       }
 
@@ -221,6 +221,47 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
     this.images?.updateValueAndValidity();
 
     this.loadImagesPreview();
+  }
+
+  getCurrentLocation() {
+    this.gettingCoordinates = true;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+        let lat = position.coords.latitude;
+        let long = position.coords.longitude;
+
+        this.newItemForm.patchValue({
+          latitude: lat
+        });
+        this.newItemForm.patchValue({
+          longitude: long
+        });
+        this.latitude?.updateValueAndValidity();
+        this.longitude?.updateValueAndValidity();
+          this.gettingCoordinates = false;
+      },
+      (err) => {
+          if(err.code !== err.PERMISSION_DENIED)
+            Swal.fire({
+              ...this.swalService.BootstrapConfirmOnlyOptions,
+              icon: 'error',
+              html: "Sorry, something went wrong. Please try selecting your position manually."
+            })
+
+        this.gettingCoordinates = false;
+      },
+      {
+        enableHighAccuracy: true
+      }
+        );
+    } else {
+      Swal.fire({
+        ...this.swalService.BootstrapConfirmOnlyOptions,
+        icon: 'error',
+        html: "Geolocation is not supported. Please try selecting your position manually."
+      })
+    }
   }
 
   submit() {
@@ -250,7 +291,7 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
     for(let cat of this.categoriesId?.value){
       formData.append("categoriesId", cat);
     }
-   Array.from(this.images?.value).map((file: any, index) => {
+   Array.from(this.images?.value).map((file: any) => {
      return formData.append('imageFiles', file, file.name);
    });
 
@@ -280,6 +321,4 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
       }
     })
   }
-  // TODO make latitude & longitude work
-
 }
