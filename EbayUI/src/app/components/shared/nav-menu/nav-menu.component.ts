@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from "../../../Services/authentication.service";
 import {Router} from "@angular/router";
 import {storageItems} from "../../../model/storageItems";
+import {MessageService} from "../../../Services/message.service";
 
 @Component({
   selector: 'app-nav-menu',
@@ -11,13 +12,29 @@ import {storageItems} from "../../../model/storageItems";
 export class NavMenuComponent implements OnInit {
   isExpanded = false;
   loggedIn: boolean;
+  role: string | null = localStorage.getItem(storageItems.Role);
+  newMessages: number = 0;
   username: string | null = localStorage.getItem(storageItems.Username);
 
-  constructor(private authSerive: AuthenticationService, private router: Router) {}
+  constructor(private authSerive: AuthenticationService, private router: Router,
+              private messageService: MessageService) {}
 
   ngOnInit() {
     let token: string | null = localStorage.getItem(storageItems.Token);
     this.loggedIn = token !== undefined && token !== null && token !== "";
+
+    if(this.role === 'user'){
+      this.getNewMessages();
+      setInterval(this.getNewMessages, 10000)
+    }
+  }
+
+  getNewMessages() {
+    this.messageService.checkForNew().subscribe({
+      next: value => {
+        this.newMessages = value;
+      }
+    })
   }
 
   collapse() {
