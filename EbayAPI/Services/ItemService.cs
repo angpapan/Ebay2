@@ -258,16 +258,6 @@ public class ItemService
             .Include(i => i.Images)
             .Where(i => i.SellerId == seller.UserId);
 
-        if(dto.MinPrice != null)
-        {
-            items = items.Where(i => i.Price >= dto.MinPrice);
-        }
-
-        if (dto.MaxPrice != null)
-        {
-            items = items.Where(i => i.Price <= dto.MaxPrice);
-        }
-
         if(dto.Search != null)
         {
             items = items.Where(i => i.Description.Contains(dto.Search) || i.Name.Contains(dto.Search));
@@ -335,25 +325,46 @@ public class ItemService
         {
             throw new BadHttpRequestException("There should be at least one category.");
         }
+
+        // Update item values
+        // DO NOT USE mapper because it destroyed old values in unmapped properties
+        item.Name = dto.Name;
+        item.BuyPrice = dto.BuyPrice;
+        item.FirstBid = dto.FirstBid;
+        item.Price = dto.FirstBid;
+        item.Location = dto.Location;
+        item.Country = dto.Country;
+        item.Description = dto.Description;
+        item.Ends = dto.Ends;
+        item.Latitude = dto.Latitude;
+        item.Longitude = dto.Longitude;
         
-        // get the new field values
-        item = _mapper.Map<Item>(dto);
+    
         
         // remove old categories
-        item.ItemCategories = new List<ItemsCategories>();
-        
+        _dbContext.ItemsCategories.RemoveRange(_dbContext.ItemsCategories
+            .Where(ic => ic.ItemId == item.ItemId)
+            .ToList()
+        );
+        // item.ItemCategories = new List<ItemsCategories>();
+
+        List<ItemsCategories> ics = new List<ItemsCategories>();
         foreach (int category in dto.CategoriesId)
         {
             ItemsCategories ic = new ItemsCategories();
             ic.CategoryId = category;
             ic.ItemId = item.ItemId;
-            _dbContext.ItemsCategories.Add(ic);
+            ics.Add(ic);   
+            
+            // _dbContext.ItemsCategories.Add(ic);
         }
-        
+
+        item.ItemCategories = ics;
         // add new images
         // old images are maintained and must be removed with a different request
         if (dto.ImageFiles != null)
         {
+            List<Image> images = item.Images ?? new List<Image>();
             foreach (IFormFile image in dto.ImageFiles)
             {
                 Image im = new Image();
@@ -365,10 +376,87 @@ public class ItemService
                     im.ImageBytes = ms.ToArray();
                 }
 
-                _dbContext.Images.Add(im);
+                images.Add(im);
             }
+
+            item.Images = images;
+        }
+
+        _dbContext.Items.Update(item);
+        
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<ItemToEditResponseDto> GetEditInfo(int item_id, User seller)
+    {
+        Item? item = await _dbContext.Items
+            .Include(i => i.ItemCategories)
+            .ThenInclude(ic => ic.Category)
+            .Include(i => i.Bids)
+            .Include(i => i.Images)
+            .SingleOrDefaultAsync(i => i.ItemId == item_id);
+
+        if (item == null)
+        {
+            throw new KeyNotFoundException("No such item found.");
         }
         
+        if (item.SellerId != seller.UserId)
+        {
+            throw new UnauthorizedAccessException("Only the seller can delete the auction.");
+        }
+        
+        if (item.Bids != null && item.Bids.Count > 0)
+        {
+            throw new NotSupportedException("The action already has some bids, so it cannot be deleted.");
+        }
+
+        ItemToEditResponseDto dto = _mapper.Map<ItemToEditResponseDto>(item);
+
+        List<Category> cats = await _dbContext.Categories
+            .Where(c => !item.ItemCategories.Select(ic => ic.CategoryId).ToList().Contains(c.CategoryId))
+            .ToListAsync();
+
+        dto.RestCategories = _mapper.Map<List<CategoryDto>>(cats);
+
+        return dto;
+    }
+
+    public async Task DeleteImageFromItem(int item_id, int image_id, User seller)
+    {
+        Item? item = await _dbContext.Items
+            .Include(i => i.Images)
+            .Include(i => i.Bids)
+            .SingleOrDefaultAsync(i => i.ItemId == item_id);
+
+        if (item == null)
+        {
+            throw new KeyNotFoundException("No such item found.");
+        }
+        
+        if (item.SellerId != seller.UserId)
+        {
+            throw new UnauthorizedAccessException("Only the seller can delete images for this item.");
+        }
+        
+        if (item.Bids != null && item.Bids.Count > 0)
+        {
+            throw new NotSupportedException("The auction already has some bids, so it cannot be modified.");
+        }
+
+        if (item.Images == null || !item.Images.Select(i => i.ImageId).ToList().Contains(image_id))
+        {
+            throw new KeyNotFoundException("No such image found.");
+        }
+
+        Image? image = await _dbContext.Images.FindAsync(image_id);
+
+        if (image == null)
+        {
+            throw new KeyNotFoundException("No such image found.");
+        }
+
+        _dbContext.Images.Remove(image);
         await _dbContext.SaveChangesAsync();
     }
 

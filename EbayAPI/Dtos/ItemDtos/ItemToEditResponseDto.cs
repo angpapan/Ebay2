@@ -1,3 +1,4 @@
+using EbayAPI.Dtos.ImageDtos;
 using EbayAPI.Models;
 
 namespace EbayAPI.Dtos;
@@ -14,7 +15,7 @@ public class ItemToEditResponseDto
     [Required] public DateTime Ends {get; set;}
     public decimal? Latitude { get; set; } = null;
     public decimal? Longitude { get; set; } = null;
-    [Required] public List<Category> AddedCategories {get; set;}
-    public List<Category>? RestCategories {get; set;}
-    public List<string>? CurrentImages {get; set;} = null;
+    [Required] public List<CategoryDto> AddedCategories {get; set;}
+    public List<CategoryDto>? RestCategories {get; set;}
+    public List<Base64WithIdImageDto>? CurrentImages {get; set;} = null;
 }

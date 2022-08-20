@@ -43,6 +43,19 @@ public class ItemProfile : Profile
 
         CreateMap<Item, SellerItemListResponse>()
             .ForMember(dest => dest.HasBids,
-                opt => opt.MapFrom(src => src.Bids!.Count > 0));
+                opt => opt.MapFrom(src => src.Bids!.Count > 0))
+            .ForMember(dest => dest.Image,
+                opt => opt.MapFrom(src =>
+                    (src.Images != null && src.Images.Count > 0)
+                        ? Convert.ToBase64String(src.Images[0].ImageBytes)
+                        : null));
+
+        CreateMap<Item, ItemToEditResponseDto>()
+            .ForMember(dest => dest.CurrentImages,
+                opt => opt.MapFrom(src =>
+                    src.Images))
+            .ForMember(dest => dest.AddedCategories,
+                opt => 
+                    opt.MapFrom(src => src.ItemCategories.Select(ic => ic.Category).ToList()));
     }
 }

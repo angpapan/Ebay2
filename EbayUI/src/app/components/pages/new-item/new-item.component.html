@@ -1,5 +1,6 @@
 <app-container>
-  <h3>Create a new auction!</h3>
+  <h3>Create a new auction</h3>
+  <hr/>
 
 
   <form [formGroup]="newItemForm" (ngSubmit)="submit()" class="row g-3">
@@ -442,7 +443,9 @@
       </div>
     </div>
 
-    <button class="btn btn-primary" [disabled]="newItemForm.invalid" type="submit">Submit</button>
+    <div class="d-grid col-lg-4 offset-lg-4 mb-5 mt-5">
+      <button class="btn btn-primary" [disabled]="newItemForm.invalid" type="submit">Create</button>
+    </div>
 
   </form>
 

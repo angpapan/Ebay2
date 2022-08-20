@@ -42,9 +42,9 @@ import { MessageViewComponent } from './components/pages/message-view/message-vi
 import { MessageSendComponent } from './components/pages/message-send/message-send.component';
 import {EnabledGuard} from "./guards/enabled.guard";
 import { NewItemComponent } from './components/pages/new-item/new-item.component';
-import { TryUploadComponent } from './components/pages/try-upload/try-upload.component';
 import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
 import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
+import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
 
 @NgModule({
   declarations: [
@@ -73,9 +73,9 @@ import { SellerItemListComponent } from './components/pages/seller-item-list/sel
     MessageViewComponent,
     MessageSendComponent,
     NewItemComponent,
-    TryUploadComponent,
     EditItemComponent,
-    SellerItemListComponent
+    SellerItemListComponent,
+    SellerItemRowComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -97,7 +97,8 @@ import { SellerItemListComponent } from './components/pages/seller-item-list/sel
       {path: 'messages/send', component: MessageSendComponent, canActivate:[AuthGuard, EnabledGuard]},
       {path: 'messages/:id', component: MessageViewComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
-      { path: 'items/try', component: TryUploadComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,

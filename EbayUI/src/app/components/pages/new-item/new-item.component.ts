@@ -214,7 +214,7 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
   }
 
   removeImage(index: number) {
-    this._images.splice(index+1, 1);
+    this._images.splice(index, 1);
     this.newItemForm.patchValue({
       imageFiles: this._images
     });

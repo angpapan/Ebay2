@@ -85,7 +85,7 @@ namespace EbayAPI.Controllers
         /// <summary>
         /// Get items in paged lists
         /// </summary>
-        [HttpGet("/search", Name = "SearchItems")]
+        [HttpGet("search", Name = "SearchItems")]
         [AllowAnonymous]
         public async Task<List<ItemDetailsSimple>>? SearchItemList([FromQuery] ItemListQueryParameters dto)
         {
@@ -132,7 +132,7 @@ namespace EbayAPI.Controllers
         }
         
         
-        [HttpGet("/sells", Name = "SellerItemsList")]
+        [HttpGet("sells", Name = "SellerItemsList")]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<List<SellerItemListResponse>> SearchItemList([FromQuery] SellerItemListQueryParameters dto)
         {
@@ -151,7 +151,8 @@ namespace EbayAPI.Controllers
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
 
-            return _mapper.Map<List<SellerItemListResponse>>(pageItem);
+            List<SellerItemListResponse> items = _mapper.Map<List<SellerItemListResponse>>(pageItem);
+            return items;
         }
         
         /// <summary>
@@ -174,11 +175,28 @@ namespace EbayAPI.Controllers
         /// <param name="dto">The item details</param>
         [HttpPut("{id}")]
         [Helpers.Authorize.Authorize(Roles.User)]
-        public async Task<IActionResult> EditAuction(int id, [FromBody] ItemAddition dto)
+        public async Task<IActionResult> EditAuction(int id, [FromForm] ItemAddition dto)
         {
             User? seller = (User?) HttpContext.Items["User"];
             await _itemService.EditAuction(id, dto, seller!);
             return Ok("Auction edited successfully!");
+        }
+
+        [HttpGet("edit-info/{id}")]
+        [Helpers.Authorize.Authorize(Roles.User)]
+        public async Task<ItemToEditResponseDto> GetEditInfo(int id)
+        {
+            User? seller = (User?) HttpContext.Items["User"];
+            return await _itemService.GetEditInfo(id, seller!);
+        }
+
+        [HttpDelete("{item_id}/image/{image_id}")]
+        [Helpers.Authorize.Authorize(Roles.User)]
+        public async Task<IActionResult> DeleteImageFromItem(int item_id, int image_id)
+        {
+            User? seller = (User?) HttpContext.Items["User"];
+            await _itemService.DeleteImageFromItem(item_id, image_id, seller!);
+            return Ok("Image deleted successfully.");
         }
 
 

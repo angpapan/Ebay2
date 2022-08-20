@@ -1,0 +1,32 @@
+<!-- TODO add routerLink to edit and view pages-->
+<!-- TODO optimize info-->
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}">
+  <img [id]="'item-thumbnail-' + item.itemId" alt="item thumbnail" [src]="this.item.image" class="h-75 w-75"/>
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" class="align-top"  >
+  <div class="row mt-2 ps-0">
+    <div class="row">
+      <b>{{item.name}}</b>
+    </div>
+    <div class="row mt-2">
+      <span style="font-size: 0.9em">{{item.description.substring(0, 200)}}{{item.description.length>200 ? '...' : ''}}</span>
+    </div>
+  </div>
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.price | currency:"EUR"}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.ends | date:'mediumDate'}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  <div class="hstack gap-3">
+    <button *ngIf="item.started === undefined || item.started === null" type="button" class="btn btn-success" (click)="startAuction(item.itemId)">Start</button>
+    <button *ngIf="item.hasBids === false" type="button" class="btn btn-primary" [routerLink]="['/items/edit', item.itemId]">Edit</button>
+    <button *ngIf="item.hasBids === false" type="button" class="btn btn-danger" (click)="deleteAuction(item.itemId)">Delete</button>
+  </div>
+</td>
