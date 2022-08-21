@@ -45,6 +45,10 @@ export class MessageService {
     return this.http.get<MessagesStats>(`${this.messageUrl}/stats`);
   }
 
+  checkForNew(): Observable<number> {
+    return this.http.get<number>(`${this.messageUrl}/check-new`);
+  }
+
   deleteMessage(req: number): Observable<HttpResponse<string>> {
     return this.http.delete<HttpResponse<string>>(`${this.messageUrl}/${req}`);
   }

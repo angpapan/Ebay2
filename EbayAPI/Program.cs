@@ -5,6 +5,7 @@ using System.Reflection;
 using EbayAPI.Data;
 using EbayAPI.Helpers;
 using EbayAPI.Services;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -40,6 +41,14 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<BidService>();
+builder.Services.AddScoped<CategoryService>();
+
+builder.Services.Configure<FormOptions>(o =>
+{
+    o.ValueLengthLimit = int.MaxValue;
+    o.MultipartBodyLengthLimit = int.MaxValue;
+    o.MemoryBufferThreshold = int.MaxValue;
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

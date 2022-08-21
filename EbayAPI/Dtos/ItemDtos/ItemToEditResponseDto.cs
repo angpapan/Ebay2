@@ -1,8 +1,9 @@
+using EbayAPI.Dtos.ImageDtos;
 using EbayAPI.Models;
 
 namespace EbayAPI.Dtos;
 
-public class ItemAddition
+public class ItemToEditResponseDto
 {
     
     [Required] public string Name { get; set; }
@@ -14,6 +15,7 @@ public class ItemAddition
     [Required] public DateTime Ends {get; set;}
     public decimal? Latitude { get; set; } = null;
     public decimal? Longitude { get; set; } = null;
-    public List<int>? CategoriesId {get; set;} = null;
-    public List<IFormFile>? ImageFiles {get; set;} = new List<IFormFile>();
+    [Required] public List<CategoryDto> AddedCategories {get; set;}
+    public List<CategoryDto>? RestCategories {get; set;}
+    public List<Base64WithIdImageDto>? CurrentImages {get; set;} = null;
 }

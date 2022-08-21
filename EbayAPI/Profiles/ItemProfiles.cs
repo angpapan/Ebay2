@@ -30,7 +30,9 @@ public class ItemProfile : Profile
         CreateMap<ItemDetailsSimple, ItemDetails>();
 
         CreateMap<ItemAddition, Item>()
-            .ForSourceMember(src => src.CategoriesId, opt => opt.DoNotValidate());
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.FirstBid))
+            .ForSourceMember(src => src.CategoriesId, opt => opt.DoNotValidate())
+            .ForSourceMember(src => src.ImageFiles, opt => opt.DoNotValidate());
 
 
         CreateMap<Category, CategoryBasics>();
@@ -38,5 +40,22 @@ public class ItemProfile : Profile
         CreateMap<BidRequest, Bid>()
             .ForMember(d => d.Time,
                 o => o.MapFrom(s=>new DateTime()));
+
+        CreateMap<Item, SellerItemListResponse>()
+            .ForMember(dest => dest.HasBids,
+                opt => opt.MapFrom(src => src.Bids!.Count > 0))
+            .ForMember(dest => dest.Image,
+                opt => opt.MapFrom(src =>
+                    (src.Images != null && src.Images.Count > 0)
+                        ? Convert.ToBase64String(src.Images[0].ImageBytes)
+                        : null));
+
+        CreateMap<Item, ItemToEditResponseDto>()
+            .ForMember(dest => dest.CurrentImages,
+                opt => opt.MapFrom(src =>
+                    src.Images))
+            .ForMember(dest => dest.AddedCategories,
+                opt => 
+                    opt.MapFrom(src => src.ItemCategories.Select(ic => ic.Category).ToList()));
     }
 }

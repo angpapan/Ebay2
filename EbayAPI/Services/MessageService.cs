@@ -237,5 +237,15 @@ public class MessageService
         return ret;
     }
 
+    public async Task<int> CheckForNew(User user)
+    {
+        int newMessages = await _dbContext.Messages
+            .Where(m => m.ReceiverId == user.UserId && m.ReceiverDelete == false && m.ReceiverRead == null)
+            .CountAsync();
+
+        return newMessages;
+    }
+    
+
 
 }

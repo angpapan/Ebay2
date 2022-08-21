@@ -149,12 +149,22 @@ namespace EbayAPI.Controllers
             return Ok("Message deleted successfully.");
         }
         
+        /// <summary>
+        /// Get the number of received, new and sent messages
+        /// </summary>
         [HttpGet("stats", Name = "MessageStatistics")]
         public async Task<MessageStatsDto> MessageStats()
         {
             User? user  = (User?)HttpContext.Items["User"];
             
             return await _messageService.GetUserStatsAsync(user);
+        }
+
+        [HttpGet("check-new", Name = "CheckForNewMessages")]
+        public async Task<int> CheckNew()
+        {
+            User? user  = (User?)HttpContext.Items["User"];
+            return await _messageService.CheckForNew(user!);
         }
     }
 }

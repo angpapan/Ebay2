@@ -28,12 +28,12 @@ namespace EbayAPI.Models
         public DateTime? Started {get; set;} = null;
         [Required]
         public DateTime Ends {get; set;}
-        
-        [Required, Column(TypeName = "DECIMAL(8, 6)")]
-        public decimal Latitude { get; set; }
-        
-        [Required, Column(TypeName = "DECIMAL(9, 6)")]
-        public decimal Longitude { get; set; }
+
+        [Column(TypeName = "DECIMAL(8, 6)")] 
+        public decimal? Latitude { get; set; } = null;
+
+        [Column(TypeName = "DECIMAL(9, 6)")] 
+        public decimal? Longitude { get; set; } = null;
         
         [Required]
         public int SellerId { get; set; }

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { UserService } from './Services/user.service';
 import { AuthGuard } from './guards/auth.guard';
 import { ErrorInterceptor} from './helpers/error.interceptor';
 import { JwtInterceptor} from './helpers/jwt.interceptor';
-import {CommonModule} from "@angular/common";
+import {CommonModule, CurrencyPipe} from "@angular/common";
 import {RegisterComponent} from "./components/shared/register/register.component";
 import {PasswordsMatchValidatorDirective} from "./components/shared/register/passwords-match-validator.directive";
 import {LoginComponent} from "./components/shared/login/login.component";
@@ -41,6 +41,10 @@ import { MessageListComponent } from './components/pages/messages-main/message-l
 import { MessageViewComponent } from './components/pages/message-view/message-view.component';
 import { MessageSendComponent } from './components/pages/message-send/message-send.component';
 import {EnabledGuard} from "./guards/enabled.guard";
+import { NewItemComponent } from './components/pages/new-item/new-item.component';
+import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
+import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
+import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +72,10 @@ import {EnabledGuard} from "./guards/enabled.guard";
     MessageListComponent,
     MessageViewComponent,
     MessageSendComponent,
+    NewItemComponent,
+    EditItemComponent,
+    SellerItemListComponent,
+    SellerItemRowComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -87,7 +95,10 @@ import {EnabledGuard} from "./guards/enabled.guard";
       {path: 'home', component: HomeComponent},
       {path: 'messages', component: MessagesMainComponent, canActivate:[AuthGuard, EnabledGuard]},
       {path: 'messages/send', component: MessageSendComponent, canActivate:[AuthGuard, EnabledGuard]},
-      {path: 'messages/:id', component: MessageViewComponent, canActivate:[AuthGuard, EnabledGuard]},
+      {path: 'messages/:id', component: MessageViewComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
@@ -96,6 +107,7 @@ import {EnabledGuard} from "./guards/enabled.guard";
   ],
   providers: [
     UserService,
+    CurrencyPipe,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
