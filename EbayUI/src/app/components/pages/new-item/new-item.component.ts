@@ -8,6 +8,7 @@ import {DataTableDirective} from "angular-datatables";
 import Swal from "sweetalert2";
 import {SwalService} from "../../../Services/swal.service";
 import {ItemService} from "../../../Services/item.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-new-item',
@@ -29,7 +30,8 @@ export class NewItemComponent implements OnInit, OnDestroy {
 
 
 constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe,
-            private categoryService: CategoryService, private swalService: SwalService) { }
+            private categoryService: CategoryService, private swalService: SwalService,
+            private router: Router) { }
 
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
@@ -315,7 +317,7 @@ constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe
             icon: 'success',
             html: 'Auction created successfully.'
           }).then(r => {
-            // TODO navigate to user item list
+            this.router.navigate(["/items/seller-list"]);
           });
         }
       }

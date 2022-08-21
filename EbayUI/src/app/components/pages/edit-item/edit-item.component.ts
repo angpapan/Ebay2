@@ -8,7 +8,7 @@ import {CurrencyPipe} from "@angular/common";
 import {CategoryService} from "../../../Services/category.service";
 import {SwalService} from "../../../Services/swal.service";
 import Swal from "sweetalert2";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Base64WithIdImage} from "../../../model/Images/Base64WithIdImage";
 import {DomSanitizer} from "@angular/platform-browser";
 
@@ -36,7 +36,7 @@ export class EditItemComponent implements OnInit {
 
   constructor(private itemService: ItemService, private currencyPipe: CurrencyPipe,
               private swalService: SwalService, private route: ActivatedRoute,
-              private sanitizer: DomSanitizer) { }
+              private sanitizer: DomSanitizer, private router: Router) { }
 
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
@@ -368,7 +368,7 @@ export class EditItemComponent implements OnInit {
             icon: 'success',
             html: 'Auction modified successfully.'
           }).then(r => {
-            // TODO navigate to user item list
+            this.router.navigate(["/items/seller-list"]);
           });
         }
       }
