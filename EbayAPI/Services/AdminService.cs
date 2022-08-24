@@ -1,8 +1,13 @@
+using System.Text;
+using System.Text.Json;
+using System.Xml;
+using System.Xml.Serialization;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Helpers;
 using EbayAPI.Models;
 using AutoMapper;
+using EbayAPI.Dtos.SerializationDtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -61,6 +66,48 @@ public class AdminService
             PagedList<User>.ToPagedList(users, parameters.PageNumber, parameters.PageSize);
 
         return userPage;
+    }
+
+
+    public async Task<string> ExtractItemInfo(List<int> item_ids, string type)
+    {
+        List<Item> items = await _dbContext.Items
+            .Include(i => i.Seller)
+            .Include(i => i.Bids)
+            .ThenInclude(b => b.Bidder)
+            .Include(i => i.ItemCategories)
+            .ThenInclude(ic => ic.Category)
+            .Where(i => item_ids.Contains(i.ItemId))
+            .ToListAsync();
+
+        ItemListSerialization lista = new ItemListSerialization(items);        
+        if (type == "xml")
+        {
+            string xml = "";
+
+            XmlSerializer serializer = new XmlSerializer(typeof(ItemListSerialization));
+            using (StringWriter sw = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sw, new XmlWriterSettings()
+                       {
+                           Indent = true,
+                           OmitXmlDeclaration = true
+                       }))
+                {
+                    serializer.Serialize(writer, lista, new XmlSerializerNamespaces(new []{XmlQualifiedName.Empty}));
+                    xml = sw.ToString();
+                }
+            }
+            return xml;
+        }
+        else
+        {
+            return  JsonSerializer.Serialize(lista, new JsonSerializerOptions()
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = true
+            });
+        }
     }
 
 

@@ -109,7 +109,7 @@ namespace EbayAPI.Controllers
         /// <summary>
         /// Create a new item for sale
         /// </summary>
-        [HttpPost(""), DisableRequestSizeLimit]
+        [HttpPost, DisableRequestSizeLimit]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<IActionResult> CreateItem([FromForm] ItemAddition dto)
         {

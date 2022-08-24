@@ -67,5 +67,19 @@ namespace EbayAPI.Controllers
             
             return _mapper.Map<List<UserReduced>>(users);
         }
+        
+        [HttpGet("extract", Name = "ExtractItemInfo")]
+        [Produces("text/plain")] // TODO return plain text or json ????
+        public async Task<string> Extract([Required, FromQuery] List<int> item_ids, string type = "xml")
+        {
+            if (type != "xml" && type != "json")
+            {
+                type = "xml";
+            }
+
+            return await _adminService.ExtractItemInfo(item_ids, type);
+
+
+        }
     }
 }
