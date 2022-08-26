@@ -1,5 +1,6 @@
 using System.Xml.Serialization;
 using EbayAPI.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EbayAPI.Dtos.SerializationDtos;
 
@@ -14,22 +15,41 @@ public class ItemSerialization
     public List<string> Category { get; set; }
     [XmlElement("First_Bid")]
     public string FirstBid { get; set; }
-    [XmlElement("Number_Of_Bids")]
+    [JsonIgnore, XmlIgnore]
+    private string? _BuyPrice;
+
+    [XmlElement("Buy_Price"), JsonIgnore]
+    public string BuyPrice
+    {
+        get
+        {
+            return (string)_BuyPrice;
+        }
+        set
+        {
+            _BuyPrice = value;
+        }
+    }
+    [JsonPropertyName("BuyPrice"), XmlIgnore]
+    public string? JsonBuyPrice { get; set; }
+    [XmlElement("Number_of_Bids")]
     public int NumberOfBids { get; set; }
 
+    [XmlArray("Bids")]
+    [XmlArrayItem("Bid")]
     public List<BidSerialization> Bids { get; set; }
     public SellerLocationSerialization Location { get; set; }
     public string Country { get; set; }
     
     [JsonIgnore, XmlIgnore]
-    private DateTime? _Started;
+    private string? _Started;
     
     [JsonIgnore]
-    public DateTime Started
+    public string Started
     {
         get
         {
-            return (DateTime)_Started;
+            return (string)_Started;
         }
         set
         {
@@ -38,19 +58,14 @@ public class ItemSerialization
     }
     
     [JsonPropertyName("Started"), XmlIgnore]
-    public DateTime? JsonStarted { get; set; }
-    public DateTime Ends { get; set; }
+    public string? JsonStarted { get; set; }
+    public string Ends { get; set; }
     public SellerSerialization Seller { get; set; }
     public string Description { get; set; }
 
-    public bool StartedSpecified
-    {
-        get
-        {
-            return _Started.HasValue;
-        }
-    }
-    
+    public bool StartedSpecified => !_Started.IsNullOrEmpty();
+    public bool BuyPriceSpecified => !_BuyPrice.IsNullOrEmpty();
+
     public ItemSerialization(){}
     public ItemSerialization(Item item)
     {
@@ -59,13 +74,15 @@ public class ItemSerialization
         Currently = item.Price.ToString("C");
         Category = item.ItemCategories.Select(i => i.Category.Name).ToList();
         FirstBid = item.FirstBid.ToString("C");
-        NumberOfBids = item.Bids == null ? 0 : item.Bids.Count;
+        _BuyPrice = item.BuyPrice?.ToString("C");
+        JsonBuyPrice = item.BuyPrice?.ToString("C");
+        NumberOfBids = item.Bids?.Count ?? 0;
         Bids = item.Bids == null ? new List<BidSerialization>() : item.Bids.Select(b => new BidSerialization(b)).ToList();
         Location = new SellerLocationSerialization(item);
         Country = item.Country;
-        _Started = item.Started;
-        JsonStarted = item.Started;
-        Ends = item.Ends;
+        _Started = item.Started?.ToString("MMM'-'dd'-'y HH:mm:ss");
+        JsonStarted = item.Started?.ToString("MMM'-'dd'-'y HH:mm:ss");
+        Ends = item.Ends.ToString("MMM'-'dd'-'y HH:mm:ss");
         Seller = new SellerSerialization(item.Seller);
         Description = item.Description;
     }

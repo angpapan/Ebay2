@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -16,13 +17,15 @@ public class AdminService
 {
     private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
+    private readonly UserService _userService;
     private readonly IMapper _mapper;
 
-    public AdminService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper)
+    public AdminService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper, UserService userService)
     {
         _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
+        _userService = userService;
     }
 
     /// <summary>
@@ -107,6 +110,142 @@ public class AdminService
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true
             });
+        }
+    }
+
+    public async Task ImportXmlData(int number)
+    {
+        string filenameBase = "Assets/Dataset/items-";
+        int NUMBER_OF_DATA_FILES = number;
+        for (int i = 0; i < NUMBER_OF_DATA_FILES; i++)
+        {
+            string filename = filenameBase + i + ".xml";
+            XmlSerializer serializer = new XmlSerializer(typeof(ItemListSerialization));
+            ItemListSerialization items;
+
+            using (Stream reader = new FileStream(filename, FileMode.Open))
+            {
+                items = (ItemListSerialization)serializer.Deserialize(reader);
+            }
+
+            foreach (ItemSerialization item in items.Item)
+            {
+                Item it = new Item();
+                it.Name = item.Name;
+                it.Price = decimal.Parse(item.Currently, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
+                it.BuyPrice = item.BuyPrice != null ? decimal.Parse(item.BuyPrice, NumberStyles.AllowCurrencySymbol | NumberStyles.Number) : null;
+                it.FirstBid = decimal.Parse(item.FirstBid, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
+                it.Location = item.Location.Location;
+                it.Latitude = item.Location.Latitude != null ? decimal.Parse(item.Location.Latitude) : null;
+                it.Longitude = item.Location.Longitude != null ? decimal.Parse(item.Location.Longitude) : null;
+                it.Country = item.Country;
+                it.Description = item.Description;
+                it.Started = DateTime.Parse(item.Started);
+                it.Ends = DateTime.Parse(item.Ends);
+
+                
+                
+                // check seller
+                User? seller = _dbContext.Users.SingleOrDefault(u => u.Username == item.Seller.Username);
+                if (seller == null)
+                {
+                    UserRegister reg = new UserRegister();
+                    reg.Username = item.Seller.Username;
+                    reg.Password = "123456789";
+                    reg.VerifyPassword = "123456789";
+                    reg.FirstName = item.Seller.Username;
+                    reg.LastName = item.Seller.Username;
+                    reg.Email = $"{item.Seller.Username}@test.com";
+                    reg.PhoneNumber = "1234567890";
+                    reg.Street = $"{item.Seller.Username} Street";
+                    reg.StreetNumber = 66;
+                    reg.City = item.Location.Location;
+                    reg.Country = item.Country;
+                    reg.PostalCode = "12345";
+                    reg.VATNumber = "123456789";
+
+                    await _userService.Register(reg);
+                    seller = _dbContext.Users.SingleOrDefault(u => u.Username == item.Seller.Username);
+                }
+
+                seller.SellerRating = item.Seller.Rating;
+                seller.SellerRatingsNum = item.Seller.Rating / 4;
+                _dbContext.Users.Update(seller);
+                it.SellerId = seller.UserId;
+                
+                
+                // Create item
+                _dbContext.Items.Add(it);
+                _dbContext.SaveChanges();
+                
+                // add categories
+                foreach (string category in item.Category)
+                {
+                    Category? cat = _dbContext.Categories.SingleOrDefault(c => c.Name == category);
+                    if (cat == null)
+                    {
+                        Category newCat = new Category();
+                        newCat.Name = category;
+                        _dbContext.Categories.Add(newCat);
+                        _dbContext.SaveChanges();
+
+                        ItemsCategories ic = new ItemsCategories();
+                        ic.ItemId = it.ItemId;
+                        ic.CategoryId = newCat.CategoryId;
+                        _dbContext.ItemsCategories.Add(ic);
+                        _dbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        ItemsCategories ic = new ItemsCategories();
+                        ic.ItemId = it.ItemId;
+                        ic.CategoryId = cat.CategoryId;
+                        _dbContext.ItemsCategories.Add(ic);
+                        _dbContext.SaveChanges();
+                    }
+                }
+                
+                // bids
+                foreach (BidSerialization bid in item.Bids)
+                {
+                    Bid b = new Bid();
+                    b.Time = DateTime.Parse(bid.Time);
+                    b.Amount = decimal.Parse(bid.Amount, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
+                    b.ItemId = it.ItemId;
+                    
+                    // check bidder user
+                    User? bidder = _dbContext.Users.SingleOrDefault(u => u.Username == bid.Bidder.Username);
+                    if (bidder == null)
+                    {
+                        UserRegister reg = new UserRegister();
+                        reg.Username = bid.Bidder.Username;
+                        reg.Password = "123456789";
+                        reg.VerifyPassword = "123456789";
+                        reg.FirstName = bid.Bidder.Username;
+                        reg.LastName = bid.Bidder.Username;
+                        reg.Email = $"{bid.Bidder.Username}@test.com";
+                        reg.PhoneNumber = "1234567890";
+                        reg.Street = $"{bid.Bidder.Username} Street";
+                        reg.StreetNumber = 66;
+                        reg.City = bid.Bidder.Location ?? "Unknown";
+                        reg.Country = bid.Bidder.Country ?? "Unknown";
+                        reg.PostalCode = "12345";
+                        reg.VATNumber = "123456789";
+
+                        await _userService.Register(reg);
+                        bidder = _dbContext.Users.SingleOrDefault(u => u.Username == bid.Bidder.Username);
+                    }
+                    
+                    bidder.BidderRating = bid.Bidder.Rating;
+                    bidder.BidderRatingsNum = bid.Bidder.Rating / 4;
+                    _dbContext.Users.Update(bidder);
+
+                    b.UserId = bidder!.UserId;
+                    
+                    _dbContext.Bids.Add(b);
+                    _dbContext.SaveChanges();
+                }
+            }
         }
     }
 

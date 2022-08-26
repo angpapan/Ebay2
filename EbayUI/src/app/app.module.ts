@@ -45,6 +45,7 @@ import { NewItemComponent } from './components/pages/new-item/new-item.component
 import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
 import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
 import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
+import { ExportDataComponent } from './components/shared/export-data/export-data.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { SellerItemRowComponent } from './components/pages/seller-item-list/sell
     NewItemComponent,
     EditItemComponent,
     SellerItemListComponent,
-    SellerItemRowComponent
+    SellerItemRowComponent,
+    ExportDataComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

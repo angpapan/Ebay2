@@ -22,7 +22,7 @@ namespace EbayAPI.Models
         [StringLength(200), Required]
         public string Country { get; set; }
 
-        [StringLength(5000), Required]
+        [MaxLength, Required]
         public string Description { get; set; }
 
         public DateTime? Started {get; set;} = null;

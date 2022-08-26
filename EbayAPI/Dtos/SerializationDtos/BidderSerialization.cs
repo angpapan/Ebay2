@@ -12,8 +12,8 @@ public class BidderSerialization
     [XmlAttribute("UserID")]
     public string Username { get; set; }
     
-    public string Location { get; set; }
-    public string Country { get; set; }
+    public string? Location { get; set; }
+    public string? Country { get; set; }
     
     public BidderSerialization() {}
     public BidderSerialization(User user)

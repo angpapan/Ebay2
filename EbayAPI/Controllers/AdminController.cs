@@ -81,5 +81,16 @@ namespace EbayAPI.Controllers
 
 
         }
+
+        [HttpPost("import-xmls", Name = "ImportDataSet")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ImportData(int number = 1)
+        {
+            if (number > 40 || number < 1)
+                return BadRequest("Please give a number between 1 and 40"); 
+            
+            await _adminService.ImportXmlData(number);
+            return Ok("Data Imported successfully!");
+        }
     }
 }
