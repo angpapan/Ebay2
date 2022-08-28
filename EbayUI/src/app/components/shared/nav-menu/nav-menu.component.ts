@@ -25,14 +25,15 @@ export class NavMenuComponent implements OnInit {
 
     if(this.role === 'user'){
       this.getNewMessages();
-      setInterval(this.getNewMessages, 10000)
     }
   }
 
   getNewMessages() {
     this.messageService.checkForNew().subscribe({
       next: value => {
+        console.log(value);
         this.newMessages = value;
+        setTimeout(() => {this.getNewMessages()}, 10000)
       }
     })
   }
@@ -46,7 +47,6 @@ export class NavMenuComponent implements OnInit {
   }
 
   logout() {
-    const role: string | undefined | null = localStorage.getItem(storageItems.Role);
     this.authSerive.logout();
     this.loggedIn = false;
     this.router.navigate(['/home']);

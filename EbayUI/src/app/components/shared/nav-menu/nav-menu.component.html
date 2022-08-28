@@ -50,7 +50,9 @@
         <span *ngIf="loggedIn">
           <div class="dropdown">
 
-            <i class="bi bi-person-circle primary fs-2 mb-3 ms-3" role="button" data-bs-toggle="dropdown" style="color: darkslateblue"></i>
+            <i class="bi bi-person-circle primary fs-2 mb-3 ms-3" role="button"
+               data-bs-toggle="dropdown" style="color: darkslateblue"
+            ></i>
             <span *ngIf="newMessages > 0" class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger">
               {{newMessages > 99 ? '99+' : newMessages}}
             </span>
@@ -59,8 +61,9 @@
               <span class="dropdown-item" style="cursor: default"><b>Hello, {{username}}</b></span>
               <hr class="dropdown-divider">
 
+              <a class="dropdown-item" [routerLink]="['/users/',username]" >My Profile</a>
+
               <span *ngIf="role === 'user'">
-                <a class="dropdown-item" [routerLink]="['/users/',username]" >My Profile</a>
                 <button class="dropdown-item" [routerLink]="['/messages']" >
                   Messages
                   <span *ngIf="newMessages > 0" class="ms-2 badge rounded-pill bg-danger">
