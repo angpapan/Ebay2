@@ -166,6 +166,7 @@ public class AdminService
 
                     await _userService.Register(reg);
                     seller = _dbContext.Users.SingleOrDefault(u => u.Username == item.Seller.Username);
+                    seller.Enabled = true;
                 }
 
                 seller.SellerRating = item.Seller.Rating;
@@ -234,6 +235,7 @@ public class AdminService
 
                         await _userService.Register(reg);
                         bidder = _dbContext.Users.SingleOrDefault(u => u.Username == bid.Bidder.Username);
+                        bidder.Enabled = true;
                     }
                     
                     bidder.BidderRating = bid.Bidder.Rating;

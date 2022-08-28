@@ -30,6 +30,15 @@ export class AdminService {
 
   exportData(type: string, items: number[]): Observable<string>{
     // TODO fix request with type and items array
-    return this.http.get<string>(this.adminUrl + '/extract');
+    let item_ids = '';
+    for(const item of items){
+      item_ids += `&item_ids=${item}`;
+    }
+
+    const requestOptions: Object = {
+      responseType: 'text'
+    }
+
+    return this.http.get<string>(this.adminUrl + `/extract?type=${type}${item_ids}`, requestOptions);
   }
 }

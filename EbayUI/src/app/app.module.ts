@@ -46,6 +46,7 @@ import { EditItemComponent } from './components/pages/edit-item/edit-item.compon
 import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
 import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
 import { ExportDataComponent } from './components/shared/export-data/export-data.component';
+import {MessageService} from "./Services/message.service";
 
 @NgModule({
   declarations: [
@@ -101,6 +102,7 @@ import { ExportDataComponent } from './components/shared/export-data/export-data
       { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/export-data', component: ExportDataComponent, canActivate: [AuthGuard, EnabledGuard] },
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
@@ -109,6 +111,7 @@ import { ExportDataComponent } from './components/shared/export-data/export-data
   ],
   providers: [
     UserService,
+    MessageService,
     CurrencyPipe,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
