@@ -16,6 +16,11 @@ public class EbayAPIDbContext : DbContext
     public DbSet<Bid> Bids { get; set; }
     public DbSet<UserVisitedItems> UserVisitedItems { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<UserBidLatent> UserBidLatents { get; set; }
+    public DbSet<UserViewLatent> UserViewLatents { get; set; }
+    public DbSet<ItemBidLatent> ItemBidLatents { get; set; }
+    public DbSet<ItemViewLatent> ItemViewLatents { get; set; }
+    
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,10 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace EbayAPI.Models
 {
+    [
+        Index(nameof(Name)),
+        Index(nameof(Price)),
+        Index(nameof(Country)),
+    ]
     public class Item
     {
         public int ItemId { get; set; }
 
-        [StringLength(1000), Required]
+        [StringLength(600), Required]
         public string Name { get; set; }
         
         [Column(TypeName = "DECIMAL(19, 2)")]

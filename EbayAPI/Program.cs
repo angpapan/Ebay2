@@ -42,6 +42,7 @@ builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<BidService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<RecommendationService>();
 
 builder.Services.Configure<FormOptions>(o =>
 {

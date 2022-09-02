@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace EbayAPI.Models
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class Category
     {
         public int CategoryId { get; set; }

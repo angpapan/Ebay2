@@ -113,11 +113,11 @@ public class AdminService
         }
     }
 
-    public async Task ImportXmlData(int number)
+    public async Task ImportXmlData(int start, int end, bool normalizeToNow)
     {
         string filenameBase = "Assets/Dataset/items-";
-        int NUMBER_OF_DATA_FILES = number;
-        for (int i = 0; i < NUMBER_OF_DATA_FILES; i++)
+        Random random = new Random();
+        for (int i = start; i <= end; i++)
         {
             string filename = filenameBase + i + ".xml";
             XmlSerializer serializer = new XmlSerializer(typeof(ItemListSerialization));
@@ -141,10 +141,13 @@ public class AdminService
                 it.Country = item.Country;
                 it.Description = item.Description;
                 it.Started = DateTime.Parse(item.Started);
-                it.Ends = DateTime.Parse(item.Ends);
+                DateTime dtEnd = DateTime.Parse(item.Ends);
+                if (normalizeToNow)
+                    it.Ends = new DateTime(DateTime.Now.Year, dtEnd.Month, dtEnd.Day, dtEnd.Hour, dtEnd.Minute,
+                        dtEnd.Second);
+                else
+                    it.Ends = dtEnd;
 
-                
-                
                 // check seller
                 User? seller = _dbContext.Users.SingleOrDefault(u => u.Username == item.Seller.Username);
                 if (seller == null)
@@ -170,7 +173,7 @@ public class AdminService
                 }
 
                 seller.SellerRating = item.Seller.Rating;
-                seller.SellerRatingsNum = item.Seller.Rating / 4;
+                seller.SellerRatingsNum = item.Seller.Rating / random.Next(1, 5);
                 _dbContext.Users.Update(seller);
                 it.SellerId = seller.UserId;
                 
@@ -180,6 +183,7 @@ public class AdminService
                 _dbContext.SaveChanges();
                 
                 // add categories
+                List<ItemsCategories> ics = new List<ItemsCategories>();
                 foreach (string category in item.Category)
                 {
                     Category? cat = _dbContext.Categories.SingleOrDefault(c => c.Name == category);
@@ -193,20 +197,21 @@ public class AdminService
                         ItemsCategories ic = new ItemsCategories();
                         ic.ItemId = it.ItemId;
                         ic.CategoryId = newCat.CategoryId;
-                        _dbContext.ItemsCategories.Add(ic);
-                        _dbContext.SaveChanges();
+                        ics.Add(ic);
                     }
                     else
                     {
                         ItemsCategories ic = new ItemsCategories();
                         ic.ItemId = it.ItemId;
                         ic.CategoryId = cat.CategoryId;
-                        _dbContext.ItemsCategories.Add(ic);
-                        _dbContext.SaveChanges();
+                        ics.Add(ic);
                     }
                 }
+                await _dbContext.ItemsCategories.AddRangeAsync(ics);
+                await _dbContext.SaveChangesAsync();
                 
                 // bids
+                List<Bid> bs = new List<Bid>();
                 foreach (BidSerialization bid in item.Bids)
                 {
                     Bid b = new Bid();
@@ -239,14 +244,14 @@ public class AdminService
                     }
                     
                     bidder.BidderRating = bid.Bidder.Rating;
-                    bidder.BidderRatingsNum = bid.Bidder.Rating / 4;
+                    bidder.BidderRatingsNum = bid.Bidder.Rating / random.Next(1, 5);
                     _dbContext.Users.Update(bidder);
 
                     b.UserId = bidder!.UserId;
-                    
-                    _dbContext.Bids.Add(b);
-                    _dbContext.SaveChanges();
+                    bs.Add(b);
                 }
+                await _dbContext.Bids.AddRangeAsync(bs);
+                await _dbContext.SaveChangesAsync();
             }
         }
     }

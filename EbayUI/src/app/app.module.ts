@@ -102,7 +102,6 @@ import {MessageService} from "./Services/message.service";
       { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
-      { path: 'items/export-data', component: ExportDataComponent, canActivate: [AuthGuard, EnabledGuard] },
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
