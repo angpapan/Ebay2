@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ItemBoxItem} from "../../../../model/ItemBoxItem";
+import {ItemSimple} from "../../../../model/Items/ItemSimple";
 
 @Component({
   selector: 'app-item-box',
@@ -8,6 +9,7 @@ import {ItemBoxItem} from "../../../../model/ItemBoxItem";
 })
 export class ItemBoxComponent implements OnInit {
   @Input() items: ItemBoxItem[];
+  @Input() newItems: ItemSimple[];
   @Input() title: string;
 
   constructor() { }

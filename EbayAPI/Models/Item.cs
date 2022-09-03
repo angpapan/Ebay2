@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace EbayAPI.Models
 {
     public class Item

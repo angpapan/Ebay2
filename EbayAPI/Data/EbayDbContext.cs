@@ -62,7 +62,7 @@ public class EbayAPIDbContext : DbContext
 
     modelBuilder.Entity<Item>().HasData(
             new Item {
-                ItemId = 132,
+                ItemId = 133,
                 Name = "Hat",
                 BuyPrice = 15,
                 FirstBid = 12,
@@ -75,6 +75,7 @@ public class EbayAPIDbContext : DbContext
                 SellerId = 1
             }
     );
+    
     }
     
 }

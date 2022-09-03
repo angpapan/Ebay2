@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using EbayAPI.Dtos.ItemDtos;
 using EbayAPI.Helpers.Authorize;
+using Microsoft.OpenApi.Any;
 
 namespace EbayAPI.Controllers
 {
@@ -31,56 +32,46 @@ namespace EbayAPI.Controllers
             _itemService = itemService;
         }
 
-        [HttpGet("/full/{id}", Name = "GetItemFullDetails")]
+        [HttpGet("full/{id}", Name = "GetItemFullDetails")]
+        [Helpers.Authorize.Authorize(Roles.User , Roles.Administrator )]
         public async Task<ItemDetailsFull> GetFullItemDetails(int id)
         {
-            return await _itemService.GetDetailsFullAsync(id , (User)HttpContext.Items["User"]);
+            return await _itemService.GetDetailsFullAsync(id , (User?)HttpContext.Items["User"]);
         }
 
         [HttpGet ("{id}", Name = "GetSimpleItem")]
         [AllowAnonymous]
         public async Task<ItemDetails> GetItemDetails(int id)
         {
-            return await _itemService.GetDetailsAsync(id, false);
+            return await _itemService.GetDetailsAsync(id);
             //return _mapper.Map<ItemDetails>(details);
         }
 
-        [HttpPost("newAuction", Name = "CreateAuction")]
+        
+        
+        
+        
+        [HttpGet("user/{username}", Name = "GetItemsByUsername")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateAuction([FromBody]ItemAddition newItem)
+        public async Task<List<SellerItemListResponse>> GetItemsByUserName(string username, [FromQuery] SellerItemListQueryParameters dto)
         {
-            User? seller = (User?) HttpContext.Items["User"];
-            
-            int newId = await _itemService.InsertItem(seller.UserId,newItem);
-            
-            return Ok($"A new auction has been created successful for item with id : {newId}!");
+            PagedList<Item> userItems = await _itemService.GetItemsByUsername(dto, username); 
+            var metadata = new
+            {
+                userItems.TotalCount,
+                userItems.PageSize,
+                userItems.CurrentPage,
+                userItems.TotalPages,
+                userItems.HasNext,
+                userItems.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+            Console.WriteLine("Users item has been send");
+            return _mapper.Map<List<SellerItemListResponse>>(userItems);
         }
 
-        [HttpPost("/category/{id:int}", Name = "GetItemsByCategory")]
-        [AllowAnonymous]
-        public async Task<List<ItemDetailsSimple>> GetItemsByCategory(int id)
-        {
-            // :: todo -> makeit paged 
-            return await _itemService.GetItemsByCategoryId(id);
-        }
-
         
-        [HttpPost("/user/{username}", Name = "GetItemsByUsername")]
-        [AllowAnonymous]
-        public async Task<List<ItemDetailsSimple>>? GetItemsByUserName(string username)
-        {
-            //:: todo -> make it paged
-            return await _itemService.GetItemsByUsername(username);
-        }
-        
-        
-        [HttpGet("/price", Name = "GetItemsByPrice")]
-        [AllowAnonymous]
-        public async Task<List<ItemDetailsSimple>>? GetItemsByPrice([FromQuery] decimal start, decimal end)
-        {
-            //:: todo -> make it paged
-            return await _itemService.GetItemsByPrice(start,end);
-        }
 
         /// <summary>
         /// Get items in paged lists

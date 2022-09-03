@@ -9,6 +9,7 @@ public class ItemDetailsSimple
     [Required] public string Name { get; set; }
     public decimal? BuyPrice {get; set;} = null;
     [Required] public decimal Price { get; set; }
-    public Image Images {get; set;} = null;
+    [Required] public DateTime Ends {get; set;}
+    public string Image {get; set;} = null;
     
 }

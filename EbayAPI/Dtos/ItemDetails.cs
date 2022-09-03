@@ -18,7 +18,8 @@ public class ItemDetails
     public decimal? Latitude { get; set; } = null;
     public decimal? Longitude { get; set; } = null;
     [Required] public int SellerId { get; set; }
+    [Required] public string SellerName { get; set; }
     public List<string>? Categories {get; set;} = null;
-    public List<Image>? Images {get; set;} = null;
+    public List<string>? Images {get; set;} = null;
     
 }

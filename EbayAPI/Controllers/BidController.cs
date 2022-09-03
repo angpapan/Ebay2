@@ -33,18 +33,9 @@ namespace EbayAPI.Controllers
         public async Task<IActionResult> CreateNewBid([FromBody] BidRequest bid)
         {
             
-            switch (_bidService.SetNewBid(bid, (User)HttpContext.Items["User"]).Result )
-            {case -1 :
-                    return BadRequest($"Item with id {bid.ItemId} not found!");
-            case -2 :
-                return Ok("Bid doesnt assign because auction has been ended!");
-            case -3 :
-                return Ok("Bid doesnt assign. Your offer must be greater than last!");
-            default:
-                return Ok($"Your bid has been assigned. BID => Item:{bid.ItemId} Amount:{bid.Amount}!");
+            await _bidService.SetNewBid(bid, (User?)HttpContext.Items["User"]);
+            return Ok($"Your bid has been assigned. BID => Item:{bid.ItemId} Amount:{bid.Amount}!");
             
-            }
-
         }
 
         [HttpGet("/myBids", Name = "GetMyBids")]

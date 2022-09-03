@@ -1,5 +1,6 @@
 using AutoMapper;
 using EbayAPI.Dtos;
+using EbayAPI.Dtos.BidsDtos;
 using EbayAPI.Models;
 using NuGet.Protocol;
 
@@ -31,5 +32,17 @@ public class UserProfile : Profile
         
         CreateMap<UserRegister, User>(MemberList.Source)
             .ForSourceMember(x => x.VerifyPassword, opt => opt.DoNotValidate());
+
+        CreateMap<User, BidderDto>()
+            .ForMember(dto =>  dto.Location,
+                opt => opt.MapFrom(
+                    user => user.City))
+            .ForMember(d=>d.Rating,
+                opt=>opt.MapFrom(
+                    user=>user.BidderRating))
+            .ForMember(d=>d.UserId, 
+                o=>o.MapFrom(
+                    user => user.Username ))
+            ;
     }
 }

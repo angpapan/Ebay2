@@ -4,6 +4,8 @@ import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
+import { GalleryModule } from 'ng-gallery';
+
 import { AppComponent } from './app.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 
@@ -45,6 +47,17 @@ import { NewItemComponent } from './components/pages/new-item/new-item.component
 import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
 import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
 import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
+import { ItemViewComponent } from "./components/pages/item-view/item-view.component";
+import { ItemSmallBoxComponent } from "./components/shared/item-small-box/item-small-box.component";
+import {SellerAllItemsComponent} from "./components/pages/seller-all-items/seller-all-items.component";
+import {
+  SellerAllItemsRowComponent
+} from "./components/pages/seller-all-items/seller-all-items-row/seller-all-items-row.component";
+import {ItemFullViewComponent} from "./components/pages/item-full-view/item-full-view.component";
+import {MapComponent} from "./components/shared/map/map.component";
+import {ItemGridBlockComponent} from "./components/shared/item-grid-block/item-grid-block.component";
+import {ResultSearchComponent} from "./components/pages/result-search/result-search.component";
+import {FilterBlockComponent} from "./components/shared/filter-block/filter-block.component";
 
 @NgModule({
   declarations: [
@@ -75,7 +88,16 @@ import { SellerItemRowComponent } from './components/pages/seller-item-list/sell
     NewItemComponent,
     EditItemComponent,
     SellerItemListComponent,
-    SellerItemRowComponent
+    SellerItemRowComponent,
+    ItemViewComponent,
+    ItemSmallBoxComponent,
+    SellerAllItemsComponent,
+    SellerAllItemsRowComponent,
+    ItemFullViewComponent,
+    MapComponent,
+    ItemGridBlockComponent,
+    ResultSearchComponent,
+    FilterBlockComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -99,11 +121,16 @@ import { SellerItemRowComponent } from './components/pages/seller-item-list/sell
       { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/:id', component: ItemViewComponent},
+      { path: 'items/user/:username', component: SellerAllItemsComponent},
+      { path: 'item/full/:id', component: ItemFullViewComponent },
+      { path: 'search', component: ResultSearchComponent},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
     StarRatingModule.forRoot(),
-    DataTablesModule
+    DataTablesModule,
+    GalleryModule
   ],
   providers: [
     UserService,

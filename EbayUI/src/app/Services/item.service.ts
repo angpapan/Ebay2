@@ -6,6 +6,10 @@ import {SellerItem} from "../model/Items/SellerItem";
 import {UserListRequest} from "../model/UserListRequest";
 import {UserListItem} from "../model/UserListItem";
 import {EditItemInfoResponse} from "../model/Items/EditItemInfoResponse";
+import {ItemDetails} from "../model/Items/ItemDetailed";
+import {ItemSimple} from "../model/Items/ItemSimple";
+import {ItemDetailsFull} from "../model/Items/ItemDetailedFull";
+import {ItemListRequest} from "../model/Items/ItemListRequest";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +19,7 @@ export class ItemService {
   constructor(private http: HttpClient) { }
 
   private itemUrl = 'https://localhost:7088/item';
+  private url = 'https://localhost:7088';
 
   createItem(req: FormData): Observable<string> {
     return this.http.post<string>(this.itemUrl, req);
@@ -46,4 +51,37 @@ export class ItemService {
     const url = this.itemUrl + `/sells?${queryString}`;
     return this.http.get<SellerItem[]>(url, {observe: "response"});
   }
+
+  getItemsBySeller(req: SellerListRequest, username: string):Observable<HttpResponse<SellerItem[]>>{
+    let queryString = Object.keys(req).map(key => key + '=' + req[key as keyof UserListRequest]).join('&');
+    console.log("query service" + queryString);
+    const url = this.itemUrl + `/user/${username}?${queryString}`;
+    return this.http.get<SellerItem[]>(url, {observe: "response"});
+
+  }
+
+  getItemDetails(_itemId: number): Observable<ItemDetails>{
+    return this.http.get<ItemDetails>(`${this.itemUrl}/${_itemId}`, {});
+  }
+
+  getItemFullDetails(_itemId: number): Observable<ItemDetailsFull>{
+    return this.http.get<ItemDetailsFull>(`${this.itemUrl}/full/${_itemId}`, {});
+  }
+
+  getTester(pn:number) : Observable<HttpResponse<ItemSimple[]>>{
+    console.log("Service started");
+    return this.http.get<ItemSimple[]>
+    (`${this.itemUrl}/search?Categories=1&Categories=2&Categories=3&Categories=4&Categories=5&PageSize=5&PageNumber=${pn}`,{observe:"response"});
+  }
+  placebid(itemId:number , amount:number): Observable<string>{
+    return this.http.post<string>(`${this.url}/createBid`,{"itemId":itemId,"amount":amount});
+  }
+
+  getSearcItemList(req : ItemListRequest) : Observable<HttpResponse<ItemSimple[]>>{
+    let queryString = $.param(req).replaceAll(`%5D`,'').replaceAll(`%5B`,'');
+    console.log("service " + queryString);
+
+    return this.http.get<ItemSimple[]>(`${this.itemUrl}/search?${queryString}`,{observe:"response"});
+  }
+
 }
