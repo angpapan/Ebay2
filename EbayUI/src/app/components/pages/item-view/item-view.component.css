@@ -1,0 +1,21 @@
+
+
+gallery{
+  background-color: white;
+  border: 1px darkgrey double;
+  width: 100%;
+  display: inline-block;
+  margin-right: 2vw;
+}
+
+
+.top-border{
+  border-top: 1px solid black;
+  padding-top: 7%;
+}
+.pad-bottom{
+  padding-bottom: 7%;
+}
+.wide{
+  width: 100%;
+}

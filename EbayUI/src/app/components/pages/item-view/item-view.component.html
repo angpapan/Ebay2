@@ -1,0 +1,148 @@
+<!-- Full page -->
+<app-container *ngIf="!preview;else preview_container">
+  <app-category-nav></app-category-nav>
+  <ng-container *ngTemplateOutlet="main"></ng-container>
+</app-container>
+<!-- Preview page -->
+<ng-template #preview_container>
+  <ng-container *ngTemplateOutlet="main"></ng-container>
+</ng-template>
+
+<!-- Content -->
+<ng-template #main>
+  <!-- Gallery Name Bid & Buy -->
+  <div class="container">
+
+    <div class="row justify-content-md-center ">
+      <div class="col-4" style="font-size: small;"> Categories : {{item.categories}}</div>
+    </div>
+
+    <div class="row ">
+
+      <div class="col-7 ">
+        <gallery [items] = "images" [nav]="false" [counter]="false" thumbPosition="left"
+                 [thumbWidth]="60" [thumbHeight]="60" thumbView="contain"
+                 slidingDirection="vertical">
+
+        </gallery>
+      </div>
+
+      <div class="col-5" style=" padding-bottom: 1px" >
+
+        <div class="row pad-bottom">
+          <div class="col">
+            <h5> {{item.name}}  </h5>
+          </div>
+        </div>
+
+        <div class="row top-border pad-bottom">
+          <div class="col-3" >
+            Current bid:
+          </div>
+          <div class="col-4">
+            <div class="row" style="font-weight: bold;font-size: xx-large;">
+              <div class="col">
+                {{item.price | currency:"EUR" }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <input [(ngModel)]="bid" placeholder="Bid Amount" style="width: 80%">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col" *ngIf="bid && item.buyPrice && bid>item.buyPrice;else lowbid" style="color:red;font-size: small">
+                Buy it now for {{item.buyPrice | currency : "EUR"}}
+              </div>
+              <ng-template #lowbid>
+                <div class="col" [ngStyle]="{'visibility' : (bid && bid < item.price) ? 'visible' : 'hidden'}" style="color:red;font-size: small">
+                  Enter more than {{item.price | currency : "EUR"}}
+                </div>
+              </ng-template>
+            </div>
+
+          </div>
+          <div class="col-5 align-self-end " style="position: relative; bottom: 2vh">
+            <button type="button" class="btn btn-primary btn-sm wide" (click)="placeBid()" >Place bid</button>
+          </div>
+        </div>
+
+
+
+
+
+        <div class="row top-border pad-bottom" *ngIf="item.buyPrice && item.buyPrice > 0" >
+
+          <div class="col-3">
+            Price:
+          </div>
+          <div class="col-4" style="font-weight: bold;font-size: xx-large;">
+            {{item.buyPrice | currency:"EUR"}}
+          </div>
+          <div class="col-5 align-self-center">
+            <button type="button" class="btn btn-primary btn-sm wide" (click)="buyItem()">Buy it now</button>
+          </div>
+
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+  </div>
+  <!-- Description Info & Map -->
+  <div class="container" style="margin-top: 15vh">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#desc">Description</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#seller">Informations</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#map-con" (click)="resize()">Map</a>
+      </li>
+    </ul>
+    <!-- Content -->
+    <div class="tab-content" style="margin-top:2vh;padding-bottom: 15vh">
+      <!-- Description -->
+      <div class="tab-pane container active" id="desc">
+        {{item.description}}
+      </div>
+      <!-- Informations -->
+      <div class="tab-pane container fade" id="seller">
+
+        <div class="row">
+          <div class="col-2">Seller:</div>
+          <div class="col" style="font-style: italic" [routerLink]="['/items/user/', item.sellerName]" style="cursor: pointer">{{item.sellerName}} </div>
+        </div>
+
+        <div class="row">
+          <div class="col-2">Country:</div>
+          <div class="col" >{{item.country}} </div>
+        </div>
+
+        <div class="row">
+          <div class="col-2">Location:</div>
+          <div class="col" >{{item.location}} </div>
+        </div>
+
+      </div>
+      <!-- Map -->
+      <div class="tab-pane container fade " id="map-con">
+        <div class="row">
+          <div class="col9">
+            <app-map [latitude]="item.latitude" [longitude]="item.longitude" ></app-map>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>

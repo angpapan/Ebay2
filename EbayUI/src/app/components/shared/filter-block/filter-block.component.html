@@ -1,0 +1,46 @@
+<div class="container add-top">
+  <div class="row">
+    <div class="col">
+      <h5>
+        Filter by Category
+      </h5>
+    </div>
+  </div>
+  <div class="row" *ngFor="let r of result">
+    <div class="col">
+        {{r.category.name}}
+    </div>
+    <div class="col">
+      <input type="checkbox" [(ngModel)]="r.isChecked" >
+    </div>
+  </div>
+</div>
+
+<div class="container add-top">
+
+  <div class="row gy-5">
+    <div class="col">
+      <h5>
+        Filter by Price
+      </h5>
+    </div>
+  </div>
+  <div class="row g-2 ">
+    <div class="col">
+      <input [(ngModel)]="pageInfo.minPrice" placeholder="min" >
+    </div>
+    <div class="col-auto">
+      -
+    </div>
+    <div class="col">
+      <input [(ngModel)]="pageInfo.maxPrice" placeholder="max">
+    </div>
+  </div>
+  <div class="row justify-content-center add-top">
+    <div class="col-auto ">
+      <button type="button" class="btn btn-secondary" (click)="search()">Search</button>
+    </div>
+  </div>
+</div>
+
+

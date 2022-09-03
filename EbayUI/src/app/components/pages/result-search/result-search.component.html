@@ -1,0 +1,25 @@
+<app-container>
+  <app-category-nav></app-category-nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <app-filter-block [selectedCategories]="info.categories" [pageInfo]="info"></app-filter-block>
+      </div>
+      <div class="col">
+        <div class="row">
+          <div class="col">
+            <app-item-grid-block [items]="itemList" ></app-item-grid-block>
+          </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 5vh; margin-bottom: 15vh;">
+          <div class="col-auto">
+            <button *ngIf="hasMore" type="button" class="btn btn-info" (click)="loadMore()">Load More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</app-container>

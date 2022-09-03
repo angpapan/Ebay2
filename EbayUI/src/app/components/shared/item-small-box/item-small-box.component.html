@@ -1,0 +1,32 @@
+
+
+<div class="card"     [routerLink]="['/items', item.itemId]" id="container">
+  <img class="card-img-top item-image" src="source" alt="Card image cap" [id]="'item-image-'+ uuid + '-' + item.itemId">
+  <div class="card-title">
+    {{item.name}}
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col" style="font-size: x-large; font-weight: bold">
+        {{item.price | currency : "EUR"}}
+      </div>
+      <div class="col-auto align-self-end" >
+        Bid until
+      </div>
+    </div>
+    <div class="row justify-content-end">
+      <div class="col-auto" style="font-style: italic">
+        {{item.ends | date : "MMM d,y h:mm" }}
+      </div>
+    </div>
+    <div class="row align-items-end" >
+      <div class="col " *ngIf="item.buyPrice" style="font-style: italic">
+        or buy Now
+      </div>
+      <div class="col" style="font-size: larger;font-weight: bold">
+        {{item.buyPrice | currency : "EUR"}}
+      </div>
+    </div>
+
+  </div>
+</div>
