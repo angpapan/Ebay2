@@ -21,9 +21,10 @@ namespace EbayAPI.Controllers
         private readonly EbayAPIDbContext _dbContext;
         private readonly ILogger<ItemService> _logger;
         private readonly ItemService _itemService;
+        
 
         public ItemController(IMapper mapper, EbayAPIDbContext dbContext, ILogger<ItemService> logger,
-            ItemService itemService)
+            ItemService itemService, RecommendationService recommendationService)
         {
             _mapper = mapper;
             _dbContext = dbContext;
@@ -173,7 +174,7 @@ namespace EbayAPI.Controllers
         /// </summary>
         /// <param name="id">The item id to edit</param>
         /// <param name="dto">The item details</param>
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateItem")]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<IActionResult> EditAuction(int id, [FromForm] ItemAddition dto)
         {
@@ -181,16 +182,27 @@ namespace EbayAPI.Controllers
             await _itemService.EditAuction(id, dto, seller!);
             return Ok("Auction edited successfully!");
         }
-
-        [HttpGet("edit-info/{id}")]
+        
+        /// <summary>
+        /// Gets the editable info of an item
+        /// </summary>
+        /// <param name="id">The item id</param>
+        /// <returns></returns>
+        [HttpGet("edit-info/{id}", Name = "GetItemInfoForEdit")]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<ItemToEditResponseDto> GetEditInfo(int id)
         {
             User? seller = (User?) HttpContext.Items["User"];
             return await _itemService.GetEditInfo(id, seller!);
         }
-
-        [HttpDelete("{item_id}/image/{image_id}")]
+        
+        /// <summary>
+        /// Delete an image from an item
+        /// </summary>
+        /// <param name="item_id">The item id</param>
+        /// <param name="image_id">The image id</param>
+        /// <returns></returns>
+        [HttpDelete("{item_id}/image/{image_id}", Name = "DeleteItemImage")]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<IActionResult> DeleteImageFromItem(int item_id, int image_id)
         {
@@ -198,8 +210,41 @@ namespace EbayAPI.Controllers
             await _itemService.DeleteImageFromItem(item_id, image_id, seller!);
             return Ok("Image deleted successfully.");
         }
-
-
+        
+        /// <summary>
+        /// Get user based recommended items
+        /// </summary>
+        /// <param name="num">The number of items to recommend</param>
+        /// <returns></returns>
+        [HttpGet("recommend", Name = "GetRecommendedItems")]
+        [Helpers.Authorize.Authorize(Roles.User)]
+        public async Task<List<ItemBoxDto>> Recommend(int num = 6)
+        {
+            User? user = (User?) HttpContext.Items["User"];
+            return await _itemService.GetRecommendedItems(user!, num);
+        }
+        
+        /// <summary>
+        /// Get the most recently submitted items
+        /// </summary>
+        /// <param name="num">The number of items to recommend</param>
+        /// <returns></returns>
+        [HttpGet("new", Name = "GetNewItems")]
+        public async Task<List<ItemBoxDto>> NewItems(int num = 6)
+        {
+            return await _itemService.GetNewItems(num);
+        }
+        
+        /// <summary>
+        /// Gets the active items with the most bids
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
+        [HttpGet("hot", Name = "GetHotItems")]
+        public async Task<List<ItemBoxDto>> HotItems(int num = 6)
+        {
+            return await _itemService.GetHotItems(num);
+        }
     }
     
 }

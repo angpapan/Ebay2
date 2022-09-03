@@ -49,8 +49,8 @@ namespace EbayAPI.Models
         
         [JsonIgnore]
         public virtual List<ItemsCategories> ItemCategories {get; set;}
-        [JsonIgnore]
-        public virtual List<Bid>? Bids {get; set;}
+
+        [JsonIgnore] public virtual List<Bid> Bids { get; set; } = new List<Bid>();
         [JsonIgnore]
         public virtual List<Image>? Images {get; set;}
         [JsonIgnore]

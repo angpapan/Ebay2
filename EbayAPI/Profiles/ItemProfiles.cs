@@ -57,5 +57,12 @@ public class ItemProfile : Profile
             .ForMember(dest => dest.AddedCategories,
                 opt => 
                     opt.MapFrom(src => src.ItemCategories.Select(ic => ic.Category).ToList()));
+        
+        CreateMap<Item, ItemBoxDto>()
+            .ForMember(dest => dest.Image,
+                opt => opt.MapFrom(src =>
+                    (src.Images != null && src.Images.Count > 0)
+                        ? Convert.ToBase64String(src.Images[0].ImageBytes)
+                        : null));
     }
 }

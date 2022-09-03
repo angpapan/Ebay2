@@ -243,9 +243,16 @@ public class RecommendationService
             // get the user-item score by calculating the dot product
             double value = double.Parse(userLatents!.dot(itemsLatents[i].Latents.transpose()).ToString());
             int itemId = itemsLatents[i].ItemId;
-
+            
             // have already seen the item - do not recommend
             if (biddedItems.Contains(itemId) || visitedItems.Contains(itemId))
+            {
+                continue;
+            }
+            
+            // check if the auction is active ---- too expensive ??
+            Item itm = _dbContext.Items.Find(itemId)!;
+            if (itm.Ends < DateTime.Now || itm.Price >= itm.BuyPrice)
             {
                 continue;
             }

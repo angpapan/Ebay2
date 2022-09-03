@@ -17,12 +17,15 @@ public class ItemService
     private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly RecommendationService _recommendationService;
     
-    public ItemService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper)
+    public ItemService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper,
+        RecommendationService recommendationService)
     {
         _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
+        _recommendationService = recommendationService;
     }
 
 //::todo auto genarate  id
@@ -141,6 +144,7 @@ public class ItemService
 
     public async Task<PagedList<Item>> GetSearchItemsList(ItemListQueryParameters dto)
     {
+        // TODO filter only for the active items !!!
         IQueryable<Item> items = _dbContext.Items
             .Include(i => i.ItemCategories)
             .Include(i => i.Images);
@@ -458,6 +462,48 @@ public class ItemService
 
         _dbContext.Images.Remove(image);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<ItemBoxDto>> GetRecommendedItems(User user, int num)
+    {
+        List<int>? itemIds = _recommendationService.GetRecommendations(user.UserId, num);
+
+        if (itemIds == null)
+        {
+            return new List<ItemBoxDto>();
+        }
+        
+        List<Item> items = await _dbContext.Items
+            .Include(i => i.Images)
+            .Where(i => itemIds.Contains(i.ItemId))
+            .ToListAsync();
+
+        return _mapper.Map<List<ItemBoxDto>>(items);
+    }
+
+    public async Task<List<ItemBoxDto>> GetNewItems(int num)
+    {
+        List<Item> items = await _dbContext.Items
+            .Include(i => i.Images)
+            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice)
+            .OrderByDescending(i => i.ItemId)
+            .Take(num)
+            .ToListAsync();
+        
+        return _mapper.Map<List<ItemBoxDto>>(items);
+    }
+    
+    public async Task<List<ItemBoxDto>> GetHotItems(int num)
+    {
+        List<Item> items = await _dbContext.Items
+            .Include(i => i.Images)
+            .Include(i => i.Bids)
+            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice)
+            .OrderByDescending(i => i.Bids.Count)
+            .Take(num)
+            .ToListAsync();
+        
+        return _mapper.Map<List<ItemBoxDto>>(items);
     }
 
 }
