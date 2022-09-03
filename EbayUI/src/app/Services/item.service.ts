@@ -49,14 +49,14 @@ export class ItemService {
   }
 
   getRecommendedItems(num?: number | undefined): Observable<ItemBoxItem[]> {
-    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/recommended${num !== undefined ? `?num={num}` : ''}`);
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/recommended${num !== undefined ? `?num=${num}` : ''}`);
   }
 
   getHotItems(num?: number | undefined): Observable<ItemBoxItem[]> {
-    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/hot${num !== undefined ? `?num={num}` : ''}`);
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/hot${num !== undefined ? `?num=${num}` : ''}`);
   }
 
   getNewItems(num?: number | undefined): Observable<ItemBoxItem[]> {
-    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/new${num !== undefined ? `?num={num}` : ''}`);
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/new${num !== undefined ? `?num=${num}` : ''}`);
   }
 }

@@ -67,4 +67,10 @@
     <app-item-box *ngIf="isLoggedIn && recommendedItems.length > 0" title="Recommended for you" [items]="recommendedItems"></app-item-box>
     <app-item-box *ngIf="newItems.length > 0" title="New Items" [items]="newItems"></app-item-box>
   </div>
+
+  <div *ngIf="loading" class="row justify-content-center mt-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 </app-container>

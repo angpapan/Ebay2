@@ -218,7 +218,7 @@ namespace EbayAPI.Controllers
         /// <returns></returns>
         [HttpGet("recommended", Name = "GetRecommendedItems")]
         [Helpers.Authorize.Authorize]
-        public async Task<List<ItemBoxDto>> Recommend(int num = 6)
+        public async Task<List<ItemBoxDto>> Recommend(int num = 5)
         {
             User? user = (User?) HttpContext.Items["User"];
             return await _itemService.GetRecommendedItems(user!, num);
@@ -230,7 +230,7 @@ namespace EbayAPI.Controllers
         /// <param name="num">The number of items to recommend</param>
         /// <returns></returns>
         [HttpGet("new", Name = "GetNewItems")]
-        public async Task<List<ItemBoxDto>> NewItems(int num = 6)
+        public async Task<List<ItemBoxDto>> NewItems(int num = 5)
         {
             return await _itemService.GetNewItems(num);
         }
@@ -241,7 +241,7 @@ namespace EbayAPI.Controllers
         /// <param name="num"></param>
         /// <returns></returns>
         [HttpGet("hot", Name = "GetHotItems")]
-        public async Task<List<ItemBoxDto>> HotItems(int num = 6)
+        public async Task<List<ItemBoxDto>> HotItems(int num = 5)
         {
             return await _itemService.GetHotItems(num);
         }

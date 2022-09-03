@@ -15,6 +15,7 @@ export class NavMenuComponent implements OnInit {
   role: string | null = localStorage.getItem(storageItems.Role);
   newMessages: number = 0;
   username: string | null = localStorage.getItem(storageItems.Username);
+  selectedCategory: number = 0;
 
   constructor(private authSerive: AuthenticationService, private router: Router,
               private messageService: MessageService) {}
