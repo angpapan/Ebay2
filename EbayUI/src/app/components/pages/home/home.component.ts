@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {ItemBoxItem} from "../../../model/ItemBoxItem";
+import {storageItems} from "../../../model/storageItems";
+import {ItemService} from "../../../Services/item.service";
+import {forkJoin, Observable} from "rxjs";
+import { zipAll } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -7,19 +11,33 @@ import {ItemBoxItem} from "../../../model/ItemBoxItem";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  items: ItemBoxItem[];
+  loading: boolean = true;
+  recommendedItems: ItemBoxItem[];
+  hotItems: ItemBoxItem[];
+  newItems: ItemBoxItem[];
+  isLoggedIn: boolean;
 
-  constructor() { }
+  constructor(private itemService: ItemService) { }
 
   ngOnInit(): void {
-    this.items = [
-      new ItemBoxItem(1, "Item1", "Item1 description"),
-      new ItemBoxItem(2, "Item2", "Item2 description"),
-      new ItemBoxItem(3, "Item3", "Item3 description"),
-      new ItemBoxItem(4, "Item4", "Item4 description"),
-      new ItemBoxItem(5, "Item5", "Item5 description"),
-      new ItemBoxItem(6, "Item6", "Item6 description"),
-    ]
+    let token: string | null = localStorage.getItem(storageItems.Token);
+    this.isLoggedIn = token !== undefined && token !== null && token !== "";
+
+    this.loading = true;
+
+    let obsvArray = [this.itemService.getHotItems(), this.itemService.getNewItems()];
+    if(this.isLoggedIn){
+      obsvArray = [...obsvArray, this.itemService.getRecommendedItems()];
+    }
+    const observable = forkJoin(obsvArray);
+    observable.subscribe({
+      next: value => {
+        this.hotItems = value[0];
+        this.newItems = value[1];
+        this.recommendedItems = value[2];
+        this.loading = false;
+      }
+    });
   }
 
 }

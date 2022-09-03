@@ -20,6 +20,10 @@ Run project from Rider/VS or run:
 
 
 
+# Notes
+* Στο import-xml τα items εισάγονται με ends year το 2022 ώστε να είναι ενεργά.
+* 
+
 
 
 # Known Issues

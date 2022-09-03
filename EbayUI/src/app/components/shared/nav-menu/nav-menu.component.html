@@ -24,14 +24,11 @@
           <form class="d-flex" style="min-width: 40vw">
             <div class="input-group">
               <input type="text" class="form-control d-flex" aria-label="Text input with dropdown button" style="border: 1px solid grey">
-              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">All Categories</button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-              </ul>
+              <select class="form-select" style="max-width: 25%; background-color: aliceblue">
+                <option value="0">All Categories</option>
+                <option value="1">Action</option>
+                <option value="2">Another Action</option>
+              </select>
             </div>
           <button class="btn btn-primary ms-3" type="submit">Search</button>
           </form>

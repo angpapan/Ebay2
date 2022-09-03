@@ -13,7 +13,14 @@ export class ItemBoxComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-
+    this.items.forEach(it => {
+      if(it.image !== null){
+        const byteArray = new Uint8Array(atob(it.image!).split('').map(char => char.charCodeAt(0)));
+        let bl: Blob = new Blob([byteArray]);
+        it.image = window.URL.createObjectURL(bl);
+      }
+      return it;
+    })
   }
 
 }

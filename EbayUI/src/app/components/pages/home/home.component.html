@@ -62,9 +62,9 @@
 
 
 
-  <div class="mt-3">
-    <app-item-box title="Hot Right Now" [items]="items"></app-item-box>
-    <app-item-box title="Recommended for you" [items]="items"></app-item-box>
-    <app-item-box title="New Items" [items]="items"></app-item-box>
+  <div *ngIf="!loading" class="mt-3">
+    <app-item-box *ngIf="hotItems.length > 0" title="Hot Right Now" [items]="hotItems"></app-item-box>
+    <app-item-box *ngIf="isLoggedIn && recommendedItems.length > 0" title="Recommended for you" [items]="recommendedItems"></app-item-box>
+    <app-item-box *ngIf="newItems.length > 0" title="New Items" [items]="newItems"></app-item-box>
   </div>
 </app-container>

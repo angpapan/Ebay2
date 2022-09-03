@@ -216,8 +216,8 @@ namespace EbayAPI.Controllers
         /// </summary>
         /// <param name="num">The number of items to recommend</param>
         /// <returns></returns>
-        [HttpGet("recommend", Name = "GetRecommendedItems")]
-        [Helpers.Authorize.Authorize(Roles.User)]
+        [HttpGet("recommended", Name = "GetRecommendedItems")]
+        [Helpers.Authorize.Authorize]
         public async Task<List<ItemBoxDto>> Recommend(int num = 6)
         {
             User? user = (User?) HttpContext.Items["User"];
