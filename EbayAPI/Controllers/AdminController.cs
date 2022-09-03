@@ -120,9 +120,15 @@ namespace EbayAPI.Controllers
             await _adminService.ImportXmlData(start, end, true);
             return Ok("Data Imported successfully!");
         }
-
-        [HttpGet("factorize")]
-        public async Task<IActionResult> Factorize()
+        
+        /// <summary>
+        /// Calculate and store to database the latent matrices
+        /// of users and items based on user bids. If values have
+        /// been already calculated the old values will be deleted. 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("factorize-bids")]
+        public async Task<IActionResult> FactorizeBids()
         {
             List<UserItem> ui = await _dbContext.Bids
                 .Select(b => new UserItem
@@ -133,10 +139,21 @@ namespace EbayAPI.Controllers
                 .ToListAsync();
 
             _rec.InitNew(ui);
-            _rec.Factorize();
+            _rec.Factorize("bid");
 
-
-            List<UserItem> ui2 = await _dbContext.UserVisitedItems
+            return Ok();
+        }
+        
+        /// <summary>
+        /// Calculate and store to database the latent matrices
+        /// of users and items based on user views. If values have
+        /// been already calculated the old values will be deleted. 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("factorize-views")]
+        public async Task<IActionResult> FactorizeViews()
+        {
+            List<UserItem> ui = await _dbContext.UserVisitedItems
                 .Select(i => new UserItem
                 {
                     UserId = i.UserId,
@@ -144,12 +161,13 @@ namespace EbayAPI.Controllers
                 })
                 .ToListAsync();
             
-            _rec.InitNew(ui2);
-            _rec.Factorize();
-            
+            _rec.InitNew(ui);
+            _rec.Factorize("view");
+
             return Ok();
         }
         
+        // TODO only for testing - delete later
         [HttpGet("recomendations/{id}")]
         [AllowAnonymous]
         public async Task<List<Item>> Recommend(int id = 21, int num = 6)
