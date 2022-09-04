@@ -23,15 +23,15 @@
         <div class="justify-content-center ms-auto mr-auto">
           <form class="d-flex" style="min-width: 40vw">
             <div class="input-group">
-              <input type="text" class="form-control d-flex" aria-label="Text input with dropdown button" style="border: 1px solid grey">
+              <input type="text" class="form-control d-flex" name="search-field" [(ngModel)]="searchText"
+                     aria-label="Text input with dropdown button" style="border: 1px solid grey">
               <select class="form-select" name="category-select"
                       style="max-width: 25%; background-color: aliceblue" [(ngModel)]="selectedCategory">
                 <option value="0">All Categories</option>
-                <option value="1">Action</option>
-                <option value="2">Another Action</option>
+                <option *ngFor="let category of topCategories" [value]="category.categoryId">{{category.name}}</option>
               </select>
             </div>
-          <button class="btn btn-primary ms-3" type="submit">Search</button>
+          <button class="btn btn-primary ms-3" type="button" (click)="search()">Search</button>
           </form>
         </div>
 
