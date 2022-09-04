@@ -140,7 +140,7 @@ namespace EbayAPI.Controllers
         /// <returns></returns>
         [HttpGet("sells", Name = "SellerItemsList")]
         [Helpers.Authorize.Authorize(Roles.User)]
-        public async Task<List<SellerItemListResponse>> SearchItemList([FromQuery] SellerItemListQueryParameters dto)
+        public async Task<List<SellerItemListResponse>> SellerItemList([FromQuery] SellerItemListQueryParameters dto)
         {
             User? seller = (User?) HttpContext.Items["User"];
             PagedList<Item> pageItem = await _itemService.GetSellerItemList(dto, seller!);
