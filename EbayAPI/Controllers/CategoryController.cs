@@ -51,5 +51,18 @@ namespace EbayAPI.Controllers
         {
             return await _categoryService.GetCategoriesAsync();
         }
+        
+        
+        /// <summary>
+        /// Get a list of top categories based on number of items
+        /// </summary>
+        /// <param name="num">The number of top categories to return</param>
+        /// <returns></returns>
+        [HttpGet("top", Name = "GetTopCategories")]
+        [AllowAnonymous]
+        public async Task<List<CategoryDto>> GetTopCategories(int num = 10)
+        {
+            return await _categoryService.GetTopCategoriesAsync(num);
+        }
     }
 }

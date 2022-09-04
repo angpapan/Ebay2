@@ -15,7 +15,6 @@ namespace EbayAPI.Models
         [JsonIgnore, ForeignKey("GenericId")]
         public virtual Category? Generic { get; set; }
 
-        [JsonIgnore] 
-        public virtual List<ItemsCategories>? CategoryItems { get; set; }
+        [JsonIgnore] public virtual List<ItemsCategories> CategoryItems { get; set; } = new List<ItemsCategories>();
     }
 }
