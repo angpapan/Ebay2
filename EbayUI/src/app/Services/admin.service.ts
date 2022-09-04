@@ -27,4 +27,18 @@ export class AdminService {
     const url = this.adminUrl + `/users?${queryString}`;
     return this.http.get<UserListItem[]>(url, {observe: "response"});
   }
+
+  exportData(type: string, items: number[]): Observable<string>{
+    // TODO fix request with type and items array
+    let item_ids = '';
+    for(const item of items){
+      item_ids += `&item_ids=${item}`;
+    }
+
+    const requestOptions: Object = {
+      responseType: 'text'
+    }
+
+    return this.http.get<string>(this.adminUrl + `/extract?type=${type}${item_ids}`, requestOptions);
+  }
 }

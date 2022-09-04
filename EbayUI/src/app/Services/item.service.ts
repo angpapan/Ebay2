@@ -6,6 +6,7 @@ import {SellerItem} from "../model/Items/SellerItem";
 import {UserListRequest} from "../model/UserListRequest";
 import {UserListItem} from "../model/UserListItem";
 import {EditItemInfoResponse} from "../model/Items/EditItemInfoResponse";
+import {ItemBoxItem} from "../model/ItemBoxItem";
 
 @Injectable({
   providedIn: 'root'
@@ -45,5 +46,17 @@ export class ItemService {
     console.log(queryString);
     const url = this.itemUrl + `/sells?${queryString}`;
     return this.http.get<SellerItem[]>(url, {observe: "response"});
+  }
+
+  getRecommendedItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/recommended${num !== undefined ? `?num=${num}` : ''}`);
+  }
+
+  getHotItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/hot${num !== undefined ? `?num=${num}` : ''}`);
+  }
+
+  getNewItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/new${num !== undefined ? `?num=${num}` : ''}`);
   }
 }

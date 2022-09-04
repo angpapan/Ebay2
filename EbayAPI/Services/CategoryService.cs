@@ -28,5 +28,16 @@ public class CategoryService
 
         return _mapper.Map<List<CategoryDto>>(categories);
     }
+    
+    public async Task<List<CategoryDto>> GetTopCategoriesAsync(int num)
+    {
+        List<Category> categories = await _dbContext.Categories
+            .Include(c => c.CategoryItems)
+            .OrderByDescending(c => c.CategoryItems.Count)
+            .Take(num)
+            .ToListAsync();
+
+        return _mapper.Map<List<CategoryDto>>(categories);
+    }
 
 }

@@ -15,4 +15,8 @@ export class CategoryService {
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.categoryUrl);
   }
+
+  getTopCategories(num?: number | undefined): Observable<Category[]> {
+    return this.http.get<Category[]>(this.categoryUrl + `/top${num !== undefined ? `?num=${num}` : ''}`);
+  }
 }
