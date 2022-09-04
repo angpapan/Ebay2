@@ -120,7 +120,7 @@ namespace EbayAPI.Controllers
         }   
         
         /// <summary>
-        /// Start a cerated auction
+        /// Start an already created auction
         /// </summary>
         /// <param name="id">The item id</param>
         [HttpPut("{id}/start")]
@@ -132,7 +132,12 @@ namespace EbayAPI.Controllers
             return Ok("Success!");
         }
         
-        
+        /// <summary>
+        /// Gets a paged list of all the items placed for selling by the
+        /// user making the request
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpGet("sells", Name = "SellerItemsList")]
         [Helpers.Authorize.Authorize(Roles.User)]
         public async Task<List<SellerItemListResponse>> SearchItemList([FromQuery] SellerItemListQueryParameters dto)

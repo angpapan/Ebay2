@@ -89,8 +89,6 @@ namespace EbayAPI.Controllers
         /// <summary>
         /// Registers a new user.
         /// </summary>
-        /// <remarks>
-
         [HttpPost("register", Name="Register")]
         [AllowAnonymous]
         public async Task<AuthenticateResponse> CreateUser(UserRegister reg)
