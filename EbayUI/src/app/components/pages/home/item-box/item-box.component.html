@@ -5,8 +5,8 @@
       <div *ngFor="let item of items" class="col">
         <div class="vstack gap-1 text-center justify-content-center align-items-center" [routerLink]="['/items', item.itemId]" style="cursor: pointer">
           <img class="item-image" [src]="item.image ?? '../../../../../assets/no-image-available.jpg'" alt="item-image"/>
-          <div><h6>{{item.name.substring(0, 30)}}{{item.name.length>30 ? '...' : ''}}</h6></div>
-          <div>{{item.price | currency:"EUR"}}</div>
+          <div><h6>{{item.name.substring(0, 50)}}{{item.name.length>50 ? '...' : ''}}</h6></div>
+          <div>Currently at: {{item.price | currency:"EUR"}}</div>
           <div class="text-muted">Until {{item.ends | date:"medium" }}</div>
         </div>
       </div>
