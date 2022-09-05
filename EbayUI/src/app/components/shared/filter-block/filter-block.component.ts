@@ -10,27 +10,30 @@ import {ActivatedRoute, Router} from "@angular/router";
   styleUrls: ['./filter-block.component.css']
 })
 export class FilterBlockComponent implements OnInit {
-  @Input() selectedCategories : number[] | undefined;
   @Input() pageInfo : ItemListRequest;
   Categories : Category[];
-  minPrice : number;
-  maxPrice : number;
   result : categoryCheck[];
+  filterdPage : ItemListRequest;
 
   constructor(private _categoryService : CategoryService, private router : Router) { }
 
   ngOnInit(): void {
+
+    this.filterdPage = new ItemListRequest();
+    this.filterdPage.maxPrice = this.pageInfo.maxPrice;
+    this.filterdPage.minPrice = this.pageInfo.minPrice;
     this._categoryService.getCategories().subscribe({next:response=>{
       this.Categories = response;
-      this.result = this.Categories.map((v)=> new categoryCheck(v,this.selectedCategories) );
-      //console.log(this.result);
+      this.result = this.Categories.map((v)=> new categoryCheck(v,this.pageInfo.categories) );
       }})
   }
 
   search(){
 
-    this.pageInfo.categories = this.result.filter(v=>v.isChecked).map(v=>v.category.categoryId);
-    this.router.navigate( [`search`], {queryParams:new helper(this.pageInfo)}  ).then();
+    this.filterdPage.orderBy = this.pageInfo.orderBy;
+    this.filterdPage.locations = this.pageInfo.locations;
+    this.filterdPage.categories = this.result.filter(v=>v.isChecked).map(v=>v.category.categoryId);
+    this.router.navigate( [`search`], {queryParams:this.filterdPage.reduceParameters()}  ).then();
 
   }
 
@@ -41,29 +44,14 @@ class categoryCheck{
   public category : Category;
   public isChecked : boolean | undefined = false;
 
-  constructor(cat : Category, cur? : number[]) {
+  constructor(cat : Category, cur? : number[] ) {
     this.category = cat;
-    this.isChecked = cur && cur.some(i=>i == this.category.categoryId);
+    if(Array.isArray(cur))
+      this.isChecked = cur && cur.some(i=>i == this.category.categoryId);
+    else
+      this.isChecked = this.category.categoryId == cur;
   }
 
 }
 
-class helper{
-  "orderBy"?: string | undefined;
-  "minPrice"? : number | undefined;
-  "maxPrice"? : number | undefined;
-  "categories"? : number[] | undefined;
-  "locations"? : string[] | undefined;
-
-  constructor(original : ItemListRequest) {
-    if(original.orderBy) this.orderBy = original.orderBy;
-    if(original.minPrice) this.minPrice = original.minPrice;
-    if(original.maxPrice) this.maxPrice = original.maxPrice;
-    if(original.categories) this.categories = original.categories;
-    if(original.locations) this.locations = original.locations;
-  }
-  queryfy(){
-    return $.param(this).replaceAll(`%5D`,'').replaceAll(`%5B`,'');
-  }
-}
 

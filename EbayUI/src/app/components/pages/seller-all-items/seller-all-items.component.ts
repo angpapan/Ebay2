@@ -14,13 +14,13 @@ import {ActivatedRoute} from "@angular/router";
 export class SellerAllItemsComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   items: SellerItem[] = [];
+  username: string;
 
   constructor(private itemService: ItemService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     const that = this;
-    let username: string;
-    this.route.params.subscribe(p=>{username=p["username"]});
+    this.route.params.subscribe(p=>{this.username=p["username"]});
 
     this.dtOptions = {
       pagingType: 'full_numbers',
@@ -42,7 +42,7 @@ export class SellerAllItemsComponent implements OnInit {
         if(searchValue !== undefined && searchValue !== null && searchValue !== "")
           req.search = searchValue;
 
-        that.itemService.getItemsBySeller(req,username).subscribe({
+        that.itemService.getItemsBySeller(req,this.username).subscribe({
           next: resp => {
             console.log(resp.headers.get('X-pagination'));
             console.log(resp);

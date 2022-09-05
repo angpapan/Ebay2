@@ -15,6 +15,10 @@ export class ItemListRequest extends PaginationRequest{
     if(params['location'])this.locations = params['location'];
   }
 
+  reduceParameters(): helper{
+    return new helper(this);
+  }
+
   querify() : string{
 
     return $.param(this).replaceAll(`%5D`,'').replaceAll(`%5B`,'');
@@ -22,5 +26,21 @@ export class ItemListRequest extends PaginationRequest{
   }
 
 
+}
+
+class helper{
+  "orderBy"?: string | undefined;
+  "minPrice"? : number | undefined;
+  "maxPrice"? : number | undefined;
+  "categories"? : number[] | undefined;
+  "locations"? : string[] | undefined;
+
+  constructor(original : ItemListRequest) {
+    if(original.orderBy) this.orderBy = original.orderBy;
+    if(original.minPrice) this.minPrice = original.minPrice;
+    if(original.maxPrice) this.maxPrice = original.maxPrice;
+    if(original.categories) this.categories = original.categories;
+    if(original.locations) this.locations = original.locations;
+  }
 
 }

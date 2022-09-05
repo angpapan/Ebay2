@@ -112,13 +112,13 @@ public class ItemService
     {
         IQueryable<Item> items = _dbContext.Items
             .Include(i => i.ItemCategories)
-            .Include(i => i.Images)
+            .Include(i => i.Images)/*
             .Where(item =>
                 item.Ends > DateTime.Now &&
                 item.Started != null &&
                 (item.BuyPrice == null || item.Price < item.BuyPrice)
                 )
-            
+            */
             ;
 
         if(dto.MinPrice != null)

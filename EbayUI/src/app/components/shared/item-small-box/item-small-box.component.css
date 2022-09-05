@@ -1,12 +1,12 @@
 .item-image {
-  display: inline-block;
   border-radius: 1%;
-  height: 25vh;
+  height: 225px;
 }
 #container{
   position: relative;
   cursor: pointer;
   display: inline-grid;
+  width: 250px;
 }
 
 .card-title{
