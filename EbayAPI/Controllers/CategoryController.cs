@@ -53,32 +53,6 @@ namespace EbayAPI.Controllers
             return await _categoryService.GetCategoriesAsync();
         }
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         /// <summary>
         /// Return a list of all available Locations
         /// </summary>
