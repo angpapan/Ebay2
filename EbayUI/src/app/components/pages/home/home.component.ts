@@ -5,6 +5,7 @@ import {ItemService} from "../../../Services/item.service";
 import {forkJoin, Observable} from "rxjs";
 import { zipAll } from 'rxjs/operators';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -20,6 +21,7 @@ export class HomeComponent implements OnInit {
   constructor(private itemService: ItemService) { }
 
   ngOnInit(): void {
+
     let token: string | null = localStorage.getItem(storageItems.Token);
     this.isLoggedIn = token !== undefined && token !== null && token !== "";
 
@@ -40,4 +42,15 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  getPage(){
+    this.itemService.getTester(this.page).subscribe(
+      {next:response=>{
+        console.log(response.headers.get('X-pagination'));
+        console.log(response.body);
+          //this.newItems = this.newItems.concat(response.body);
+        }
+
+      }
+    )
+  }
 }

@@ -55,6 +55,25 @@ public class EbayAPIDbContext : DbContext
                 VATNumber ="123456789"
             }
         );
+
+
+    modelBuilder.Entity<Item>().HasData(
+            new Item {
+                ItemId = 133,
+                Name = "Hat",
+                BuyPrice = 15,
+                FirstBid = 12,
+                Location = "Athens",
+                Country = "Greece",
+                Description = "A very nice red hat",
+                Ends = new DateTime(2022-03-02),
+                Latitude = new decimal(1.3),
+                Longitude = new decimal(1.6),
+                SellerId = 1
+            }
+    );
+   
+
     }
     
 }

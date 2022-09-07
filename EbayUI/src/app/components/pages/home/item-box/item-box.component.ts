@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ItemBoxItem} from "../../../../model/ItemBoxItem";
+import {ItemSimple} from "../../../../model/Items/ItemSimple";
 import {DomSanitizer} from "@angular/platform-browser";
+
 
 @Component({
   selector: 'app-item-box',
@@ -9,6 +11,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class ItemBoxComponent implements OnInit {
   @Input() items: ItemBoxItem[];
+  @Input() newItems: ItemSimple[];
   @Input() title: string;
 
   constructor(private sanitizer: DomSanitizer) { }

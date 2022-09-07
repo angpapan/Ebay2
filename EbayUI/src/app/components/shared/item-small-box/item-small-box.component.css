@@ -1,0 +1,20 @@
+.item-image {
+  border-radius: 1%;
+  height: 225px;
+}
+#container{
+  position: relative;
+  cursor: pointer;
+  display: inline-grid;
+  width: 250px;
+}
+
+.card-title{
+  max-height: 5vh;
+  overflow: hidden;
+}
+
+.card-title:hover{
+  text-decoration: underline;
+}
+

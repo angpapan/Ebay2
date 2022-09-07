@@ -73,4 +73,26 @@
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
+
+
+
+  <div class="card bg-light border-light mb-3">
+    <div class="card-header"><h5>Tester</h5></div>
+    <div class="card-body">
+      <div class="row">
+
+        <div *ngFor ="let itemNew of newItems" class="col-auto">
+          <app-item-small-box [item]="itemNew" style="display:inline" uuid="test"></app-item-small-box>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <input [(ngModel)]="page">
+  <button (click)="getPage()"></button>
+  <app-item-grid-block [items]="newItems" ></app-item-grid-block>
+
+
+
 </app-container>

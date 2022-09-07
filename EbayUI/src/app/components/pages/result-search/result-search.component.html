@@ -1,0 +1,49 @@
+<app-container>
+  <app-category-nav></app-category-nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-2" style="background-color: #cccccc; padding-left: 0; padding-right: 0">
+        <app-filter-block [pageInfo]="info"></app-filter-block>
+      </div>
+      <div class="col">
+        <div class="row" style="margin: 15px 0 20px 0">
+          <div class="col">
+            <div class="dropdown">
+              <label for="dropdownMenu">Sort by :</label>
+              <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+              {{sortList.active}}
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu" >
+                <li *ngFor="let s of sortList.inActive">
+                  <button class="dropdown-item" type="button" (click)="sort(s.name + ' ' + s.order)">{{s.name}}{{s.uni}}</button>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-auto" style="font-style: italic">
+            {{totalResults}} Results
+          </div>
+
+        </div>
+
+
+
+        <div class="row">
+          <div class="col">
+            <app-item-grid-block [items]="itemList" ></app-item-grid-block>
+          </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 5vh; margin-bottom: 15vh;">
+          <div class="col-auto">
+            <button *ngIf="hasMore" type="button" class="btn btn-secondary" (click)="loadMore()">Load More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</app-container>
