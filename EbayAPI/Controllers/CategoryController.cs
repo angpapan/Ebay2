@@ -17,6 +17,7 @@ using EbayAPI.Dtos.MessageDtos;
 using EbayAPI.Helpers;
 using EbayAPI.Helpers.Authorize;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace EbayAPI.Controllers
 {
@@ -50,6 +51,20 @@ namespace EbayAPI.Controllers
         public async Task<List<CategoryDto>> GetCategories()
         {
             return await _categoryService.GetCategoriesAsync();
+        }
+        
+        /// <summary>
+        /// Return a list of all available Locations
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/locations", Name = "GetLocations")]
+        [AllowAnonymous]
+        public async Task<List<string>> GetLocations()
+        {
+            return await _dbContext.Items
+                .Select(i => i.Country)
+                .Distinct()
+                .ToListAsync();
         }
     }
 }

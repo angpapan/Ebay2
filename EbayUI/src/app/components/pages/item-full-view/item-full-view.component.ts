@@ -18,6 +18,7 @@ export class ItemFullViewComponent implements OnInit {
   images: GalleryItem[] = [];
   noImg = '../../../assets/no-image-available.jpg';
   bid: number;
+  informations:any;
 
   constructor(private itemService: ItemService, private route: ActivatedRoute, private router: Router, private gallery: Gallery) {
   }
@@ -64,6 +65,10 @@ export class ItemFullViewComponent implements OnInit {
         }
       });
     });
+
+  }
+
+  createInfo():void{
 
   }
 

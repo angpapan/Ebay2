@@ -12,7 +12,7 @@ export class ItemListRequest extends PaginationRequest{
     if(params['minPrice']) this.minPrice = params['minPrice'];
     if(params['maxPrice']) this.maxPrice = params['maxPrice'];
     if(params['categories'])this.categories = params['categories'];
-    if(params['location'])this.locations = params['location'];
+    if(params['locations'])this.locations = params['locations'];
   }
 
   reduceParameters(): helper{
@@ -41,6 +41,7 @@ class helper{
     if(original.maxPrice) this.maxPrice = original.maxPrice;
     if(original.categories) this.categories = original.categories;
     if(original.locations) this.locations = original.locations;
+    console.log(this);
   }
 
 }

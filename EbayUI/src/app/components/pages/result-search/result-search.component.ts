@@ -13,6 +13,7 @@ import {FilterBlockComponent} from "../../shared/filter-block/filter-block.compo
 export class ResultSearchComponent implements OnInit {
 
   @ViewChild(FilterBlockComponent) filters : any ;
+  totalResults : number;
   itemList: any ;
   hasMore: boolean;
   info : ItemListRequest;
@@ -24,7 +25,7 @@ export class ResultSearchComponent implements OnInit {
 
     this.route.queryParams.subscribe(params=>{
       let req = new ItemListRequest();
-      req.pageSize = 3;
+      req.pageSize = 30;
       req.pageNumber = 1;
       req.serialize(params);
       this.info = req;
@@ -34,6 +35,7 @@ export class ResultSearchComponent implements OnInit {
       this._itemService.getSearcItemList(req).subscribe({next:response=>{
           let pagination: PaginationResponseHeader = JSON.parse(response.headers.get('X-pagination')!);
           //console.log(pagination);
+          this.totalResults = pagination.TotalCount;
           this.hasMore = pagination.HasNext;
           this.itemList = response.body!;
         }

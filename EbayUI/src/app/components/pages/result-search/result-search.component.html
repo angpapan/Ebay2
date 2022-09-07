@@ -2,7 +2,7 @@
   <app-category-nav></app-category-nav>
   <div class="container">
     <div class="row">
-      <div class="col-2">
+      <div class="col-2" style="background-color: #cccccc; padding-left: 0; padding-right: 0">
         <app-filter-block [pageInfo]="info"></app-filter-block>
       </div>
       <div class="col">
@@ -21,6 +21,11 @@
               </ul>
             </div>
           </div>
+
+          <div class="col-auto" style="font-style: italic">
+            {{totalResults}} Results
+          </div>
+
         </div>
 
 
