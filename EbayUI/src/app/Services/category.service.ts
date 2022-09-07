@@ -20,4 +20,9 @@ export class CategoryService {
   getLocations(): Observable<string[]>{
     return this.http.get<string[]>(this.locationUrl);
   }
+
+  getTopCategories(num?: number | undefined): Observable<Category[]> {
+    return this.http.get<Category[]>(this.categoryUrl + `/top${num !== undefined ? `?num=${num}` : ''}`);
+
+  }
 }

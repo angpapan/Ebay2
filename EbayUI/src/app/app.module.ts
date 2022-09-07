@@ -47,6 +47,7 @@ import { NewItemComponent } from './components/pages/new-item/new-item.component
 import { EditItemComponent } from './components/pages/edit-item/edit-item.component';
 import { SellerItemListComponent } from './components/pages/seller-item-list/seller-item-list.component';
 import { SellerItemRowComponent } from './components/pages/seller-item-list/seller-item-row/seller-item-row.component';
+
 import { ItemViewComponent } from "./components/pages/item-view/item-view.component";
 import { ItemSmallBoxComponent } from "./components/shared/item-small-box/item-small-box.component";
 import {SellerAllItemsComponent} from "./components/pages/seller-all-items/seller-all-items.component";
@@ -58,6 +59,10 @@ import {MapComponent} from "./components/shared/map/map.component";
 import {ItemGridBlockComponent} from "./components/shared/item-grid-block/item-grid-block.component";
 import {ResultSearchComponent} from "./components/pages/result-search/result-search.component";
 import {FilterBlockComponent} from "./components/shared/filter-block/filter-block.component";
+
+import { ExportDataComponent } from './components/shared/export-data/export-data.component';
+import {MessageService} from "./Services/message.service";
+
 
 @NgModule({
   declarations: [
@@ -89,6 +94,7 @@ import {FilterBlockComponent} from "./components/shared/filter-block/filter-bloc
     EditItemComponent,
     SellerItemListComponent,
     SellerItemRowComponent,
+
     ItemViewComponent,
     ItemSmallBoxComponent,
     SellerAllItemsComponent,
@@ -98,6 +104,9 @@ import {FilterBlockComponent} from "./components/shared/filter-block/filter-bloc
     ItemGridBlockComponent,
     ResultSearchComponent,
     FilterBlockComponent
+
+    ExportDataComponent
+
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -134,6 +143,7 @@ import {FilterBlockComponent} from "./components/shared/filter-block/filter-bloc
   ],
   providers: [
     UserService,
+    MessageService,
     CurrencyPipe,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }

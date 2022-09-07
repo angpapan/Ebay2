@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace EbayAPI.Models
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class Category
     {
         public int CategoryId { get; set; }
@@ -12,7 +15,6 @@ namespace EbayAPI.Models
         [JsonIgnore, ForeignKey("GenericId")]
         public virtual Category? Generic { get; set; }
 
-        [JsonIgnore] 
-        public virtual List<ItemsCategories>? CategoryItems { get; set; }
+        [JsonIgnore] public virtual List<ItemsCategories> CategoryItems { get; set; } = new List<ItemsCategories>();
     }
 }

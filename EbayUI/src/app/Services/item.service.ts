@@ -6,10 +6,14 @@ import {SellerItem} from "../model/Items/SellerItem";
 import {UserListRequest} from "../model/UserListRequest";
 import {UserListItem} from "../model/UserListItem";
 import {EditItemInfoResponse} from "../model/Items/EditItemInfoResponse";
+
 import {ItemDetails} from "../model/Items/ItemDetailed";
 import {ItemSimple} from "../model/Items/ItemSimple";
 import {ItemDetailsFull} from "../model/Items/ItemDetailedFull";
 import {ItemListRequest} from "../model/Items/ItemListRequest";
+
+import {ItemBoxItem} from "../model/ItemBoxItem";
+
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +56,7 @@ export class ItemService {
     return this.http.get<SellerItem[]>(url, {observe: "response"});
   }
 
+
   getItemsBySeller(req: SellerListRequest, username: string):Observable<HttpResponse<SellerItem[]>>{
     let queryString = Object.keys(req).map(key => key + '=' + req[key as keyof UserListRequest]).join('&');
     console.log("query service" + queryString);
@@ -81,6 +86,19 @@ export class ItemService {
     let queryString = $.param(req).replaceAll(`%5D`,'').replaceAll(`%5B`,'');
 
     return this.http.get<ItemSimple[]>(`${this.itemUrl}/search?${queryString}`,{observe:"response"});
+  }
+
+
+  getRecommendedItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/recommended${num !== undefined ? `?num=${num}` : ''}`);
+  }
+
+  getHotItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/hot${num !== undefined ? `?num=${num}` : ''}`);
+  }
+
+  getNewItems(num?: number | undefined): Observable<ItemBoxItem[]> {
+    return this.http.get<ItemBoxItem[]>(`${this.itemUrl}/new${num !== undefined ? `?num=${num}` : ''}`);
   }
 
 }

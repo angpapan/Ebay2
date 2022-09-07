@@ -159,7 +159,12 @@ namespace EbayAPI.Controllers
             
             return await _messageService.GetUserStatsAsync(user);
         }
-
+        
+        /// <summary>
+        /// Gets the number of unread inbox messages for the
+        /// user making the request
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("check-new", Name = "CheckForNewMessages")]
         public async Task<int> CheckNew()
         {

@@ -1,12 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace EbayAPI.Models
 {
+    [
+        Index(nameof(Name)),
+        Index(nameof(Price)),
+        Index(nameof(Country)),
+    ]
     public class Item
     {
         public int ItemId { get; set; }
 
-        [StringLength(1000), Required]
+        [StringLength(600), Required]
         public string Name { get; set; }
         
         [Column(TypeName = "DECIMAL(19, 2)")]
@@ -24,7 +31,7 @@ namespace EbayAPI.Models
         [StringLength(200), Required]
         public string Country { get; set; }
 
-        [StringLength(5000), Required]
+        [MaxLength, Required]
         public string Description { get; set; }
 
         public DateTime? Started {get; set;} = null;
@@ -44,8 +51,8 @@ namespace EbayAPI.Models
         
         [JsonIgnore]
         public virtual List<ItemsCategories> ItemCategories {get; set;}
-        [JsonIgnore]
-        public virtual List<Bid>? Bids {get; set;}
+
+        [JsonIgnore] public virtual List<Bid> Bids { get; set; } = new List<Bid>();
         [JsonIgnore]
         public virtual List<Image>? Images {get; set;}
         [JsonIgnore]

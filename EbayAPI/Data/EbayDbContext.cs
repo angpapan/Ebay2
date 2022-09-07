@@ -16,6 +16,11 @@ public class EbayAPIDbContext : DbContext
     public DbSet<Bid> Bids { get; set; }
     public DbSet<UserVisitedItems> UserVisitedItems { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<UserBidLatent> UserBidLatents { get; set; }
+    public DbSet<UserViewLatent> UserViewLatents { get; set; }
+    public DbSet<ItemBidLatent> ItemBidLatents { get; set; }
+    public DbSet<ItemViewLatent> ItemViewLatents { get; set; }
+    
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,16 +54,8 @@ public class EbayAPIDbContext : DbContext
                 RoleId = 1, 
                 VATNumber ="123456789"
             }
-    );
-
-        modelBuilder.Entity<Category>().HasData(
-            new Category { CategoryId = 1, Name = "Holidays" },
-            new Category { CategoryId = 2, Name = "Clothes" },
-            new Category { CategoryId = 3, Name = "Electronic"},
-            new Category { CategoryId = 4, Name = "Vehicle"},
-            new Category { CategoryId = 5, Name = "House"}
-            // TODO ::: get categories from dataset
         );
+
 
     modelBuilder.Entity<Item>().HasData(
             new Item {
@@ -75,7 +72,8 @@ public class EbayAPIDbContext : DbContext
                 SellerId = 1
             }
     );
-    
+   
+
     }
     
 }

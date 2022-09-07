@@ -1,0 +1,37 @@
+<span [style]="{display: role !== 'admin' && 'none'}">
+  <button id="export-button-popover" tabindex="0" class="btn btn-primary" role="button"
+     data-bs-toggle="popover" (click)="export()">Export Data</button>
+
+  <div hidden>
+    <div data-name="export-popover-content" id="export-popover-content" style="min-width: 25vw">
+      <div class="row mb-3">
+        <div class="col-lg-12 ms-0 ps-0">
+          <span class="text-start">
+            <input type="radio" class="btn-check" name="data-radio" id="xml" autocomplete="off"
+                   value="xml" #xmlRadio (click)="selectType(xmlRadio.value)" checked>
+            <label class="btn btn-outline-primary me-1" for="xml">
+              XML
+            </label>
+
+            <input type="radio" class="btn-check" name="data-radio" id="json" autocomplete="off"
+                   value="json" #jsonRadio (click)="selectType(jsonRadio.value)">
+            <label class="btn btn-outline-primary" for="json">JSON</label>
+          </span>
+          <span *ngIf="!loading" class="text-end float-end">
+            <label *ngIf="showCopy" class="text-success me-3">Copied to clipboard!</label>
+            <button class="btn btn-outline-secondary" title="Copy to clipboard" (click)="copyData()">
+              <i class="bi bi-clipboard-plus"></i>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="row text-center justify-content-center">
+        <div *ngIf="loading" class="spinner-border text-center" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <textarea *ngIf="!loading" id="data-area" rows="20">{{data}}</textarea>
+      </div>
+    </div>
+  </div>
+</span>

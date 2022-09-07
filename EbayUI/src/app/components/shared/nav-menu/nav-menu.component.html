@@ -23,17 +23,15 @@
         <div class="justify-content-center ms-auto mr-auto">
           <form class="d-flex" style="min-width: 40vw">
             <div class="input-group">
-              <input type="text" class="form-control d-flex" aria-label="Text input with dropdown button" style="border: 1px solid grey">
-              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">All Categories</button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-              </ul>
+              <input type="text" class="form-control d-flex" name="search-field" [(ngModel)]="searchText"
+                     aria-label="Text input with dropdown button" style="border: 1px solid grey">
+              <select class="form-select" name="category-select"
+                      style="max-width: 25%; background-color: aliceblue" [(ngModel)]="selectedCategory">
+                <option value="0">All Categories</option>
+                <option *ngFor="let category of topCategories" [value]="category.categoryId">{{category.name}}</option>
+              </select>
             </div>
-          <button class="btn btn-primary ms-3" type="submit">Search</button>
+          <button class="btn btn-primary ms-3" type="button" (click)="search()">Search</button>
           </form>
         </div>
 
@@ -50,7 +48,9 @@
         <span *ngIf="loggedIn">
           <div class="dropdown">
 
-            <i class="bi bi-person-circle primary fs-2 mb-3 ms-3" role="button" data-bs-toggle="dropdown" style="color: darkslateblue"></i>
+            <i class="bi bi-person-circle primary fs-2 mb-3 ms-3" role="button"
+               data-bs-toggle="dropdown" style="color: darkslateblue"
+            ></i>
             <span *ngIf="newMessages > 0" class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger">
               {{newMessages > 99 ? '99+' : newMessages}}
             </span>
@@ -59,8 +59,9 @@
               <span class="dropdown-item" style="cursor: default"><b>Hello, {{username}}</b></span>
               <hr class="dropdown-divider">
 
+              <a class="dropdown-item" [routerLink]="['/users/',username]" >My Profile</a>
+
               <span *ngIf="role === 'user'">
-                <a class="dropdown-item" [routerLink]="['/users/',username]" >My Profile</a>
                 <button class="dropdown-item" [routerLink]="['/messages']" >
                   Messages
                   <span *ngIf="newMessages > 0" class="ms-2 badge rounded-pill bg-danger">
