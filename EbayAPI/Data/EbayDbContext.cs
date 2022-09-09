@@ -21,7 +21,10 @@ public class EbayAPIDbContext : DbContext
     public DbSet<ItemBidLatent> ItemBidLatents { get; set; }
     public DbSet<ItemViewLatent> ItemViewLatents { get; set; }
     
-
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

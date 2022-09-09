@@ -57,5 +57,11 @@ namespace EbayAPI.Models
         public virtual List<Image>? Images {get; set;}
         [JsonIgnore]
         public virtual List<UserVisitedItems>? VisitedByUsers {get; set;}
+
+        /// <summary>
+        /// This field only added to keep the item id from the xml import
+        /// to avoid dropping and recreating the items.
+        /// </summary>
+        [JsonIgnore] public int? XmlId { get; set; } = null;
     }
 }

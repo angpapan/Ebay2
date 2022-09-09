@@ -17,6 +17,7 @@ import {SendMessageRequest} from "../../../model/messages/SendMessageRequest";
 import {ReplyOfState} from "../../../model/messages/ReplyOfState";
 import Swal from "sweetalert2";
 import {SwalService} from "../../../Services/swal.service";
+import {SendToState} from "../../../model/messages/SendToState";
 
 @Component({
   selector: 'app-message-send',
@@ -26,6 +27,8 @@ import {SwalService} from "../../../Services/swal.service";
 export class MessageSendComponent implements OnInit {
   sendForm: FormGroup;
   inReplyOf: ReplyOfState | undefined;
+  sendTo: SendToState | undefined;
+
 
   constructor(private userService : UserService, private router: Router,
               private messageService: MessageService, private location:Location, private swalService: SwalService) { }
@@ -48,6 +51,7 @@ export class MessageSendComponent implements OnInit {
     let state = this.location.getState() as any;
 
     this.inReplyOf = state['inReplyOf'];
+    this.sendTo = state['sendTo'];
 
     this.sendForm = new UntypedFormGroup({
       'receiverUsername': new UntypedFormControl(null, {
@@ -76,6 +80,11 @@ export class MessageSendComponent implements OnInit {
       this.receiverUsername?.setValue(this.inReplyOf.usernameTo);
       this.receiverUsername?.disable();
       this.subject?.setValue(`Re: ${this.inReplyOf.messageSubject}`);
+    }
+    else if(this.sendTo !== undefined){
+      this.receiverUsername?.setValue(this.sendTo.usernameTo);
+      this.receiverUsername?.disable();
+      this.subject?.setValue(this.sendTo.messageSubject);
     }
   }
 

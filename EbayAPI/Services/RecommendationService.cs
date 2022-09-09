@@ -20,6 +20,7 @@ public class RecommendationService
     private double Sensitivity;
     private Dictionary<int, List<int>> BaseDict;
     private int Steps;
+    private int SampleSize;
 
     public RecommendationService(EbayAPIDbContext dbContext)
     {
@@ -47,6 +48,7 @@ public class RecommendationService
         // Convert List to Dictionary from userIds to viewed/bid items.
         // Justified because of the number of searches during factorization
         BaseDict = new Dictionary<int, List<int>>();
+        this.SampleSize = 0;
         foreach (UserItem ui in data)
         {
             if (!BaseDict.ContainsKey(ui.UserId))
@@ -55,6 +57,7 @@ public class RecommendationService
             }
 
             BaseDict[ui.UserId].Add(ui.ItemId);
+            this.SampleSize++;
         }
         
         // get a list of users
@@ -82,27 +85,30 @@ public class RecommendationService
     public void Factorize(string type = "bid")
     {
         this.ItemArray = this.ItemArray.transpose();
-
+        double previousError = 10e9;    
+        
         for (int step = 0; step < this.Steps; step++)
         {
             for (int i = 0; i < this.Users.Count; i++)
             {
                 for (int j = 0; j < this.Items.Count; j++)
                 {
-                    int UserId = this.Users[i];
-                    int ItemId = this.Items[j];
-                    if (this.BaseDict[UserId].Contains(ItemId))
+                    int userId = this.Users[i];
+                    int itemId = this.Items[j];
+
+                    int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    if (occurrences > 0)
                     {
                         // get the dot product of i-th user row with j-th item column
                         NDArray userTemp = this.UserArray[$"{i},:"];
                         NDArray itemTemp = this.ItemArray[$":,{j}"];
                         NDArray dotted = userTemp.dot(itemTemp);
                         string str = dotted.ToString();
-                        double CompValue = double.Parse(str);
+                        double compValue = double.Parse(str);
                         
-                        // if the user-item combination is found the value is 1 
-                        // true - false. The user either bidded/viewed the item or not. 
-                        double eij = 1 - CompValue;
+                        // The number of the times the user bidded/viewed the item 
+                        // is a meter of how much he likes it
+                        double eij = occurrences - compValue;
                         
                         // change the matrices values 
                         for (int f = 0; f < this.Features; f++)
@@ -110,31 +116,40 @@ public class RecommendationService
                             this.UserArray[i][f] += this.LearningRate * 2 * eij * this.ItemArray[f][j];
                             this.ItemArray[f][j] += this.LearningRate * 2 * eij * this.UserArray[i][f];
                         }
-
                     }
                 }
             }
             
             // calculate global squared error
-            double Error = 0;
+            double error = 0;
             for (int i = 0; i < this.Users.Count; i++)
             {
                 for (int j = 0; j < this.Items.Count; j++)
                 {
-                    int UserId = this.Users[i];
-                    int ItemId = this.Items[j];
-                    if (this.BaseDict[UserId].Contains(ItemId))
+                    int userId = this.Users[i];
+                    int itemId = this.Items[j];
+                    int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    if (occurrences > 0)
                     {
-                        Error += Math.Pow(
-                            1 - (double)this.UserArray[$"{i}, :"].dot(this.ItemArray[$":, {j}"]),
+                        error += Math.Pow(
+                            occurrences - (double)this.UserArray[$"{i}, :"].dot(this.ItemArray[$":, {j}"]),
                             2);
                     }
                 }
             }
             
-            // Stop if the error is lower than the sensitivity
-            if (Error < this.Sensitivity)
+            // get MSRE
+            error = Math.Sqrt(error / this.SampleSize);
+
+            // Stop if MSRE did not change
+            // Sensitivity is used to avoid possible loss of precision
+            // in floating point numbers
+            double difference = Math.Abs(error - previousError); 
+            Console.WriteLine($"Step: {step}, MSRE: {error}, Difference: {difference}");
+            if (difference < Sensitivity)
                 break;
+            
+            previousError = error;
         }
         
         // transpose again to save to db
@@ -328,5 +343,16 @@ public class RecommendationService
 
         return lst;
     }
-    
+
+    private int CountOccurrences<T>(List<T> lista, T value)
+    {
+        int count = 0;
+        foreach (T t in lista)
+        {
+            if (t.Equals(value))
+                count++;
+        }
+
+        return count;
+    }
 }

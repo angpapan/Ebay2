@@ -130,7 +130,11 @@ public class AdminService
 
             foreach (ItemSerialization item in items.Item)
             {
+                Item? exists = _dbContext.Items.SingleOrDefault(i => i.XmlId == item.ItemId);
+                if (exists != null) continue;
+                
                 Item it = new Item();
+                it.XmlId = item.ItemId; 
                 it.Name = item.Name;
                 it.Price = decimal.Parse(item.Currently, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
                 it.BuyPrice = item.BuyPrice != null ? decimal.Parse(item.BuyPrice, NumberStyles.AllowCurrencySymbol | NumberStyles.Number) : null;
@@ -197,18 +201,21 @@ public class AdminService
                         ItemsCategories ic = new ItemsCategories();
                         ic.ItemId = it.ItemId;
                         ic.CategoryId = newCat.CategoryId;
-                        ics.Add(ic);
+                        
+                        if(!ics.Select(i=>i.CategoryId).ToList().Contains(newCat.CategoryId))
+                            ics.Add(ic);
                     }
                     else
                     {
                         ItemsCategories ic = new ItemsCategories();
                         ic.ItemId = it.ItemId;
                         ic.CategoryId = cat.CategoryId;
-                        ics.Add(ic);
+                        if(!ics.Select(i=>i.CategoryId).ToList().Contains(cat.CategoryId))
+                            ics.Add(ic);
                     }
                 }
-                await _dbContext.ItemsCategories.AddRangeAsync(ics);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.ItemsCategories.AddRange(ics);
+                _dbContext.SaveChanges();
                 
                 // bids
                 List<Bid> bs = new List<Bid>();
@@ -250,8 +257,8 @@ public class AdminService
                     b.UserId = bidder!.UserId;
                     bs.Add(b);
                 }
-                await _dbContext.Bids.AddRangeAsync(bs);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.Bids.AddRange(bs);
+                _dbContext.SaveChanges();
             }
         }
     }

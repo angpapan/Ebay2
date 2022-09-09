@@ -98,14 +98,11 @@ namespace EbayAPI.Controllers
             }
 
             return await _adminService.ExtractItemInfo(item_ids, type);
-
-
         }
         
         /// <summary>
         /// Import the data from the data-xmls. It will auto generate users, bids etc.
-        /// The data can be only imported one time.
-        /// TO import again, manually truncate the existing data and re-execute.
+        /// Import skips already imported items, in case of re-import
         /// </summary>
         /// <param name="start">The xml file to to start importing</param>
         /// <param name="end">The xml file to stop importing</param>
@@ -128,6 +125,7 @@ namespace EbayAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("factorize-bids")]
+        [AllowAnonymous]
         public async Task<IActionResult> FactorizeBids()
         {
             List<UserItem> ui = await _dbContext.Bids

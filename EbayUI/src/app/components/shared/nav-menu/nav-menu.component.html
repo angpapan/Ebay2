@@ -70,8 +70,13 @@
                 </button>
 
                 <hr class="dropdown-divider">
+
                 <a class="dropdown-item" [routerLink]="['/items/seller-list']" >My Sales</a>
                 <a class="dropdown-item" [routerLink]="['/items/new']" >Create Auction</a>
+
+                <hr class="dropdown-divider">
+
+                <a class="dropdown-item" [routerLink]="['/items/bidder-list']" >My Bids</a>
               </span>
 
               <span *ngIf="role === 'admin'">

@@ -1,0 +1,43 @@
+<!-- TODO add routerLink to view page-->
+
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}">
+  <img [id]="'item-thumbnail-' + item.itemId" alt="item thumbnail" [src]="this.item.image" class="h-75 w-75"/>
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" class="align-top"  >
+  <div class="row mt-2 ps-0">
+    <div class="row">
+      <b>{{item.name}}</b>
+    </div>
+    <div class="row mt-2">
+      <span style="font-size: 0.9em">{{item.description.substring(0, 200)}}{{item.description.length>200 ? '...' : ''}}</span>
+    </div>
+  </div>
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.maxBid | currency:"EUR"}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.userMaxBid | currency:"EUR"}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.buyPrice | currency:"EUR"}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  {{item.ends | date:'mediumDate'}}
+</td>
+
+<td [ngStyle]="{display: visible ? '' : 'none'}">
+  <div class="hstack gap-3">
+    <button *ngIf="item.userMaxBid === item.buyPrice || (item.maxBid === item.userMaxBid && endDate.getTime() <= currentDate.getTime())"
+            type="button" class="btn btn-success"
+            [routerLink]="['/messages/send']" [state]="{ sendTo }"
+    >Message Seller</button>
+    <button *ngIf="item.maxBid > item.userMaxBid" type="button" class="btn btn-primary">Bid Again</button>
+  </div>
+</td>
+
