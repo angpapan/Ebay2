@@ -106,7 +106,9 @@ import { BidderItemRowComponent } from './components/pages/bidder-item-list/bidd
     MapComponent,
     ItemGridBlockComponent,
     ResultSearchComponent,
-    FilterBlockComponent
+    FilterBlockComponent,
+    BidderItemListComponent,
+    BidderItemRowComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
