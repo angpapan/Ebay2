@@ -7,7 +7,7 @@ namespace EbayAPI.Dtos.SerializationDtos;
 [XmlRoot("Item")]
 public class ItemSerialization
 {
-    [XmlAttribute]
+    [XmlAttribute("ItemID")]
     public int ItemId { get; set; }
     public string Name { get; set; }
     public string Currently { get; set; }

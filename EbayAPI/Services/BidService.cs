@@ -1,7 +1,13 @@
 using AutoMapper;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
+using EbayAPI.Dtos.BidDtos;
+using EbayAPI.Helpers;
 using EbayAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EbayAPI.Services;
 
@@ -79,6 +85,51 @@ public class BidService
     public async Task<List<Bid>> GetBids(User user)
     {
         return _dbContext.Bids.Where(i => i.UserId == user.UserId).ToList();
+    }
+
+    public async Task<PagedList<UserBidInfoDto>> GetUserBidInfo(BidderItemListQueryParameters dto, User user)
+    {
+        List<UserBidInfoDto> lista = new List<UserBidInfoDto>();
+
+        List<int> items = await this.ItemsUserHaveBidded(user);
+
+        IQueryable<UserBidInfoDto> itemq = _dbContext.Items
+            .Include(i => i.Bids)
+            .Include(i => i.Seller)
+            .Include(i => i.Images)
+            .Where(i=>items.Contains(i.ItemId))
+            .Select(i => new UserBidInfoDto
+            {
+                MaxBid = i.Bids.Max(b => b.Amount),
+                UserMaxBid = i.Bids.Where(b => b.UserId == user.UserId).Max(b => b.Amount),
+                ItemId = i.ItemId,
+                Name = i.Name,
+                Description = i.Description,
+                BuyPrice = i.BuyPrice,
+                Ends = i.Ends,
+                SellerUsername = i.Seller.Username,
+                Image = i.Images != null && i.Images.Count > 0 ? Convert.ToBase64String(i.Images[0].ImageBytes) : null
+            });
+            
+        if(dto.Search != null)
+        {
+            itemq = itemq.Where(i => i.Description.Contains(dto.Search) || i.Name.Contains(dto.Search));
+        }
+        
+        PagedList<UserBidInfoDto> itemPage =
+            PagedList<UserBidInfoDto>.ToPagedList(itemq, dto.PageNumber, dto.PageSize);
+
+        return itemPage;
+    }
+
+
+    private async Task<List<int>> ItemsUserHaveBidded(User user)
+    {
+        return await _dbContext.Bids
+            .Where(b => b.UserId == user.UserId)
+            .Select(b => b.ItemId)
+            .Distinct()
+            .ToListAsync();
     }
     
     

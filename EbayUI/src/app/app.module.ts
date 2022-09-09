@@ -62,7 +62,8 @@ import {FilterBlockComponent} from "./components/shared/filter-block/filter-bloc
 
 import { ExportDataComponent } from './components/shared/export-data/export-data.component';
 import {MessageService} from "./Services/message.service";
-
+import { BidderItemListComponent } from './components/pages/bidder-item-list/bidder-item-list.component';
+import { BidderItemRowComponent } from './components/pages/bidder-item-list/bidder-item-row/bidder-item-row.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,9 @@ import {MessageService} from "./Services/message.service";
     EditItemComponent,
     SellerItemListComponent,
     SellerItemRowComponent,
-
+    ExportDataComponent,
+    BidderItemListComponent,
+    BidderItemRowComponent,
     ItemViewComponent,
     ItemSmallBoxComponent,
     SellerAllItemsComponent,
@@ -103,10 +106,9 @@ import {MessageService} from "./Services/message.service";
     MapComponent,
     ItemGridBlockComponent,
     ResultSearchComponent,
-    FilterBlockComponent
-
-    ExportDataComponent
-
+    FilterBlockComponent,
+    BidderItemListComponent,
+    BidderItemRowComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -129,6 +131,7 @@ import {MessageService} from "./Services/message.service";
       {path: 'messages/:id', component: MessageViewComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/new', component: NewItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/seller-list', component: SellerItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
+      { path: 'items/bidder-list', component: BidderItemListComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/:id', component: ItemViewComponent},
       { path: 'items/user/:username', component: SellerAllItemsComponent},
