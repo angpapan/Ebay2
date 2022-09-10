@@ -84,7 +84,7 @@ export class ItemService {
 
   getSearcItemList(req : ItemListRequest) : Observable<HttpResponse<ItemSimple[]>>{
     let queryString = $.param(req).replaceAll(`%5D`,'').replaceAll(`%5B`,'');
-
+    console.log(queryString);
     return this.http.get<ItemSimple[]>(`${this.itemUrl}/search?${queryString}`,{observe:"response"});
   }
 
