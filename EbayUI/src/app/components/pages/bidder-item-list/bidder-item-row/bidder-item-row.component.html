@@ -1,10 +1,8 @@
-<!-- TODO add routerLink to view page-->
-
-<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}">
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" [routerLink]="['/items', this.item.itemId]">
   <img [id]="'item-thumbnail-' + item.itemId" alt="item thumbnail" [src]="this.item.image" class="h-75 w-75"/>
 </td>
 
-<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" class="align-top"  >
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" class="align-top" [routerLink]="['/items', this.item.itemId]">
   <div class="row mt-2 ps-0">
     <div class="row">
       <b>{{item.name}}</b>
@@ -37,7 +35,7 @@
             type="button" class="btn btn-success"
             [routerLink]="['/messages/send']" [state]="{ sendTo }"
     >Message Seller</button>
-    <button *ngIf="item.maxBid > item.userMaxBid" type="button" class="btn btn-primary">Bid Again</button>
+    <button *ngIf="item.maxBid > item.userMaxBid && endDate.getTime() > currentDate.getTime()" type="button" class="btn btn-primary">Bid Again</button>
   </div>
 </td>
 
