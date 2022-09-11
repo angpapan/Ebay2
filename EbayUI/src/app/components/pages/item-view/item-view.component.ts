@@ -33,7 +33,7 @@ export class ItemViewComponent implements OnInit {
             this.item.images.forEach(img => {
               const byteArray = new Uint8Array(atob(img!).split('').map(char => char.charCodeAt(0)));
               //console.log(byteArray);
-              let bl: Blob = new Blob([byteArray], {type: 'application/pdf'});
+              let bl: Blob = new Blob([byteArray]);
               let source = window.URL.createObjectURL(bl);
 
               this.images.push(new ImageItem({src: source, thumb: source}));
