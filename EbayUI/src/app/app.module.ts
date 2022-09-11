@@ -139,6 +139,7 @@ import { ExportDataPageComponent } from './components/pages/export-data-page/exp
       { path: 'items/user/:username', component: SellerAllItemsComponent},
       { path: 'item/full/:id', component: ItemFullViewComponent },
       { path: 'search', component: ResultSearchComponent},
+      { path: 'export-data', component: ExportDataPageComponent},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
