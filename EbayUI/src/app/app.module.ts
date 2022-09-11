@@ -64,6 +64,7 @@ import { ExportDataComponent } from './components/shared/export-data/export-data
 import {MessageService} from "./Services/message.service";
 import { BidderItemListComponent } from './components/pages/bidder-item-list/bidder-item-list.component';
 import { BidderItemRowComponent } from './components/pages/bidder-item-list/bidder-item-row/bidder-item-row.component';
+import { ExportDataPageComponent } from './components/pages/export-data-page/export-data-page.component';
 
 @NgModule({
   declarations: [
@@ -108,7 +109,8 @@ import { BidderItemRowComponent } from './components/pages/bidder-item-list/bidd
     ResultSearchComponent,
     FilterBlockComponent,
     BidderItemListComponent,
-    BidderItemRowComponent
+    BidderItemRowComponent,
+    ExportDataPageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -137,6 +139,7 @@ import { BidderItemRowComponent } from './components/pages/bidder-item-list/bidd
       { path: 'items/user/:username', component: SellerAllItemsComponent},
       { path: 'item/full/:id', component: ItemFullViewComponent },
       { path: 'search', component: ResultSearchComponent},
+      { path: 'export-data', component: ExportDataPageComponent},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,

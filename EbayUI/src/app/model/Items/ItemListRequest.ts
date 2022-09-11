@@ -2,6 +2,7 @@ import { PaginationRequest } from "../PaginationRequest";
 
 export class ItemListRequest extends PaginationRequest{
   "orderBy"?: string | undefined;
+  "search"?: string | undefined;
   "minPrice"? : number | undefined;
   "maxPrice"? : number | undefined;
   "categories"? : number[] | undefined;
@@ -9,6 +10,7 @@ export class ItemListRequest extends PaginationRequest{
 
   serialize(params: any) : void{
     if(params['orderBy']) this.orderBy = params['orderBy'];
+    if(params['search']) this.search = params['search'];
     if(params['minPrice']) this.minPrice = params['minPrice'];
     if(params['maxPrice']) this.maxPrice = params['maxPrice'];
     if(params['categories'])this.categories = params['categories'];
@@ -30,6 +32,7 @@ export class ItemListRequest extends PaginationRequest{
 
 class helper{
   "orderBy"?: string | undefined;
+  "search"?: string | undefined;
   "minPrice"? : number | undefined;
   "maxPrice"? : number | undefined;
   "categories"? : number[] | undefined;
@@ -37,6 +40,7 @@ class helper{
 
   constructor(original : ItemListRequest) {
     if(original.orderBy) this.orderBy = original.orderBy;
+    if(original.search) this.search = original.search;
     if(original.minPrice) this.minPrice = original.minPrice;
     if(original.maxPrice) this.maxPrice = original.maxPrice;
     if(original.categories) this.categories = original.categories;

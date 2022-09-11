@@ -119,7 +119,7 @@ export class EditItemComponent implements OnInit {
         if(info.currentImages){
           this._existingImages = info.currentImages.map(i => {
             const byteArray = new Uint8Array(atob(i.data as string).split('').map(char => char.charCodeAt(0)));
-            let bl: Blob = new Blob([byteArray], {type: 'application/pdf'});
+            let bl: Blob = new Blob([byteArray]);
             const source = this.sanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(bl));
 
             let image: Base64WithIdImage = new Base64WithIdImage();

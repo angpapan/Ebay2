@@ -42,15 +42,15 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  getPage(){
-    this.itemService.getTester(this.page).subscribe(
-      {next:response=>{
-        console.log(response.headers.get('X-pagination'));
-        console.log(response.body);
-          //this.newItems = this.newItems.concat(response.body);
-        }
-
-      }
-    )
-  }
+  // getPage(){
+  //   this.itemService.getTester(this.page).subscribe(
+  //     {next:response=>{
+  //       console.log(response.headers.get('X-pagination'));
+  //       console.log(response.body);
+  //         //this.newItems = this.newItems.concat(response.body);
+  //       }
+  //
+  //     }
+  //   )
+  // }
 }

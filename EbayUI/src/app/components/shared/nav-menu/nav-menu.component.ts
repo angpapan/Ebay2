@@ -5,6 +5,7 @@ import {storageItems} from "../../../model/storageItems";
 import {MessageService} from "../../../Services/message.service";
 import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../Services/category.service";
+import {Obj} from "@popperjs/core";
 
 @Component({
   selector: 'app-nav-menu',
@@ -65,6 +66,15 @@ export class NavMenuComponent implements OnInit {
 
   search(): void {
     console.log(`Text: ${this.searchText}, Category: ${this.selectedCategory}`);
-    // TODO navigate to search results page giving above parameters as state
-  }
+    let query: object = {};
+    if(this.searchText !== ''){
+      query = {search: this.searchText};
+    }
+    if(this.selectedCategory !== 0){
+      query = {...query, categories: this.selectedCategory};
+    }
+
+
+    this.router.navigate(['/search'], {queryParams: query});
+    }
 }

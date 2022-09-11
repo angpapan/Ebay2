@@ -148,6 +148,11 @@ public class ItemService
                     .Any(c => dto.Categories.Contains(c)));
         }
 
+        if (dto.Search != null)
+        {
+            items = items.Where(i => i.Description.Contains(dto.Search) || i.Name.Contains(dto.Search));
+        }
+
         QuerySortHelper<Item> it = new QuerySortHelper<Item>();
         items = it.QuerySort(items, dto.OrderBy);
 

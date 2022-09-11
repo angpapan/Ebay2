@@ -14,8 +14,13 @@
   <!-- Gallery Name Bid & Buy -->
   <div class="container">
 
-    <div class="row justify-content-md-center ">
-      <div class="col-4" style="font-size: small;"> Categories : {{item.categories}}</div>
+    <div class="row mt-1">
+      <div class="col-4 offset-lg-4 text-center" style="font-size: small;">
+        Categories : {{item.categories}}
+      </div>
+      <div class="col-2 offset-lg-2 float-end text-end justify-content-end">
+        <app-export-data [itemIds]="[item.itemId]"></app-export-data>
+      </div>
     </div>
 
     <div class="row ">

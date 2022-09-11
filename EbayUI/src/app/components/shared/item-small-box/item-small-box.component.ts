@@ -20,7 +20,7 @@ export class ItemSmallBoxComponent implements AfterViewInit {
     let source: string;
     if (this.item.image !== undefined && this.item.image !== null) {
       const byteArray = new Uint8Array(atob(this.item.image!).split('').map(char => char.charCodeAt(0)));
-      let bl: Blob = new Blob([byteArray], {type: 'application/pdf'});
+      let bl: Blob = new Blob([byteArray]);
       source = window.URL.createObjectURL(bl);
     } else {
       source = '../../../assets/no-image-available.jpg';

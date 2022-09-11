@@ -1,0 +1,52 @@
+<app-container>
+  <div class="row mt-3">
+    <h3>Mass Export Item Data</h3>
+  </div>
+  <div class="row mt-3 justify-content-center">
+    <div class="col-10">
+      <div class="alert alert-info">Export item data to xml or json format.</div>
+    </div>
+  </div>
+
+  <div class="row mt-3 justify-content-center">
+    <div class="col-2">
+      <input type="radio" class="btn-check" name="method-radio" id="range" autocomplete="off" value="range" #rangeRadio (click)="selectMethod(rangeRadio.value)" checked>
+      <label class="btn btn-outline-primary" for="range">Select Range</label>
+    </div>
+    <div class="col-2">
+      <input type="radio" class="btn-check" name="method-radio" id="specific" autocomplete="off" value="specific" #specificRadio (click)="selectMethod(specificRadio.value)">
+      <label class="btn btn-outline-primary" for="specific">Select Specific</label>
+    </div>
+  </div>
+
+  <span *ngIf="this.method==='range'">
+    <div class="row mt-3">
+      <div class="col-6">
+        <div class="input-group mb-3">
+          <span class="input-group-text">From Id:</span>
+          <input type="number" class="form-control" name="from" [(ngModel)]="from" (change)="setRange()">
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="input-group mb-3">
+          <span class="input-group-text">To Id:</span>
+          <input type="number" class="form-control" name="to" [(ngModel)]="to" (change)="setRange()">
+        </div>
+      </div>
+    </div>
+  </span>
+
+  <span *ngIf="this.method==='specific'">
+    <div class="mb-3">
+      <label for="specficItems" class="form-label">Type comma separated item ids</label>
+      <textarea class="form-control" id="specficItems" rows="3" (change)="setSpecific()" [(ngModel)]="specificString"></textarea>
+    </div>
+  </span>
+
+  <div class="row mt-3 justify-content-center">
+    <div class="col-4 text-center">
+      <app-export-data [itemIds]="this.items" id="data-export"></app-export-data>
+    </div>
+  </div>
+
+</app-container>
