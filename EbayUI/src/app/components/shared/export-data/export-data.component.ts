@@ -23,8 +23,6 @@ export class ExportDataComponent implements OnInit {
     this.role = localStorage.getItem(storageItems.Role);
     console.log(this.role)
 
-    this.itemIds.push(132);
-
     const options: Partial<Popover.Options> = {
       html: true,
       title: "Export Items Data",
