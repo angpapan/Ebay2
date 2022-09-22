@@ -466,7 +466,7 @@ public class ItemService
     {
         List<Item> items = await _dbContext.Items
             .Include(i => i.Images)
-            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice)
+            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice && i.Started != null)
             .OrderByDescending(i => i.ItemId)
             .Take(num)
             .ToListAsync();
@@ -479,7 +479,7 @@ public class ItemService
         List<Item> items = await _dbContext.Items
             .Include(i => i.Images)
             .Include(i => i.Bids)
-            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice)
+            .Where(i => i.Ends > DateTime.Now && i.Price != i.BuyPrice && i.Started != null)
             .OrderByDescending(i => i.Bids.Count)
             .Take(num)
             .ToListAsync();
