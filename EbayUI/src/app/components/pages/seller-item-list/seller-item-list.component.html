@@ -21,8 +21,9 @@
       </tr>
       </thead>
       <tbody *ngIf="items?.length != 0">
-        <tr app-seller-item-row [item]="item" *ngFor="let item of items" style="min-height: 15vh; height: 15vh;"
+        <tr app-seller-item-row [item]="item" *ngFor="let item of items" style="min-height: 15vh; height: 15vh; cursor: pointer"
           class="text-start align-middle"
+          [routerLink]="['/item/full/', item.itemId]"
         >
         </tr>
       </tbody>

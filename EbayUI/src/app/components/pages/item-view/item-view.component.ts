@@ -29,7 +29,10 @@ export class ItemViewComponent implements OnInit {
         this.itemService.getItemDetails(params['id']).subscribe({ next: item => {
           this.item = item;
 
-          if (this.item.images !== undefined && this.item.images !== null) {
+          if (this.item.images != undefined && this.item.images?.length>0) {
+            console.log("item has image")
+            console.log(this.item.images);
+            console.log("end");
             this.item.images.forEach(img => {
               const byteArray = new Uint8Array(atob(img!).split('').map(char => char.charCodeAt(0)));
               //console.log(byteArray);

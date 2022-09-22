@@ -1,6 +1,6 @@
-<!-- TODO add routerLink to view page-->
 
-<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" [routerLink]="['/item/full/', item.itemId]">
+
+<td [ngStyle]="{display: visible ? '' : 'none', cursor: 'pointer'}" >
   <img [id]="'item-thumbnail-' + item.itemId" alt="item thumbnail" [src]="this.item.image" class="h-75 w-75"/>
 </td>
 
