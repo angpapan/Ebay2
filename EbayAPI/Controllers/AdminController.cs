@@ -141,7 +141,18 @@ namespace EbayAPI.Controllers
 
             return Ok();
         }
-        
+
+        [HttpGet("factorize-tester")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Factorization()
+        {
+            Console.WriteLine("Starting Init");
+            _rec.InitNew2();
+            Console.WriteLine("Finish Init and starting Factorize");
+            _rec.Factorize();
+            return Ok();
+        }
+
         /// <summary>
         /// Calculate and store to database the latent matrices
         /// of users and items based on user views. If values have

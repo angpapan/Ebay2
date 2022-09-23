@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Models;
@@ -18,7 +19,8 @@ public class RecommendationService
     private int Features;
     private double LearningRate;
     private double Sensitivity;
-    private Dictionary<int, List<int>> BaseDict;
+    //private Dictionary<int, List<int>> BaseDict;
+    private Dictionary<int, Dictionary<int,int>> BaseDict;
     private int Steps;
     private int SampleSize;
 
@@ -47,8 +49,9 @@ public class RecommendationService
         
         // Convert List to Dictionary from userIds to viewed/bid items.
         // Justified because of the number of searches during factorization
-        BaseDict = new Dictionary<int, List<int>>();
+        BaseDict = new Dictionary<int, Dictionary<int,int>>();
         this.SampleSize = 0;
+        /*
         foreach (UserItem ui in data)
         {
             if (!BaseDict.ContainsKey(ui.UserId))
@@ -59,13 +62,23 @@ public class RecommendationService
             BaseDict[ui.UserId].Add(ui.ItemId);
             this.SampleSize++;
         }
+        */
         
         // get a list of users
-        Users = data.Select(i => i.UserId).Distinct().ToList();
-        Users.Sort();
+        Users = _dbContext.Users.Select(user => user.UserId).ToList();
+        //Users = data.Select(i => i.UserId).Distinct().ToList();
+        //Users.Sort();
+        
         // get a list of items
-        Items = data.Select(i => i.ItemId).Distinct().ToList();
-        Items.Sort();
+        Items = _dbContext.Items.Select(item => item.ItemId).ToList();
+        //Items = data.Select(i => i.ItemId).Distinct().ToList();
+        //Items.Sort();
+        
+        // get rates
+        foreach (var user in Users)
+        {
+            BaseDict[user] = GetRates(user);
+        }
 
         Features = features;
         LearningRate = learningRate;
@@ -75,6 +88,138 @@ public class RecommendationService
         // initialize arrays for users and items with random values in (-1, 1)
         UserArray = np.random.stardard_normal(new int[] { Users.Count, this.Features }).astype(typeof(float));
         ItemArray = np.random.stardard_normal(new int[] { Items.Count, this.Features }).astype(typeof(float));
+    }
+    
+    public void InitNew2( double learningRate = 0.001, double sensitivity = 0.001,
+        int features = 25, int steps = 1000)
+    {
+        
+        // Convert List to Dictionary from userIds to viewed/bid items.
+        // Justified because of the number of searches during factorization
+        BaseDict = new Dictionary<int, Dictionary<int,int>>();
+        this.SampleSize = 0;
+        /*
+        foreach (UserItem ui in data)
+        {
+            if (!BaseDict.ContainsKey(ui.UserId))
+            {
+                BaseDict[ui.UserId] = new List<int>();
+            }
+
+            BaseDict[ui.UserId].Add(ui.ItemId);
+            this.SampleSize++;
+        }
+        */
+        
+        // get a list of users
+        Users = _dbContext.Users.Select(user => user.UserId).ToList();
+        //Users = data.Select(i => i.UserId).Distinct().ToList();
+        //Users.Sort();
+        
+        // get a list of items
+        Items = _dbContext.Items.Select(item => item.ItemId).ToList();
+        //Items = data.Select(i => i.ItemId).Distinct().ToList();
+        //Items.Sort();
+        // get rates
+        foreach (var user in Users)
+        {
+            BaseDict[user] = GetRates(user);
+        }
+        Features = features;
+        LearningRate = learningRate;
+        Steps = steps;
+        Sensitivity = sensitivity;
+        
+        // initialize arrays for users and items with random values in (-1, 1)
+        UserArray = np.random.stardard_normal(new int[] { Users.Count, this.Features }).astype(typeof(float));
+        ItemArray = np.random.stardard_normal(new int[] { Items.Count, this.Features }).astype(typeof(float));
+    }
+    
+    /// <summary>
+    /// Returns the rates of a user to every item.Rates are in range 1-3
+    /// 3 -> user has bid on item / high views => likes it for sure
+    /// 2 -> user has view item more than once / medium views => possibly likes it
+    /// 1 -> user has one view on item / low views => low chance likes it
+    /// 0 -> no rating
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns>A dictionary with rate for every item that user has view or bid</returns>
+
+    private Dictionary<int,int> GetRates(int userId)
+    {
+        List<int> bidsOfUser = _dbContext.Bids.Where(bid => bid.UserId == userId).Select(bid=>bid.ItemId).ToList();
+        List<int> viewsOfUser = _dbContext.UserVisitedItems.Where(u => u.UserId == userId).Select(u => u.ItemId).ToList();
+        Dictionary<int, int> Rates = new Dictionary<int, int>();
+        //Console.WriteLine("RatesOk");
+        IQueryable<int> viewsWithOutBid = viewsOfUser.AsQueryable().Where(i => !bidsOfUser.Contains(i));
+        
+        
+
+        if (bidsOfUser.Count > 0)
+        {
+            foreach (var item in bidsOfUser)
+            {
+                Rates[item] = 3;
+            }
+            foreach (var item in viewsWithOutBid)
+            {
+                int viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
+                Rates[item] = viewsOnItem > 1 ? 2 : viewsOnItem;
+            }
+        }
+        else if(viewsOfUser.Any())
+        {
+            var maxViews = viewsOfUser.GroupBy(i => i).Select(i=>i.Count()).Max();
+            foreach (var item in viewsOfUser)
+            {
+                var viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
+                Rates[item] = 3 * viewsOnItem / maxViews;
+            }
+        }
+        
+        /*
+        foreach (int item in Items)
+        {
+            //Console.WriteLine("RatesOk2");
+            if (bidsOfUser.Contains(item))
+            {
+                Rates[item] = 3;
+            }
+            else if (bidsOfUser.Count > 0)
+            {
+                int viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
+                Rates[item] = viewsOnItem > 1 ? 2 : viewsOnItem;
+            }
+            else
+            {
+                if(!viewsOfUser.Any())
+                    break;
+               // Console.WriteLine("RatesElse");
+                var viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
+                //Console.WriteLine("RatesElse2");
+                var maxViews = viewsOfUser.GroupBy(i => i).Select(i=>i.Count()).Max();
+                //Console.WriteLine("RatesElse3");
+                Rates[item] = 3 * viewsOnItem / maxViews;
+            }
+            
+            //Console.WriteLine("RatesEnd");
+            
+        }*/
+        
+        //Console.WriteLine("RatesOk3");
+//::todo make rates canonical 0-1 
+        return Rates;
+
+    }
+
+    private int getRate(int userId, int itemId)
+    {
+        if (BaseDict[userId].Count > 0 && BaseDict[userId].ContainsKey(itemId))
+        {
+            return BaseDict[userId][itemId];
+        }
+
+        return 0;
     }
 
     /// <summary>
@@ -96,7 +241,8 @@ public class RecommendationService
                     int userId = this.Users[i];
                     int itemId = this.Items[j];
 
-                    int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    //int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    var occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId];
                     if (occurrences > 0)
                     {
                         // get the dot product of i-th user row with j-th item column
@@ -122,15 +268,17 @@ public class RecommendationService
             
             // calculate global squared error
             double error = 0;
+            SampleSize = 0;
             for (int i = 0; i < this.Users.Count; i++)
             {
                 for (int j = 0; j < this.Items.Count; j++)
                 {
                     int userId = this.Users[i];
                     int itemId = this.Items[j];
-                    int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    int occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId]; 
                     if (occurrences > 0)
                     {
+                        SampleSize++;
                         error += Math.Pow(
                             occurrences - (double)this.UserArray[$"{i}, :"].dot(this.ItemArray[$":, {j}"]),
                             2);
@@ -139,7 +287,7 @@ public class RecommendationService
             }
             
             // get MSRE
-            error = Math.Sqrt(error / this.SampleSize);
+            error = Math.Sqrt(error / SampleSize);
 
             // Stop if MSRE did not change
             // Sensitivity is used to avoid possible loss of precision
@@ -156,62 +304,140 @@ public class RecommendationService
         this.ItemArray = this.ItemArray.transpose();
         
         // convert latent feature arrays to string to save to db
-        if (type == "bid")
+
+        List<UserBidLatent> ubl = new List<UserBidLatent>();
+        for (int i = 0; i < this.Users.Count; i++)
         {
-            List<UserBidLatent> ubl = new List<UserBidLatent>();
-            for (int i = 0; i < this.Users.Count; i++)
-            {
-                UserBidLatent u = new UserBidLatent();
-                u.UserId = this.Users[i];
-                u.LatentFeatures = String.Join(";", Array.ConvertAll((float[])UserArray[i], x => x.ToString()));
-                ubl.Add(u);
-            }
-
-            List<ItemBidLatent> ibl = new List<ItemBidLatent>();
-            for (int i = 0; i < this.Items.Count; i++)
-            {
-                ItemBidLatent it = new ItemBidLatent();
-                it.ItemId = this.Items[i];
-                it.LatentFeatures = String.Join(";", Array.ConvertAll((float[])ItemArray[i], x => x.ToString()));
-                ibl.Add(it);
-            }
-
-            _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserBidLatents");
-            _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE ItemBidLatents");
-            _dbContext.SaveChanges();
-
-            _dbContext.UserBidLatents.AddRange(ubl);
-            _dbContext.ItemBidLatents.AddRange(ibl);
-            _dbContext.SaveChanges();
+            UserBidLatent u = new UserBidLatent();
+            u.UserId = this.Users[i];
+            u.LatentFeatures = String.Join(";", Array.ConvertAll((float[])UserArray[i], x => x.ToString()));
+            ubl.Add(u);
         }
-        else if (type == "view")
+
+        List<ItemBidLatent> ibl = new List<ItemBidLatent>();
+        for (int i = 0; i < this.Items.Count; i++) 
         {
-            List<UserViewLatent> ubl = new List<UserViewLatent>();
-            for (int i = 0; i < this.Users.Count; i++)
-            {
-                UserViewLatent u = new UserViewLatent();
-                u.UserId = this.Users[i];
-                u.LatentFeatures = String.Join(";", Array.ConvertAll((float[])UserArray[i], x => x.ToString()));
-                ubl.Add(u);
-            }
-
-            List<ItemViewLatent> ibl = new List<ItemViewLatent>();
-            for (int i = 0; i < this.Items.Count; i++)
-            {
-                ItemViewLatent it = new ItemViewLatent();
-                it.ItemId = this.Items[i];
-                it.LatentFeatures = String.Join(";", Array.ConvertAll((float[])ItemArray[i], x => x.ToString()));
-                ibl.Add(it);
-            }
-
-            _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserViewLatents");
-            _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE ItemViewLatents");
-            _dbContext.SaveChanges();
-
-            _dbContext.UserViewLatents.AddRange(ubl);
-            _dbContext.ItemViewLatents.AddRange(ibl);
-            _dbContext.SaveChanges();
+            ItemBidLatent it = new ItemBidLatent();
+            it.ItemId = this.Items[i];
+            it.LatentFeatures = String.Join(";", Array.ConvertAll((float[])ItemArray[i], x => x.ToString()));
+            ibl.Add(it);
         }
+
+        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserBidLatents");
+        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE ItemBidLatents");
+        _dbContext.SaveChanges();
+
+        _dbContext.UserBidLatents.AddRange(ubl);
+        _dbContext.ItemBidLatents.AddRange(ibl);
+        _dbContext.SaveChanges();
+        
+    }
+    
+    public void Factorize2(string type = "bid")
+    {
+        this.ItemArray = this.ItemArray.transpose();
+        double previousError = 10e9;
+        // calculate global squared error
+        double error = 0;
+        SampleSize = 0;
+        for (int step = 0; step < this.Steps; step++)
+        {
+            foreach (var userId in BaseDict.Keys)
+            {
+                foreach (var itemId in BaseDict[userId].Keys)
+                {
+                    
+                        //int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                        var occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId];
+                        if (occurrences > 0)
+                        {
+                            // get the dot product of i-th user row with j-th item column
+                            NDArray userTemp = this.UserArray[$"{userId},:"];
+                            NDArray itemTemp = this.ItemArray[$":,{itemId}"];
+                            NDArray dotted = userTemp.dot(itemTemp);
+                            string str = dotted.ToString();
+                            double compValue = double.Parse(str);
+                        
+                            // The number of the times the user bidded/viewed the item 
+                            // is a meter of how much he likes it
+                            double eij = occurrences - compValue;
+                        
+                            // change the matrices values 
+                            for (int f = 0; f < this.Features; f++)
+                            {
+                                this.UserArray[userId][f] += this.LearningRate * 2 * eij * this.ItemArray[f][itemId];
+                                this.ItemArray[f][itemId] += this.LearningRate * 2 * eij * this.UserArray[userId][f];
+                            }
+                        }
+                }
+            }
+        }
+        
+        
+            
+           
+        foreach (var userId in BaseDict.Keys)
+            {
+                foreach (var itemId in BaseDict[userId].Keys)
+                {
+                    int userId = this.Users[i];
+                    int itemId = this.Items[j];
+                    int occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId]; 
+                    if (occurrences > 0)
+                    {
+                        SampleSize++;
+                        error += Math.Pow(
+                            occurrences - (double)this.UserArray[$"{i}, :"].dot(this.ItemArray[$":, {j}"]),
+                            2);
+                    }
+                }
+            }
+            
+            // get MSRE
+            error = Math.Sqrt(error / SampleSize);
+
+            // Stop if MSRE did not change
+            // Sensitivity is used to avoid possible loss of precision
+            // in floating point numbers
+            double difference = Math.Abs(error - previousError); 
+            Console.WriteLine($"Step: {step}, MSRE: {error}, Difference: {difference}");
+            if (difference < Sensitivity)
+                break;
+            
+            previousError = error;
+        }
+        
+        // transpose again to save to db
+        this.ItemArray = this.ItemArray.transpose();
+        
+        // convert latent feature arrays to string to save to db
+
+        List<UserBidLatent> ubl = new List<UserBidLatent>();
+        for (int i = 0; i < this.Users.Count; i++)
+        {
+            UserBidLatent u = new UserBidLatent();
+            u.UserId = this.Users[i];
+            u.LatentFeatures = String.Join(";", Array.ConvertAll((float[])UserArray[i], x => x.ToString()));
+            ubl.Add(u);
+        }
+
+        List<ItemBidLatent> ibl = new List<ItemBidLatent>();
+        for (int i = 0; i < this.Items.Count; i++) 
+        {
+            ItemBidLatent it = new ItemBidLatent();
+            it.ItemId = this.Items[i];
+            it.LatentFeatures = String.Join(";", Array.ConvertAll((float[])ItemArray[i], x => x.ToString()));
+            ibl.Add(it);
+        }
+
+        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserBidLatents");
+        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE ItemBidLatents");
+        _dbContext.SaveChanges();
+
+        _dbContext.UserBidLatents.AddRange(ubl);
+        _dbContext.ItemBidLatents.AddRange(ibl);
+        _dbContext.SaveChanges();
+        
     }
 
     /// <summary>
