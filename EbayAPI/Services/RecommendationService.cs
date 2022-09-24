@@ -337,9 +337,7 @@ public class RecommendationService
     {
         this.ItemArray = this.ItemArray.transpose();
         double previousError = 10e9;
-        // calculate global squared error
-        double error = 0;
-        SampleSize = 0;
+        
         for (int step = 0; step < this.Steps; step++)
         {
             foreach (var userId in BaseDict.Keys)
@@ -347,47 +345,45 @@ public class RecommendationService
                 foreach (var itemId in BaseDict[userId].Keys)
                 {
                     
-                        //int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
-                        var occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId];
-                        if (occurrences > 0)
+                    //int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
+                    var occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId];
+                    if (occurrences > 0)
+                    {
+                        // get the dot product of i-th user row with j-th item column
+                        NDArray userTemp = this.UserArray[$"{userId-1},:"];
+                        NDArray itemTemp = this.ItemArray[$":,{itemId-1}"];
+                        NDArray dotted = userTemp.dot(itemTemp);
+                        string str = dotted.ToString();
+                        double compValue = double.Parse(str);
+                        
+                        // The number of the times the user bidded/viewed the item 
+                        // is a meter of how much he likes it
+                        double eij = occurrences - compValue;
+                        
+                        // change the matrices values 
+                        for (int f = 0; f < this.Features; f++)
                         {
-                            // get the dot product of i-th user row with j-th item column
-                            NDArray userTemp = this.UserArray[$"{userId},:"];
-                            NDArray itemTemp = this.ItemArray[$":,{itemId}"];
-                            NDArray dotted = userTemp.dot(itemTemp);
-                            string str = dotted.ToString();
-                            double compValue = double.Parse(str);
-                        
-                            // The number of the times the user bidded/viewed the item 
-                            // is a meter of how much he likes it
-                            double eij = occurrences - compValue;
-                        
-                            // change the matrices values 
-                            for (int f = 0; f < this.Features; f++)
-                            {
-                                this.UserArray[userId][f] += this.LearningRate * 2 * eij * this.ItemArray[f][itemId];
-                                this.ItemArray[f][itemId] += this.LearningRate * 2 * eij * this.UserArray[userId][f];
-                            }
+                            this.UserArray[userId-1][f] += this.LearningRate * 2 * eij * this.ItemArray[f][itemId-1];
+                            this.ItemArray[f][itemId-1] += this.LearningRate * 2 * eij * this.UserArray[userId-1][f];
                         }
+                    }
                 }
             }
-        }
-        
-        
             
-           
-        foreach (var userId in BaseDict.Keys)
+            // calculate global squared error
+            double error = 0;
+            SampleSize = 0;
+            
+            foreach (var userId in BaseDict.Keys)
             {
                 foreach (var itemId in BaseDict[userId].Keys)
                 {
-                    int userId = this.Users[i];
-                    int itemId = this.Items[j];
                     int occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId]; 
                     if (occurrences > 0)
                     {
                         SampleSize++;
                         error += Math.Pow(
-                            occurrences - (double)this.UserArray[$"{i}, :"].dot(this.ItemArray[$":, {j}"]),
+                            occurrences - (double)this.UserArray[$"{userId-1}, :"].dot(this.ItemArray[$":, {itemId-1}"]),
                             2);
                     }
                 }
@@ -406,6 +402,7 @@ public class RecommendationService
             
             previousError = error;
         }
+        
         
         // transpose again to save to db
         this.ItemArray = this.ItemArray.transpose();

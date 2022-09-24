@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System;
+using System.Diagnostics;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using EbayAPI.Dtos;
@@ -147,9 +148,13 @@ namespace EbayAPI.Controllers
         public async Task<IActionResult> Factorization()
         {
             Console.WriteLine("Starting Init");
+            var stopWatch = Stopwatch.StartNew();
             _rec.InitNew2();
             Console.WriteLine("Finish Init and starting Factorize");
             _rec.Factorize();
+            stopWatch.Stop();
+            Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
+            
             return Ok();
         }
 
