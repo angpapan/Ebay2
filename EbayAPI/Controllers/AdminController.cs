@@ -151,7 +151,7 @@ namespace EbayAPI.Controllers
             var stopWatch = Stopwatch.StartNew();
             _rec.InitNew2();
             Console.WriteLine("Finish Init and starting Factorize");
-            _rec.Factorize();
+            _rec.Factorize2();
             stopWatch.Stop();
             Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
             
