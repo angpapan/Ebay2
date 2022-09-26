@@ -90,6 +90,31 @@ public class RecommendationService
         ItemArray = np.random.stardard_normal(new int[] { Items.Count, this.Features }).astype(typeof(float));
     }
     
+    
+    public void AddNewItem(int itemId)
+    {
+        var newItemLatens = np.random.stardard_normal( Features ).astype(typeof(float));
+        
+        ItemBidLatent il = new ItemBidLatent();
+        il.ItemId = itemId;
+        il.LatentFeatures = String.Join(";", Array.ConvertAll((float[])newItemLatens, x => x.ToString()));
+        _dbContext.ItemBidLatents.AddRange(il);
+        _dbContext.SaveChanges();
+        
+    }
+    
+    public void AddNewUser(int userId)
+    {
+        var newUserLatens = np.random.stardard_normal( Features ).astype(typeof(float));
+        
+        UserBidLatent ul = new UserBidLatent();
+        ul.UserId = userId;
+        ul.LatentFeatures = String.Join(";", Array.ConvertAll((float[])newUserLatens, x => x.ToString()));
+        _dbContext.UserBidLatents.AddRange(ul);
+        _dbContext.SaveChanges();
+        
+    }
+    
     public void InitNew2( double learningRate = 0.001, double sensitivity = 0.001,
         int features = 25, int steps = 1000)
     {
@@ -532,4 +557,5 @@ public class RecommendationService
 
         return count;
     }
+
 }
