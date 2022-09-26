@@ -97,19 +97,8 @@ public class RecommendationService
         // Convert List to Dictionary from userIds to viewed/bid items.
         // Justified because of the number of searches during factorization
         BaseDict = new Dictionary<int, Dictionary<int,int>>();
-        this.SampleSize = 0;
-        /*
-        foreach (UserItem ui in data)
-        {
-            if (!BaseDict.ContainsKey(ui.UserId))
-            {
-                BaseDict[ui.UserId] = new List<int>();
-            }
-
-            BaseDict[ui.UserId].Add(ui.ItemId);
-            this.SampleSize++;
-        }
-        */
+        SampleSize = 0;
+       
         
         // get a list of users
         Users = _dbContext.Users.Select(user => user.UserId).ToList();
@@ -177,36 +166,6 @@ public class RecommendationService
             }
         }
         
-        /*
-        foreach (int item in Items)
-        {
-            //Console.WriteLine("RatesOk2");
-            if (bidsOfUser.Contains(item))
-            {
-                Rates[item] = 3;
-            }
-            else if (bidsOfUser.Count > 0)
-            {
-                int viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
-                Rates[item] = viewsOnItem > 1 ? 2 : viewsOnItem;
-            }
-            else
-            {
-                if(!viewsOfUser.Any())
-                    break;
-               // Console.WriteLine("RatesElse");
-                var viewsOnItem = viewsOfUser.Count(i => i.Equals(item));
-                //Console.WriteLine("RatesElse2");
-                var maxViews = viewsOfUser.GroupBy(i => i).Select(i=>i.Count()).Max();
-                //Console.WriteLine("RatesElse3");
-                Rates[item] = 3 * viewsOnItem / maxViews;
-            }
-            
-            //Console.WriteLine("RatesEnd");
-            
-        }*/
-        
-        //Console.WriteLine("RatesOk3");
 //::todo make rates canonical 0-1 
         return Rates;
 
@@ -222,12 +181,7 @@ public class RecommendationService
         return 0;
     }
 
-    /// <summary>
-    /// Factorizes the initial data and saves them to the database.
-    /// The InitNew method should be executed before Factorize.
-    /// </summary>
-    /// <param name="type">It can be "bid" or "view" depending on the given data</param>
-    public void Factorize(string type = "bid")
+       public void Factorize(string type = "bid")
     {
         this.ItemArray = this.ItemArray.transpose();
         double previousError = 10e9;    
@@ -333,7 +287,7 @@ public class RecommendationService
         
     }
     
-    public void Factorize2(string type = "bid")
+    public void Factorize2()
     {
         this.ItemArray = this.ItemArray.transpose();
         double previousError = 10e9;

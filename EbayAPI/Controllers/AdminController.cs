@@ -197,5 +197,21 @@ namespace EbayAPI.Controllers
                 .Where(i => items!.Contains(i.ItemId))
                 .ToList();
         }
+
+        [HttpGet("testingRecomed")]
+        [AllowAnonymous]
+        public async Task<Dictionary<int, List<int>>> recomendTester()
+        {
+            var result = new Dictionary<int, List<int>>();
+            var users = _dbContext.Users.Where(user=>user.UserId%13 == 0).Select(user => user.UserId).ToList();
+            foreach (var user in users)
+            {
+                result[user] = _rec.GetRecommendations(user, 10);
+                Console.WriteLine($"{user} done");
+            }
+
+            return result;
+        }
     }
+    
 }
