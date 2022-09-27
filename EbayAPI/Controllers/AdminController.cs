@@ -212,6 +212,14 @@ namespace EbayAPI.Controllers
 
             return result;
         }
+        
+        [HttpGet("updateRecomed")]
+        [AllowAnonymous]
+        public async Task<IActionResult> updateRec()
+        {
+            _rec.UpdateRecommendationTable();
+            return Ok();
+        }
     }
     
 }

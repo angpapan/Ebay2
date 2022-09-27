@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
@@ -416,6 +417,7 @@ public class RecommendationService
         
     }
 
+    
     /// <summary>
     /// Gets num recommendations for a user based on the db saved data.
     /// </summary>
@@ -424,55 +426,50 @@ public class RecommendationService
     /// <returns></returns>
     public List<int>? GetRecommendations(int userId, int num = 5)
     {
-        User? usr = _dbContext.Users
-            .Include(u => u.Bids)
-            .Include(u => u.VisitedItems)
-            .SingleOrDefault(u => u.UserId == userId);
+        var stopWatch = Stopwatch.StartNew();
+        User? usr = _dbContext.Users.SingleOrDefault(u => u.UserId == userId);
 
         if (usr == null) return null;
-        
-        // try to get latents for bid
-        NDArray? userLatents = LoadUserLatents(userId, "bid");
-        List<ItemLatents> itemsLatents;
-        if (userLatents == null)
-        {
-            // go to viewed latents otherwise
-            userLatents = LoadUserLatents(userId, "view");
-            if (userLatents == null) return null;
-            
-            itemsLatents = LoadItemsLatents("view");
-        }
-        else
-        {
-            itemsLatents = LoadItemsLatents("bid");
-        }
-        
+
+        var userLatensT = _dbContext.UserBidLatents.Find(userId);
+        NDArray? userLatents = (NDArray)Array.ConvertAll(userLatensT.LatentFeatures.Split(";"), Single.Parse);
+
         // get bidded and viewed items by user to avoid recommending them again
         List<int> biddedItems = usr.Bids != null ? usr.Bids.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
         List<int> visitedItems = usr.VisitedItems != null ? usr.VisitedItems.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
         
+        List<ItemBidLatent> items = _dbContext.ItemBidLatents
+            .Where(i=> !biddedItems.Contains(i.ItemId) && !visitedItems.Contains(i.ItemId))
+            .ToList();
+        
+        var itemsLatents = items
+            .Select(i => new ItemLatents{
+                ItemId = i.ItemId,
+                // convert back saved string to array
+                Latents = (NDArray)Array.ConvertAll(i.LatentFeatures.Split(";"), Single.Parse)
+                })
+            .ToList();
+        stopWatch.Stop();
+        Console.WriteLine($"Get from database in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
+        
+        stopWatch.Restart();
         // lists to keep the best match items
         List<double> maxValues = new List<double>();
         List<int> maxItems = new List<int>();
 
         for (int i = 0; i < itemsLatents.Count; i++)
-        {
-            // get the user-item score by calculating the dot product
-            double value = double.Parse(userLatents!.dot(itemsLatents[i].Latents.transpose()).ToString());
+        {            
             int itemId = itemsLatents[i].ItemId;
             
-            // have already seen the item - do not recommend
-            if (biddedItems.Contains(itemId) || visitedItems.Contains(itemId))
-            {
-                continue;
-            }
-            
-            // check if the auction is active ---- too expensive ??
+            // check if the auction is active
             Item itm = _dbContext.Items.Find(itemId)!;
-            if (itm.Ends < DateTime.Now || itm.Price >= itm.BuyPrice)
+            if (itm.Ends < DateTime.Now || itm.Price >= itm.BuyPrice || itm.Started == null)
             {
                 continue;
             }
+            // get the user-item score by calculating the dot product
+            double value = double.Parse(userLatents!.dot(itemsLatents[i].Latents.transpose()).ToString());
+
 
             // fill the list first
             if (maxValues.Count < num)
@@ -494,68 +491,64 @@ public class RecommendationService
                 maxItems.Add(itemId);
             }
         }
+        stopWatch.Stop();
+        Console.WriteLine($"Calculate ratings in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
 
         return maxItems;
     }
 
-    private NDArray? LoadUserLatents(int user_id, string type = "bid")
+    public void UpdateRecommendationTable()
     {
-        string latents;
-        if (type == "bid")
+        var stopWatch = Stopwatch.StartNew();
+        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserViewLatents");
+        _dbContext.SaveChanges();
+        var itemLatents = new Dictionary<int, NDArray>();
+
+        foreach (var ibl in _dbContext.ItemBidLatents.ToList())
         {
-            UserBidLatent? user = _dbContext.UserBidLatents.Find(user_id);
-            if (user == null) return null;
-            latents = user.LatentFeatures;
+            itemLatents[ibl.ItemId] = (NDArray)Array.ConvertAll(ibl.LatentFeatures.Split(";"), Single.Parse);
         }
-        else
+
+        foreach (var ubl in _dbContext.UserBidLatents.ToList())
         {
-            UserViewLatent? user = _dbContext.UserViewLatents.Find(user_id);
-            if (user == null) return null;
-            latents = user.LatentFeatures;
+            var user = ubl.UserId;
+            var userLatents = (NDArray)Array.ConvertAll(ubl.LatentFeatures.Split(";"), Single.Parse);
+
+            var temp = new List<itemRating>();
+            foreach (var item in itemLatents.Keys)
+            {
+                var itemR = new itemRating
+                {
+                    itemId = item,
+                    Rating = double.Parse(userLatents!.dot(itemLatents[item]).ToString())
+                };
+                temp.Add(itemR);
+            }
+            var l = temp.OrderBy(i => i.Rating).Select(i=>i.itemId).ToArray();
+            var entry = new UserViewLatent
+            {
+                UserId = user,
+                LatentFeatures = String.Join(";", Array.ConvertAll((int[])l, x => x.ToString()))
+            };
+            _dbContext.UserViewLatents.Add(entry);
+            _dbContext.SaveChanges();
+            if(user%50 == 0)
+                //break;
+                Console.WriteLine($"User {user} done");
         }
         
-        // convert back saved string to array
-        NDArray lats = (NDArray)Array.ConvertAll(latents.Split(";"), Single.Parse);
-        return lats;
+        stopWatch.Stop();
+        Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
+
+
     }
 
-    private List<ItemLatents> LoadItemsLatents(string type = "bid")
+    private class itemRating
     {
-        List<ItemLatents> lst = new List<ItemLatents>();
-        if (type == "bid")
-        {
-            List<ItemBidLatent> items = _dbContext.ItemBidLatents.ToList();
-            lst = items.Select(i => new ItemLatents
-            {
-                ItemId = i.ItemId,
-                // convert back saved string to array
-                Latents = (NDArray)Array.ConvertAll(i.LatentFeatures.Split(";"), Single.Parse)
-            }).ToList();
-        }
-        else
-        {
-            List<ItemViewLatent> items = _dbContext.ItemViewLatents.ToList();
-            lst = items.Select(i => new ItemLatents
-            {
-                ItemId = i.ItemId,
-                // convert back saved string to array
-                Latents = (NDArray)Array.ConvertAll(i.LatentFeatures.Split(";"), Single.Parse)
-            }).ToList();
-        }
+        public int itemId;
+        public double Rating;
 
-        return lst;
-    }
+    } 
 
-    private int CountOccurrences<T>(List<T> lista, T value)
-    {
-        int count = 0;
-        foreach (T t in lista)
-        {
-            if (t.Equals(value))
-                count++;
-        }
-
-        return count;
-    }
 
 }
