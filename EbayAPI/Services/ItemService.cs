@@ -31,10 +31,16 @@ public class ItemService
         _recommendationService = recommendationService;
     }
 
-
+    /// <summary>
+    /// Fetch all details of an item only to the owner of the product or the admin for full view of it
+    /// </summary>
+    /// <param name="id">id of the requested item</param>
+    /// <param name="userRequests">details of the user who made the request</param>
+    /// <returns>ItemDetailsFull object (dto) </returns>
+    /// <exception cref="KeyNotFoundException">if item doesn't exist or user isn't the seller/admin</exception>
     public async Task<ItemDetailsFull> GetDetailsFullAsync(int id, User? userRequests)
     {
-        Item item = _dbContext.Items
+        Item? item = _dbContext.Items
             .Include(item => item.Seller )
             .Include(item=>item.ItemCategories)
             .ThenInclude(categories => categories.Category)
@@ -42,37 +48,38 @@ public class ItemService
             .Include(item=>item.Bids)
             .ThenInclude(bid => bid.Bidder)
             .ThenInclude(user => user.Bids )
-            .Where(item =>  item.ItemId == id)
-            .SingleOrDefault();
+            .SingleOrDefault(item =>  item.ItemId == id);
         
         if( item == null )
             throw new KeyNotFoundException($"Item {id} not found!");
             
         if( userRequests == null || (userRequests.RoleId != Roles.Administrator && userRequests.UserId != item.SellerId) )
             throw new KeyNotFoundException($"unauthorized access to item {id} for role {userRequests.RoleId} and userid {userRequests.UserId}!");
-        var toR = _mapper.Map<ItemDetailsFull>(item);
-        //toR.Bids = toR.Bids.OrderByDescending(i => i.Amount).ToList();
-        return toR;
+        
+        return _mapper.Map<ItemDetailsFull>(item);
 
     }
 
-
-    public async Task<ItemDetails> GetDetailsAsync(int id)
+    /// <summary>
+    /// Fetch details of an items' auction for preview it and add entry for recommendation algorithm
+    /// </summary>
+    /// <param name="id">id of item</param>
+    /// <returns>ItemDetails object (dto) </returns>
+    /// <exception cref="KeyNotFoundException">if item doesn't exist or auction not running ( not started/ end/ item sold ) </exception>
+    public async Task<ItemDetails> GetDetailsAsync(int id, User? user)
     {
         Item? item = _dbContext.Items
             .Include(i => i.Images)
             .Include(s => s.Seller)
             .Include(c => c.ItemCategories)
             .ThenInclude(i => i.Category)
-            .Where(i => i.ItemId == id && (
-                                            i.Started != null && 
-                                            i.Ends > DateTime.Now && 
-                                            i.BuyPrice != null ? i.Price < i.BuyPrice : true)
-            )
-            .SingleOrDefault()
-            ;
-       
-        
+            .SingleOrDefault(i => i.ItemId == id
+                                    && i.Started != null  
+                                    && i.Ends > DateTime.Now 
+                                    && i.Price != i.BuyPrice 
+            );
+
+
         if( item == null )
             throw new KeyNotFoundException($"Item {id} not found!");
         
@@ -85,12 +92,29 @@ public class ItemService
         }
 
         toR.Images = l;
+        if (user == null || user.RoleId == 1 || user.UserId == toR.SellerId) 
+            return toR;
         
+        // if viewer isn't admin or seller or guest add entry to for recommendations
+        var entry = new UserVisitedItems
+        {
+            Dt = DateTime.Now,
+            ItemId = toR.ItemId,
+            UserId = user.UserId
+        };
+        _dbContext.UserVisitedItems.Add(entry);
+        await _dbContext.SaveChangesAsync();
+
         return toR;
         }
 
     
-
+    /// <summary>
+    /// Fetch all items of a user
+    /// </summary>
+    /// <param name="dto">Parameters for paging</param>
+    /// <param name="username">Username of the requested user</param>
+    /// <returns>Basic information about all items of a user</returns>
     public async Task<PagedList<Item>>? GetItemsByUsername(SellerItemListQueryParameters dto ,string username)
     {
         

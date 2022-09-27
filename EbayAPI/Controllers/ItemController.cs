@@ -33,6 +33,11 @@ namespace EbayAPI.Controllers
             _itemService = itemService;
         }
 
+        /// <summary>
+        /// Full information about an item only for seller and admin
+        /// </summary>
+        /// <param name="id">id of item</param>
+        /// <returns>full information of item</returns>
         [HttpGet("full/{id}", Name = "GetItemFullDetails")]
         [Helpers.Authorize.Authorize(Roles.User , Roles.Administrator )]
         public async Task<ItemDetailsFull> GetFullItemDetails(int id)
@@ -40,12 +45,16 @@ namespace EbayAPI.Controllers
             return await _itemService.GetDetailsFullAsync(id , (User?)HttpContext.Items["User"]);
         }
 
+        /// <summary>
+        /// Information of item which is for sale
+        /// </summary>
+        /// <param name="id">id of the item</param>
+        /// <returns>All necessary info about the auction</returns>
         [HttpGet ("{id}", Name = "GetSimpleItem")]
         [AllowAnonymous]
         public async Task<ItemDetails> GetItemDetails(int id)
         {
-            return await _itemService.GetDetailsAsync(id);
-            //return _mapper.Map<ItemDetails>(details);
+            return await _itemService.GetDetailsAsync(id,(User?)HttpContext.Items["User"]);
         }
 
         
