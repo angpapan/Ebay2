@@ -13,7 +13,7 @@ namespace EbayAPI.Models
         [ForeignKey("ItemId"), JsonIgnore]
         public virtual Item Item { get; set; }
         
-        [Required]
+        [Required, Column(Order = 3)]
         public DateTime Dt { get; set; }
     }
 }
