@@ -186,7 +186,7 @@ namespace EbayAPI.Controllers
         [AllowAnonymous]
         public async Task<List<Item>> Recommend(int id = 21, int num = 6)
         {
-            List<int>? items = _rec.GetRecommendations(id, num);
+            List<int>? items = _rec.GetRecommendations2(id, num);
 
             if (items == null)
             {
@@ -198,19 +198,15 @@ namespace EbayAPI.Controllers
                 .ToList();
         }
 
-        [HttpGet("testingRecomed")]
+        [HttpGet("testingRecomed/{id}")]
         [AllowAnonymous]
-        public async Task<Dictionary<int, List<int>>> recomendTester()
+        public List<ItemDetailsSimple> recomendTester(int id)
         {
-            var result = new Dictionary<int, List<int>>();
-            var users = _dbContext.Users.Where(user=>user.UserId%13 == 0).Select(user => user.UserId).ToList();
-            foreach (var user in users)
-            {
-                result[user] = _rec.GetRecommendations(user, 10);
-                Console.WriteLine($"{user} done");
-            }
-
-            return result;
+            var l = _rec.GetRecommendations2(id);
+            if (l == null)
+                return null;
+            var toR = _dbContext.Items.Where(item => l.Contains(item.ItemId));
+            return _mapper.Map<List<ItemDetailsSimple>>(toR);
         }
         
         [HttpGet("updateRecomed")]

@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Dynamic.Core;
 using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using NumSharp;
@@ -99,21 +101,30 @@ public class RecommendationService
         ItemBidLatent il = new ItemBidLatent();
         il.ItemId = itemId;
         il.LatentFeatures = String.Join(";", Array.ConvertAll((float[])newItemLatens, x => x.ToString()));
-        _dbContext.ItemBidLatents.AddRange(il);
+        Console.WriteLine($"New latents for item : {itemId}");
+        _dbContext.ItemBidLatents.Add(il);
         _dbContext.SaveChanges();
         
     }
     
-    public void AddNewUser(int userId)
+    private NDArray? AddNewUser(int userId)
     {
-        var newUserLatens = np.random.stardard_normal( Features ).astype(typeof(float));
+        var t = _dbContext.Users.FirstOrDefault(user => user.UserId == userId);
+        if(t == null) 
+            return null;
         
+        int features = Features > 0 ? Features : 25; 
+        var newUserLatens = np.random.stardard_normal(  features  ).astype(typeof(float));
+       
         UserBidLatent ul = new UserBidLatent();
         ul.UserId = userId;
         ul.LatentFeatures = String.Join(";", Array.ConvertAll((float[])newUserLatens, x => x.ToString()));
-        _dbContext.UserBidLatents.AddRange(ul);
+        
+        _dbContext.UserBidLatents.Add(ul);
         _dbContext.SaveChanges();
         
+        return newUserLatens;
+
     }
     
     public void InitNew2( double learningRate = 0.001, double sensitivity = 0.001,
@@ -416,7 +427,7 @@ public class RecommendationService
         _dbContext.SaveChanges();
         
     }
-
+    
     
     /// <summary>
     /// Gets num recommendations for a user based on the db saved data.
@@ -424,79 +435,35 @@ public class RecommendationService
     /// <param name="userId">The user to get recommendations</param>
     /// <param name="num">Number of items to recommend</param>
     /// <returns></returns>
-    public List<int>? GetRecommendations(int userId, int num = 5)
+    public List<int>? GetRecommendations2(int userId, int num = 5)
     {
-        var stopWatch = Stopwatch.StartNew();
-        User? usr = _dbContext.Users.SingleOrDefault(u => u.UserId == userId);
 
-        if (usr == null) return null;
-
-        var userLatensT = _dbContext.UserBidLatents.Find(userId);
-        NDArray? userLatents = (NDArray)Array.ConvertAll(userLatensT.LatentFeatures.Split(";"), Single.Parse);
-
-        // get bidded and viewed items by user to avoid recommending them again
-        List<int> biddedItems = usr.Bids != null ? usr.Bids.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
-        List<int> visitedItems = usr.VisitedItems != null ? usr.VisitedItems.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
-        
-        List<ItemBidLatent> items = _dbContext.ItemBidLatents
-            .Where(i=> !biddedItems.Contains(i.ItemId) && !visitedItems.Contains(i.ItemId))
-            .ToList();
-        
-        var itemsLatents = items
-            .Select(i => new ItemLatents{
-                ItemId = i.ItemId,
-                // convert back saved string to array
-                Latents = (NDArray)Array.ConvertAll(i.LatentFeatures.Split(";"), Single.Parse)
-                })
-            .ToList();
-        stopWatch.Stop();
-        Console.WriteLine($"Get from database in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
-        
-        stopWatch.Restart();
-        // lists to keep the best match items
-        List<double> maxValues = new List<double>();
-        List<int> maxItems = new List<int>();
-
-        for (int i = 0; i < itemsLatents.Count; i++)
-        {            
-            int itemId = itemsLatents[i].ItemId;
-            
-            // check if the auction is active
-            Item itm = _dbContext.Items.Find(itemId)!;
-            if (itm.Ends < DateTime.Now || itm.Price >= itm.BuyPrice || itm.Started == null)
-            {
-                continue;
-            }
-            // get the user-item score by calculating the dot product
-            double value = double.Parse(userLatents!.dot(itemsLatents[i].Latents.transpose()).ToString());
-
-
-            // fill the list first
-            if (maxValues.Count < num)
-            {
-                maxValues.Add(value);
-                maxItems.Add(itemId);
-                continue;
-            }
-
-            // replace min value with a larger one
-            if (maxValues.Any(v => v < value))
-            {
-                double minValue = maxValues.Min();
-                int minIndex = maxValues.IndexOf(minValue);
-                maxValues.RemoveAt(minIndex);
-                maxItems.RemoveAt(minIndex);
-
-                maxValues.Add(value);
-                maxItems.Add(itemId);
-            }
+        var userEntry = _dbContext.UserBidLatents.Find(userId);
+        var userLatents = 
+            userEntry == null ? AddNewUser(userId) : (NDArray)Array.ConvertAll(userEntry.LatentFeatures.Split(';'), Single.Parse);
+        if (userLatents == null)
+            return null;
+        var temp = new List<itemRating>();
+        foreach (var item in _dbContext.ItemBidLatents)
+        {
+            var itemL = (NDArray)Array.ConvertAll(item.LatentFeatures.Split(";"), Single.Parse);
+            temp.Add( new itemRating {
+                itemId = item.ItemId,
+                Rating = double.Parse(userLatents.dot(itemL).ToString())
+            });
         }
-        stopWatch.Stop();
-        Console.WriteLine($"Calculate ratings in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
 
-        return maxItems;
+        var l = temp.OrderByDescending(i => i.Rating).Select(i => i.itemId).ToArray();
+        var entry = new UserViewLatent
+        {
+            UserId = userId,
+            LatentFeatures = String.Join(";", Array.ConvertAll(l, x => x.ToString()))
+        };
+        return l.Take(num).ToList();
     }
 
+    [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: NumSharp.Backends.UnmanagedStorage")]
+    [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
     public void UpdateRecommendationTable()
     {
         var stopWatch = Stopwatch.StartNew();
@@ -524,7 +491,7 @@ public class RecommendationService
                 };
                 temp.Add(itemR);
             }
-            var l = temp.OrderBy(i => i.Rating).Select(i=>i.itemId).ToArray();
+            var l = temp.OrderByDescending(i => i.Rating).Select(i=>i.itemId).ToArray();
             var entry = new UserViewLatent
             {
                 UserId = user,
