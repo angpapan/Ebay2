@@ -32,7 +32,7 @@ public class EbayAPIDbContext : DbContext
             .HasKey(nameof(EbayAPI.Models.ItemsCategories.ItemId), nameof(EbayAPI.Models.ItemsCategories.CategoryId));
 
         modelBuilder.Entity<UserVisitedItems>()
-            .HasKey(nameof(EbayAPI.Models.UserVisitedItems.UserId), nameof(EbayAPI.Models.UserVisitedItems.ItemId));
+            .HasKey(nameof(EbayAPI.Models.UserVisitedItems.UserId), nameof(EbayAPI.Models.UserVisitedItems.ItemId), nameof(EbayAPI.Models.UserVisitedItems.Dt));
 
         modelBuilder.Entity<Role>().HasData(
             new Role { RoleId = 1, Name = "Administrator" },
