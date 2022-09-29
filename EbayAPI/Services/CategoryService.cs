@@ -24,6 +24,7 @@ public class CategoryService
     {
         List<Category> categories = await _dbContext.Categories
             .Where(c => c.GenericId == null)
+            .OrderBy(c=>c.Name)
             .ToListAsync();
 
         return _mapper.Map<List<CategoryDto>>(categories);

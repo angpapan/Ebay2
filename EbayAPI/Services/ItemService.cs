@@ -66,18 +66,31 @@ public class ItemService
     /// <param name="id">id of item</param>
     /// <returns>ItemDetails object (dto) </returns>
     /// <exception cref="KeyNotFoundException">if item doesn't exist or auction not running ( not started/ end/ item sold ) </exception>
-    public async Task<ItemDetails> GetDetailsAsync(int id, User? user)
+    public async Task<ItemDetails> GetDetailsAsync(int id, User? user, bool checks)
     {
-        Item? item = _dbContext.Items
-            .Include(i => i.Images)
-            .Include(s => s.Seller)
-            .Include(c => c.ItemCategories)
-            .ThenInclude(i => i.Category)
-            .SingleOrDefault(i => i.ItemId == id
-                                    && i.Started != null  
-                                    && i.Ends > DateTime.Now 
-                                    && i.Price != i.BuyPrice 
-            );
+        Item? item;
+        if (checks)
+        {
+            item = _dbContext.Items
+                .Include(i => i.Images)
+                .Include(s => s.Seller)
+                .Include(c => c.ItemCategories)
+                .ThenInclude(i => i.Category)
+                .SingleOrDefault(i => i.ItemId == id
+                                      && i.Started != null
+                                      && i.Ends > DateTime.Now
+                                      && i.Price != i.BuyPrice
+                );
+        }
+        else
+        {
+            item = _dbContext.Items
+                .Include(i => i.Images)
+                .Include(s => s.Seller)
+                .Include(c => c.ItemCategories)
+                .ThenInclude(i => i.Category)
+                .SingleOrDefault(i => i.ItemId == id);
+        }
 
 
         if( item == null )

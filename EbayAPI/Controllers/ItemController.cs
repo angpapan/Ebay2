@@ -46,6 +46,19 @@ namespace EbayAPI.Controllers
         }
 
         /// <summary>
+        /// A function to get details of an item for preview
+        /// doesnt matter if auction has start/end or item sold 
+        /// </summary>
+        /// <param name="id">id of item</param>
+        /// <returns>details of item</returns>
+        [HttpGet("{id}/preview", Name = "GetPreviewDetails")]
+        [Helpers.Authorize.Authorize(Roles.User, Roles.Administrator)]
+        public async Task<ItemDetails> GetPreview(int id)
+        {
+            return await _itemService.GetDetailsAsync(id,(User?)HttpContext.Items["User"],false);
+        }
+
+        /// <summary>
         /// Information of item which is for sale
         /// </summary>
         /// <param name="id">id of the item</param>
@@ -54,7 +67,7 @@ namespace EbayAPI.Controllers
         [AllowAnonymous]
         public async Task<ItemDetails> GetItemDetails(int id)
         {
-            return await _itemService.GetDetailsAsync(id,(User?)HttpContext.Items["User"]);
+            return await _itemService.GetDetailsAsync(id,(User?)HttpContext.Items["User"],true);
         }
 
         

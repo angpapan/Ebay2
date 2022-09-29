@@ -125,7 +125,9 @@
 
         <div class="row">
           <div class="col-2">Seller:</div>
-          <div class="col" style="font-style: italic" [routerLink]="['/items/user/', item.sellerName]" style="cursor: pointer">{{item.sellerName}} </div>
+          <div class="col" >{{item.sellerName}}
+            <span [routerLink]="['/items/user/', item.sellerName]" style="cursor: pointer;font-style: italic;font-size: small">(see all items)</span>
+          </div>
         </div>
 
         <div class="row">
