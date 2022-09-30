@@ -12,7 +12,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAutoMapper(typeof(Program)); //AppDomain.CurrentDomain.GetAssemblies()
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 builder.Services.AddDbContext<EbayAPIDbContext>(options =>
     options.UseMySql(
@@ -119,14 +119,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();
 app.UseAuthorization();
-// app.UseEndpoints(endpoint => endpoint.MapControllers());
 app.MapControllers();
-
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller}/{action=Index}/{id?}");
-    
-// app.MapFallbackToFile("index.html");
-
 
 app.Run();

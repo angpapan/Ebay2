@@ -29,7 +29,6 @@ export class AdminService {
   }
 
   exportData(type: string, items: number[]): Observable<string>{
-    // TODO fix request with type and items array
     let item_ids = '';
     for(const item of items){
       item_ids += `&item_ids=${item}`;
