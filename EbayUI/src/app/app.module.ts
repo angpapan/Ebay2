@@ -7,8 +7,6 @@ import { RouterModule } from '@angular/router';
 import { GalleryModule } from 'ng-gallery';
 
 import { AppComponent } from './app.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
-
 
 import { UserService } from './Services/user.service';
 import { AuthGuard } from './guards/auth.guard';
@@ -70,7 +68,6 @@ import { ExportDataPageComponent } from './components/pages/export-data-page/exp
   declarations: [
     AppComponent,
     NavMenuComponent,
-    FetchDataComponent,
     UserComponent,
     LoginComponent,
     CategoryNavComponent,
@@ -119,8 +116,6 @@ import { ExportDataPageComponent } from './components/pages/export-data-page/exp
     ReactiveFormsModule,
     CommonModule,
     RouterModule.forRoot([
-      // { path: '', component: HomeComponent, pathMatch: 'full' },
-      {path: 'fetch-data', component: FetchDataComponent},
       {path: '', component: WelcomeComponent, pathMatch: 'full'},
       {path: 'users', component: UserListComponent, canActivate: [AuthGuard, AdminGuard]},
       {path: 'users/:username', component: UserComponent, canActivate: [AuthGuard]},
@@ -137,9 +132,9 @@ import { ExportDataPageComponent } from './components/pages/export-data-page/exp
       { path: 'items/edit/:id', component: EditItemComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'items/:id', component: ItemViewComponent},
       { path: 'items/user/:username', component: SellerAllItemsComponent},
-      { path: 'item/full/:id', component: ItemFullViewComponent },
+      { path: 'item/full/:id', component: ItemFullViewComponent, canActivate: [AuthGuard, EnabledGuard] },
       { path: 'search', component: ResultSearchComponent},
-      { path: 'export-data', component: ExportDataPageComponent},
+      { path: 'export-data', component: ExportDataPageComponent, canActivate: [AuthGuard, AdminGuard]},
       {path: '**', redirectTo: ''}
     ]),
     ReactiveFormsModule,
