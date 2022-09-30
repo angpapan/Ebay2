@@ -182,11 +182,11 @@ namespace EbayAPI.Controllers
         }
         
         // TODO only for testing - delete later
-        [HttpGet("recomendations/{id}")]
+        [HttpGet("recommendations/{id}")]
         [AllowAnonymous]
         public async Task<List<Item>> Recommend(int id = 21, int num = 6)
         {
-            List<int>? items = _rec.GetRecommendations2(id, num);
+            List<int>? items = await _rec.GetRecommendations3(id, num);
 
             if (items == null)
             {

@@ -35,7 +35,7 @@ public class RecommendationService
     private class ItemLatents
     {
         public int ItemId { get; set; }
-        public NDArray Latents { get; set; }
+        public string? StringLatents { get; set; }
     }
     
     /// <summary>
@@ -460,6 +460,107 @@ public class RecommendationService
             LatentFeatures = String.Join(";", Array.ConvertAll(l, x => x.ToString()))
         };
         return l.Take(num).ToList();
+    }
+    
+    
+    /// <summary>
+    /// Gets num recommendations for a user based on the db saved data.
+    /// </summary>
+    /// <param name="userId">The user to get recommendations</param>
+    /// <param name="num">Number of items to recommend</param>
+    /// <returns></returns>
+    public async Task<List<int>?> GetRecommendations3(int userId, int num = 5)
+    {
+        User? usr = _dbContext.Users
+            .Include(u => u.Bids)
+            .Include(u => u.VisitedItems)
+            .SingleOrDefault(u => u.UserId == userId);
+        if (usr == null) return null;
+        
+        var userEntry = _dbContext.UserBidLatents.Find(userId);
+        var userLatents = 
+            userEntry == null ? AddNewUser(userId) : (NDArray)Array.ConvertAll(userEntry.LatentFeatures.Split(';'), Single.Parse);
+        if (userLatents == null)
+            return null;
+        
+        // get only the active items
+        List<ItemLatents> itemsLatents = await (from i in _dbContext.ItemBidLatents
+            join it in _dbContext.Items
+                on i.ItemId equals it.ItemId
+                where it.Ends >= DateTime.Now && (it.BuyPrice == null || it.Price < it.BuyPrice)
+                select new ItemLatents
+                {
+                    ItemId = i.ItemId,
+                    StringLatents = i.LatentFeatures
+                }
+                ).ToListAsync();
+        
+        // keep already bidded - visited items to avoid recommending the same
+        List<int> biddedItems = usr.Bids != null ? usr.Bids.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
+        List<int> visitedItems = usr.VisitedItems != null ? usr.VisitedItems.Select(b => b.ItemId).Distinct().ToList() : new List<int>();
+        
+        // lists to keep the best match items
+        List<double> maxValues = new List<double>();
+        List<int> maxItems = new List<int>();
+        
+        if (itemsLatents.Count <= num)
+        {
+            return itemsLatents.Select(i => i.ItemId).ToList();
+        }
+        
+        // first fill the list with num items
+        // this avoids checking if the list have reached the number of
+        // the demanded items for every item
+        int j = 0;
+        while (maxValues.Count < num)
+        {
+            if (j >= itemsLatents.Count)
+                return maxItems;
+            
+            NDArray itemLats = (NDArray)Array.ConvertAll(itemsLatents[j].StringLatents!.
+                Split(";", StringSplitOptions.None), Single.Parse);
+            double value = double.Parse(userLatents!.dot(itemLats.transpose()).ToString());
+            int itemId = itemsLatents[j].ItemId;
+            
+            // recommend if user have not already seen the item
+            if (!(biddedItems.Contains(itemId) || visitedItems.Contains(itemId)))
+            {
+                maxValues.Add(value);
+                maxItems.Add(itemId);
+            }
+            
+            j++;
+        }
+        
+        // check the rest items to find the best matches
+        for (int i = j; i < itemsLatents.Count; i++)
+        {
+            // get the user-item score by calculating the dot product
+            NDArray itemLats = (NDArray)Array.ConvertAll(itemsLatents[i].StringLatents!.
+                    Split(";", StringSplitOptions.None), Single.Parse);
+            double value = double.Parse(userLatents!.dot(itemLats.transpose()).ToString());
+            int itemId = itemsLatents[i].ItemId;
+            
+            // replace min value with a larger one
+            if (maxValues.Any(v => v < value))
+            {
+                // have already seen the item - do not recommend
+                if (biddedItems.Contains(itemId) || visitedItems.Contains(itemId))
+                {
+                    continue;
+                }
+                
+                double minValue = maxValues.Min();
+                int minIndex = maxValues.IndexOf(minValue);
+                maxValues.RemoveAt(minIndex);
+                maxItems.RemoveAt(minIndex);
+
+                maxValues.Add(value);
+                maxItems.Add(itemId);
+            }
+        }
+        
+        return maxItems;
     }
 
     [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: NumSharp.Backends.UnmanagedStorage")]
