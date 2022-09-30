@@ -25,10 +25,8 @@ export class NotVerifiedGuard implements CanActivate {
       return false;
     }
 
-    // TODO navigate to login - uncomment when auto login after register is fixed
-    // this.router.navigate(['/login']);
-    // return  false;
-    return true;
+    this.router.navigate(['/login']);
+    return  false;
   }
 
 }
