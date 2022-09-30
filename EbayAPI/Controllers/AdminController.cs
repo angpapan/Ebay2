@@ -200,22 +200,22 @@ namespace EbayAPI.Controllers
 
         [HttpGet("testingRecomed/{id}")]
         [AllowAnonymous]
-        public List<ItemDetailsSimple> recomendTester(int id)
+        public async Task<List<ItemDetailsSimple>> recomendTester(int id)
         {
-            var l = _rec.GetRecommendations2(id);
+            var l = await _rec.GetRecommendations3(id);
             if (l == null)
                 return null;
             var toR = _dbContext.Items.Where(item => l.Contains(item.ItemId));
             return _mapper.Map<List<ItemDetailsSimple>>(toR);
         }
         
-        [HttpGet("updateRecomed")]
-        [AllowAnonymous]
-        public async Task<IActionResult> updateRec()
-        {
-            _rec.UpdateRecommendationTable();
-            return Ok();
-        }
+        // [HttpGet("updateRecomed")]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> updateRec()
+        // {
+        //     _rec.UpdateRecommendationTable();
+        //     return Ok();
+        // }
     }
     
 }

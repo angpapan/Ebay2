@@ -430,38 +430,38 @@ public class RecommendationService
     
     
     
-    /// <summary>
-    /// Gets num recommendations for a user based on the db saved data.
-    /// </summary>
-    /// <param name="userId">The user to get recommendations</param>
-    /// <param name="num">Number of items to recommend</param>
-    /// <returns></returns>
-    public List<int>? GetRecommendations2(int userId, int num = 5)
-    {
-
-        var userEntry = _dbContext.UserBidLatents.Find(userId);
-        var userLatents = 
-            userEntry == null ? AddNewUser(userId) : (NDArray)Array.ConvertAll(userEntry.LatentFeatures.Split(';'), Single.Parse);
-        if (userLatents == null)
-            return null;
-        var temp = new List<itemRating>();
-        foreach (var item in _dbContext.ItemBidLatents)
-        {
-            var itemL = (NDArray)Array.ConvertAll(item.LatentFeatures.Split(";"), Single.Parse);
-            temp.Add( new itemRating {
-                itemId = item.ItemId,
-                Rating = double.Parse(userLatents.dot(itemL).ToString())
-            });
-        }
-
-        var l = temp.OrderByDescending(i => i.Rating).Select(i => i.itemId).ToArray();
-        var entry = new UserViewLatent
-        {
-            UserId = userId,
-            LatentFeatures = String.Join(";", Array.ConvertAll(l, x => x.ToString()))
-        };
-        return l.Take(num).ToList();
-    }
+    // /// <summary>
+    // /// Gets num recommendations for a user based on the db saved data.
+    // /// </summary>
+    // /// <param name="userId">The user to get recommendations</param>
+    // /// <param name="num">Number of items to recommend</param>
+    // /// <returns></returns>
+    // public List<int>? GetRecommendations2(int userId, int num = 5)
+    // {
+    //
+    //     var userEntry = _dbContext.UserBidLatents.Find(userId);
+    //     var userLatents = 
+    //         userEntry == null ? AddNewUser(userId) : (NDArray)Array.ConvertAll(userEntry.LatentFeatures.Split(';'), Single.Parse);
+    //     if (userLatents == null)
+    //         return null;
+    //     var temp = new List<itemRating>();
+    //     foreach (var item in _dbContext.ItemBidLatents)
+    //     {
+    //         var itemL = (NDArray)Array.ConvertAll(item.LatentFeatures.Split(";"), Single.Parse);
+    //         temp.Add( new itemRating {
+    //             itemId = item.ItemId,
+    //             Rating = double.Parse(userLatents.dot(itemL).ToString())
+    //         });
+    //     }
+    //
+    //     var l = temp.OrderByDescending(i => i.Rating).Select(i => i.itemId).ToArray();
+    //     var entry = new UserViewLatent
+    //     {
+    //         UserId = userId,
+    //         LatentFeatures = String.Join(";", Array.ConvertAll(l, x => x.ToString()))
+    //     };
+    //     return l.Take(num).ToList();
+    // }
     
     
     /// <summary>
@@ -564,53 +564,53 @@ public class RecommendationService
         return maxItems;
     }
 
-    [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: NumSharp.Backends.UnmanagedStorage")]
-    [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
-    public void UpdateRecommendationTable()
-    {
-        var stopWatch = Stopwatch.StartNew();
-        _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserViewLatents");
-        _dbContext.SaveChanges();
-        var itemLatents = new Dictionary<int, NDArray>();
-
-        foreach (var ibl in _dbContext.ItemBidLatents.ToList())
-        {
-            itemLatents[ibl.ItemId] = (NDArray)Array.ConvertAll(ibl.LatentFeatures.Split(";"), Single.Parse);
-        }
-
-        foreach (var ubl in _dbContext.UserBidLatents.ToList())
-        {
-            var user = ubl.UserId;
-            var userLatents = (NDArray)Array.ConvertAll(ubl.LatentFeatures.Split(";"), Single.Parse);
-
-            var temp = new List<itemRating>();
-            foreach (var item in itemLatents.Keys)
-            {
-                var itemR = new itemRating
-                {
-                    itemId = item,
-                    Rating = double.Parse(userLatents!.dot(itemLatents[item]).ToString())
-                };
-                temp.Add(itemR);
-            }
-            var l = temp.OrderByDescending(i => i.Rating).Select(i=>i.itemId).ToArray();
-            var entry = new UserViewLatent
-            {
-                UserId = user,
-                LatentFeatures = String.Join(";", Array.ConvertAll((int[])l, x => x.ToString()))
-            };
-            _dbContext.UserViewLatents.Add(entry);
-            _dbContext.SaveChanges();
-            if(user%50 == 0)
-                //break;
-                Console.WriteLine($"User {user} done");
-        }
-        
-        stopWatch.Stop();
-        Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
-
-
-    }
+    // [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: NumSharp.Backends.UnmanagedStorage")]
+    // [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
+    // public void UpdateRecommendationTable()
+    // {
+    //     var stopWatch = Stopwatch.StartNew();
+    //     _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE UserViewLatents");
+    //     _dbContext.SaveChanges();
+    //     var itemLatents = new Dictionary<int, NDArray>();
+    //
+    //     foreach (var ibl in _dbContext.ItemBidLatents.ToList())
+    //     {
+    //         itemLatents[ibl.ItemId] = (NDArray)Array.ConvertAll(ibl.LatentFeatures.Split(";"), Single.Parse);
+    //     }
+    //
+    //     foreach (var ubl in _dbContext.UserBidLatents.ToList())
+    //     {
+    //         var user = ubl.UserId;
+    //         var userLatents = (NDArray)Array.ConvertAll(ubl.LatentFeatures.Split(";"), Single.Parse);
+    //
+    //         var temp = new List<itemRating>();
+    //         foreach (var item in itemLatents.Keys)
+    //         {
+    //             var itemR = new itemRating
+    //             {
+    //                 itemId = item,
+    //                 Rating = double.Parse(userLatents!.dot(itemLatents[item]).ToString())
+    //             };
+    //             temp.Add(itemR);
+    //         }
+    //         var l = temp.OrderByDescending(i => i.Rating).Select(i=>i.itemId).ToArray();
+    //         var entry = new UserViewLatent
+    //         {
+    //             UserId = user,
+    //             LatentFeatures = String.Join(";", Array.ConvertAll((int[])l, x => x.ToString()))
+    //         };
+    //         _dbContext.UserViewLatents.Add(entry);
+    //         _dbContext.SaveChanges();
+    //         if(user%50 == 0)
+    //             //break;
+    //             Console.WriteLine($"User {user} done");
+    //     }
+    //     
+    //     stopWatch.Stop();
+    //     Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
+    //
+    //
+    // }
 
     private class itemRating
     {
