@@ -32,8 +32,6 @@ public class MessageService
     /// <exception cref="NotSupportedException"></exception>
     public async Task SendMessageAsync(SendMessageDto dto, User? sender)
     {
-        // TODO check if the two users had a successful transaction
-        
         if (sender == null)
         {
             throw new UnauthorizedAccessException("Please login to send a message.");
