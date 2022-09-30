@@ -35,7 +35,8 @@
             type="button" class="btn btn-success"
             [routerLink]="['/messages/send']" [state]="{ sendTo }"
     >Message Seller</button>
-    <button *ngIf="item.maxBid > item.userMaxBid && endDate.getTime() > currentDate.getTime()" type="button" class="btn btn-primary">Bid Again</button>
+    <button *ngIf="item.maxBid > item.userMaxBid && endDate.getTime() > currentDate.getTime()"
+            [routerLink]="['/items', this.item.itemId]" type="button" class="btn btn-primary">Bid Again</button>
   </div>
 </td>
 
