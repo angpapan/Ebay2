@@ -30,7 +30,11 @@ namespace EbayAPI.Controllers
             _bidService = bidService;
         }
 
-        
+        /// <summary>
+        /// TODO add comment
+        /// </summary>
+        /// <param name="bid"></param>
+        /// <returns></returns>
         [HttpPost("/createBid", Name = "CreateNewBid")]
         [Authorize]
         public async Task<IActionResult> CreateNewBid([FromBody] BidRequest bid)
@@ -40,7 +44,12 @@ namespace EbayAPI.Controllers
             return Ok($"Your bid has been assigned. BID => Item:{bid.ItemId} Amount:{bid.Amount}!");
             
         }
-
+        
+        
+        /// <summary>
+        /// TODO add comment --- xrisimopoiitai ?????
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/myBids", Name = "GetMyBids")]
         [Authorize]
         public async Task<List<Bid>>? GetUsersBids()

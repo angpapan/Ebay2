@@ -73,7 +73,12 @@ namespace EbayAPI.Controllers
         
         
         
-        
+        /// <summary>
+        /// TODO add comment
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpGet("user/{username}", Name = "GetItemsByUsername")]
         [AllowAnonymous]
         public async Task<List<SellerItemListResponse>> GetItemsByUserName(string username, [FromQuery] SellerItemListQueryParameters dto)
