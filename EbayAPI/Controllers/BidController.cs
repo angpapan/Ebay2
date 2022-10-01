@@ -1,6 +1,4 @@
 using System.Text.Json;
-using AutoMapper;
-using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Dtos.BidDtos;
 using EbayAPI.Helpers;
@@ -16,17 +14,10 @@ namespace EbayAPI.Controllers
     [Route("bids")]
     public class BidController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly EbayAPIDbContext _dbContext;
-        private readonly ILogger<ItemService> _logger;
         private readonly BidService _bidService;
 
-        public BidController(IMapper mapper, EbayAPIDbContext dbContext, ILogger<ItemService> logger,
-            BidService bidService)
+        public BidController(BidService bidService)
         {
-            _mapper = mapper;
-            _dbContext = dbContext;
-            _logger = logger;
             _bidService = bidService;
         }
 
@@ -53,7 +44,7 @@ namespace EbayAPI.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpGet("bidder-list", Name = "BidderItemsList")]
-        [Helpers.Authorize.Authorize(Roles.User)]
+        [Authorize(Roles.User)]
         public async Task<List<UserBidInfoDto>> BidderItemList([FromQuery] BidderItemListQueryParameters dto)
         {
             User? bidder = (User?) HttpContext.Items["User"];
