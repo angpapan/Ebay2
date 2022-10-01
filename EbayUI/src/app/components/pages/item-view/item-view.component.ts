@@ -7,6 +7,7 @@ import { ItemDetails } from "../../../model/Items/ItemDetailed";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subject, take, takeUntil} from "rxjs";
 import { MapComponent} from "../../shared/map/map.component";
+import {storageItems} from "../../../model/storageItems";
 
 @Component({
   selector: 'app-item-view',
@@ -21,6 +22,7 @@ export class ItemViewComponent implements OnInit {
   images: GalleryItem[] = [];
   noImg = '../../../assets/no-image-available.jpg';
   bid : number;
+  role : string | null;
   constructor(private itemService : ItemService, private route : ActivatedRoute, private router : Router, private gallery : Gallery) { }
 
   ngOnInit(): void {
@@ -28,6 +30,7 @@ export class ItemViewComponent implements OnInit {
     this.route.params.subscribe(params => {
         this.itemService.getItemDetails(params['id'], this.preview).subscribe({ next: item => {
           this.item = item;
+          this.role = localStorage.getItem(storageItems.Role);
 
           if (this.item.images != undefined && this.item.images?.length>0) {
 
