@@ -125,68 +125,28 @@ namespace EbayAPI.Controllers
         /// been already calculated the old values will be deleted. 
         /// </summary>
         /// <returns></returns>
-        [HttpPost("factorize-bids")]
-        [AllowAnonymous]
-        public async Task<IActionResult> FactorizeBids()
-        {
-            List<UserItem> ui = await _dbContext.Bids
-                .Select(b => new UserItem
-                {
-                    UserId = b.UserId,
-                    ItemId = b.ItemId
-                })
-                .ToListAsync();
-
-            _rec.InitNew(ui);
-            _rec.Factorize("bid");
-
-            return Ok();
-        }
-
-        [HttpGet("factorize-tester")]
+        [HttpGet("factorize")]
         [AllowAnonymous]
         public async Task<IActionResult> Factorization()
         {
-            Console.WriteLine("Starting Init");
-            var stopWatch = Stopwatch.StartNew();
-            _rec.InitNew2();
-            Console.WriteLine("Finish Init and starting Factorize");
-            _rec.Factorize2();
-            stopWatch.Stop();
-            Console.WriteLine($"Finish Init and starting Factorize in {stopWatch.Elapsed.Minutes} : {stopWatch.Elapsed.Seconds} : {stopWatch.Elapsed.Milliseconds}");
+            _rec.InitNew();
+            _rec.Factorize();
             
             return Ok();
         }
 
         /// <summary>
-        /// Calculate and store to database the latent matrices
-        /// of users and items based on user views. If values have
-        /// been already calculated the old values will be deleted. 
+        /// Gets recommendations for a user.
+        /// To be used only for testing by admin.
         /// </summary>
+        /// <param name="id">The user id to get the recommendations for</param>
+        /// <param name="num">The number of recommended items</param>
         /// <returns></returns>
-        [HttpPost("factorize-views")]
-        public async Task<IActionResult> FactorizeViews()
-        {
-            List<UserItem> ui = await _dbContext.UserVisitedItems
-                .Select(i => new UserItem
-                {
-                    UserId = i.UserId,
-                    ItemId = i.ItemId
-                })
-                .ToListAsync();
-            
-            _rec.InitNew(ui);
-            _rec.Factorize("view");
-
-            return Ok();
-        }
-        
-        // TODO only for testing - delete later
         [HttpGet("recommendations/{id}")]
         [AllowAnonymous]
-        public async Task<List<Item>> Recommend(int id = 21, int num = 6)
+        public async Task<List<Item>> Recommend(int id, int num = 6)
         {
-            List<int>? items = await _rec.GetRecommendations3(id, num);
+            List<int>? items = await _rec.GetRecommendations(id, num);
 
             if (items == null)
             {
@@ -197,25 +157,6 @@ namespace EbayAPI.Controllers
                 .Where(i => items!.Contains(i.ItemId))
                 .ToList();
         }
-
-        [HttpGet("testingRecomed/{id}")]
-        [AllowAnonymous]
-        public async Task<List<ItemDetailsSimple>> recomendTester(int id)
-        {
-            var l = await _rec.GetRecommendations3(id);
-            if (l == null)
-                return null;
-            var toR = _dbContext.Items.Where(item => l.Contains(item.ItemId));
-            return _mapper.Map<List<ItemDetailsSimple>>(toR);
-        }
-        
-        // [HttpGet("updateRecomed")]
-        // [AllowAnonymous]
-        // public async Task<IActionResult> updateRec()
-        // {
-        //     _rec.UpdateRecommendationTable();
-        //     return Ok();
-        // }
     }
     
 }

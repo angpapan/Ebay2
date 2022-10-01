@@ -482,7 +482,7 @@ public class ItemService
     public async Task<List<ItemBoxDto>> GetRecommendedItems(User user, int num)
     {
         //List<int>? itemIds = _recommendationService.GetRecommendations(user.UserId, num);
-        List<int>? itemIds = await _recommendationService.GetRecommendations3(user.UserId, num);
+        List<int>? itemIds = await _recommendationService.GetRecommendations(user.UserId, num);
         if (itemIds == null)
         {
             return new List<ItemBoxDto>();
