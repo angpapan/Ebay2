@@ -22,9 +22,13 @@ export class ResultSearchComponent implements OnInit {
   constructor(private _itemService : ItemService, private route : ActivatedRoute, private router : Router) { }
 
   ngOnInit(): void {
-
     this.route.queryParams.subscribe(params=>{
-      console.log(params)
+      console.log("params", params);
+
+      if(params["orderBy"] === undefined){
+        this.sortList.active = "";
+      }
+
       let req = new ItemListRequest();
       req.pageSize = 30;
       req.pageNumber = 1;
