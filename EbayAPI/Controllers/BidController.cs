@@ -31,7 +31,7 @@ namespace EbayAPI.Controllers
         }
 
         /// <summary>
-        /// TODO add comment
+        /// Creates a new bid for an item
         /// </summary>
         /// <param name="bid"></param>
         /// <returns></returns>
@@ -45,17 +45,6 @@ namespace EbayAPI.Controllers
             
         }
         
-        
-        /// <summary>
-        /// TODO add comment --- xrisimopoiitai ?????
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("/myBids", Name = "GetMyBids")]
-        [Authorize]
-        public async Task<List<Bid>>? GetUsersBids()
-        {
-            return await _bidService.GetBids((User) HttpContext.Items["User"]);
-        }
         
         /// <summary>
         /// Gets a paged list of all the items which the user

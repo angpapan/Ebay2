@@ -74,9 +74,9 @@ namespace EbayAPI.Controllers
         
         
         /// <summary>
-        /// TODO add comment
+        /// Gets all the items a user sells
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="username">The username of the seller</param>
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpGet("user/{username}", Name = "GetItemsByUsername")]

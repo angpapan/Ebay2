@@ -16,16 +16,13 @@ using NuGet.Packaging;
 namespace EbayAPI.Services;
 public class ItemService
 {
-    // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-    private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly RecommendationService _recommendationService;
     
-    public ItemService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper,
+    public ItemService(EbayAPIDbContext dbContext, IMapper mapper,
         RecommendationService recommendationService)
     {
-        _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
         _recommendationService = recommendationService;

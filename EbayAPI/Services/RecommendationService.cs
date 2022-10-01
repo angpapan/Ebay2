@@ -129,9 +129,7 @@ public class RecommendationService
             }
         }
         
-//::todo make rates canonical 0-1 
         return Rates;
-
     }
 
     private int getRate(int userId, int itemId)
