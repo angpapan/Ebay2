@@ -101,7 +101,7 @@ namespace EbayAPI.Controllers
         public async Task<IActionResult> ImportData(int start = 0, int end = 39)
         {
             if (end > 39 || end < 0 || start > 39 || start < 0)
-            return BadRequest("Invalid arguments"); 
+                return BadRequest("Invalid arguments"); 
             
             await _adminService.ImportXmlData(start, end, true);
             return Ok("Data Imported successfully!");
@@ -109,7 +109,7 @@ namespace EbayAPI.Controllers
         
         /// <summary>
         /// Calculate and store to database the latent matrices
-        /// of users and items based on user bids. If values have
+        /// of users and items based on user bids and views. If values have
         /// been already calculated the old values will be deleted. 
         /// </summary>
         /// <returns></returns>
@@ -140,7 +140,7 @@ namespace EbayAPI.Controllers
             }
 
             return _dbContext.Items
-                .Where(i => items!.Contains(i.ItemId))
+                .Where(i => items.Contains(i.ItemId))
                 .ToList();
         }
     }
