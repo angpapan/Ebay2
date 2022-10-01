@@ -23,7 +23,6 @@ public class CategoryService
     public async Task<List<CategoryDto>> GetCategoriesAsync()
     {
         List<Category> categories = await _dbContext.Categories
-            .Where(c => c.GenericId == null)
             .OrderBy(c=>c.Name)
             .ToListAsync();
 
