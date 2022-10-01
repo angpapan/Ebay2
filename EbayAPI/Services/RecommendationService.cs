@@ -1,16 +1,12 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Dynamic.Core;
 using EbayAPI.Data;
-using EbayAPI.Dtos;
 using EbayAPI.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Any;
 using NumSharp;
 
 namespace EbayAPI.Services;
-
+/// <summary>
+/// Generates recommendations depending on the user's choices
+/// </summary>
 public class RecommendationService
 {
     private readonly EbayAPIDbContext _dbContext;
@@ -26,17 +22,29 @@ public class RecommendationService
     private int Steps;
     private int SampleSize;
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="dbContext"> Object of database </param>
     public RecommendationService(EbayAPIDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
+    /// <summary>
+    /// helper class for storing item latent features
+    /// </summary>
     private class ItemLatents
     {
         public int ItemId { get; set; }
         public string? StringLatents { get; set; }
     }
     
+    /// <summary>
+    /// Adds an new entry in users latent features for a new user
+    /// </summary>
+    /// <param name="userId"> id of user </param>
+    /// <returns> returns the latent features of new user </returns>
     private NDArray? AddNewUser(int userId)
     {
         var t = _dbContext.Users.FirstOrDefault(user => user.UserId == userId);
@@ -56,6 +64,14 @@ public class RecommendationService
         return newUserLatens;
 
     }
+    
+    /// <summary>
+    /// Initializes values for the matrix factorization
+    /// </summary>
+    /// <param name="learningRate">how fast should learn</param>
+    /// <param name="sensitivity">when algorithm stops</param>
+    /// <param name="features"> number of latent features </param>
+    /// <param name="steps">when algorithm stops (max) </param>
     
     public void InitNew( double learningRate = 0.001, double sensitivity = 0.001,
         int features = 25, int steps = 1000)
@@ -132,7 +148,13 @@ public class RecommendationService
         return Rates;
     }
 
-    private int getRate(int userId, int itemId)
+    /// <summary>
+    /// find the rate of a specific user for a specific item
+    /// </summary>
+    /// <param name="userId">id of user</param>
+    /// <param name="itemId">id of item</param>
+    /// <returns>the real rate </returns>
+    private int GetRate(int userId, int itemId)
     {
         if (BaseDict[userId].Count > 0 && BaseDict[userId].ContainsKey(itemId))
         {
@@ -142,6 +164,12 @@ public class RecommendationService
         return 0;
     }
 
+    /// <summary>
+    /// Fills the tables for latent features of users and items
+    /// and stores them into database tables UserBidLatent & ItemBidLatent.
+    /// Algorithm stops if 2 consecutive errors are less than sensitivity value
+    /// or there more iterations than steps  
+    /// </summary>
     public void Factorize()
     {
         this.ItemArray = this.ItemArray.transpose();
@@ -155,7 +183,7 @@ public class RecommendationService
                 {
                     
                     //int occurrences = this.CountOccurrences(this.BaseDict[userId], itemId); 
-                    var occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId];
+                    var occurrences = GetRate(userId, itemId);//this.BaseDict[userId][itemId];
                     if (occurrences > 0)
                     {
                         // get the dot product of i-th user row with j-th item column
@@ -187,7 +215,7 @@ public class RecommendationService
             {
                 foreach (var itemId in BaseDict[userId].Keys)
                 {
-                    int occurrences = getRate(userId, itemId);//this.BaseDict[userId][itemId]; 
+                    int occurrences = GetRate(userId, itemId);//this.BaseDict[userId][itemId]; 
                     if (occurrences > 0)
                     {
                         SampleSize++;
