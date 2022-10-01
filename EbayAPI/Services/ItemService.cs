@@ -150,17 +150,14 @@ public class ItemService
 
     public async Task<PagedList<Item>> GetSearchItemsList(ItemListQueryParameters dto)
     {
-        // TODO filter only for the active items !!!
         IQueryable<Item> items = _dbContext.Items
             .Include(i => i.ItemCategories)
-            .Include(i => i.Images)/*
+            .Include(i => i.Images)
             .Where(item =>
                 item.Ends > DateTime.Now &&
                 item.Started != null &&
                 (item.BuyPrice == null || item.Price < item.BuyPrice)
-                )
-            */
-            ;
+            );
 
         if(dto.MinPrice != null)
         {
