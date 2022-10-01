@@ -1,23 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System;
-using System.Diagnostics;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 using EbayAPI.Dtos;
 using AutoMapper;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
 using EbayAPI.Models;
 using EbayAPI.Services;
 using EbayAPI.Data;
 using EbayAPI.Helpers;
 using EbayAPI.Helpers.Authorize;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 
 namespace EbayAPI.Controllers
 {
@@ -27,19 +17,17 @@ namespace EbayAPI.Controllers
     [Route("admin")]
     public class AdminController : ControllerBase
     {
-        private readonly ILogger<AdminController> _logger;
         private readonly EbayAPIDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly AdminService _adminService;
         private readonly RecommendationService _rec;
 
-        public AdminController(ILogger<AdminController> logger,
+        public AdminController(
             EbayAPIDbContext dbContext,
             IMapper mapper,
             RecommendationService rec,
             AdminService adminService)
         {
-            _logger = logger;
             _dbContext = dbContext;
             _mapper = mapper;
             _adminService = adminService;
@@ -47,7 +35,7 @@ namespace EbayAPI.Controllers
         }
         
         /// <summary>
-        /// Enable an eixsting user
+        /// Enable an existing user
         /// </summary>
         /// <param name="username">The user's username to enable</param>
         /// <returns></returns>
@@ -126,7 +114,6 @@ namespace EbayAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("factorize")]
-        [AllowAnonymous]
         public async Task<IActionResult> Factorization()
         {
             _rec.InitNew();
@@ -143,7 +130,6 @@ namespace EbayAPI.Controllers
         /// <param name="num">The number of recommended items</param>
         /// <returns></returns>
         [HttpGet("recommendations/{id}")]
-        [AllowAnonymous]
         public async Task<List<Item>> Recommend(int id, int num = 6)
         {
             List<int>? items = await _rec.GetRecommendations(id, num);
