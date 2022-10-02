@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 import {CategoryService} from "../../../Services/category.service";
 import {Category} from "../../../model/Category";
 import {ItemListRequest} from "../../../model/Items/ItemListRequest";
@@ -35,6 +35,7 @@ export class FilterBlockComponent implements OnInit {
     }})
   }
 
+
   search(){
 
     this.filterdPage.orderBy = this.pageInfo.orderBy;
@@ -42,6 +43,13 @@ export class FilterBlockComponent implements OnInit {
     this.filterdPage.categories = this.result.filter(v=>v.isChecked).map(v=>v.category.categoryId);
     this.router.navigate( [`search`], {queryParams:this.filterdPage.reduceParameters()}  ).then();
 
+  }
+  search1(){
+
+    this.result.forEach((v)=>v.isChecked=false);
+    this.result1.forEach((v)=>v.isChecked=false);
+    this.filterdPage = new ItemListRequest();
+    this.router.navigate( [`search`], {queryParams:this.filterdPage.reduceParameters()}  ).then();
   }
 
 }

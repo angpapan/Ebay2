@@ -1,6 +1,6 @@
 <!-- Full page -->
 <app-container *ngIf="!preview;else preview_container">
-  <app-category-nav></app-category-nav>
+  <!--<app-category-nav></app-category-nav> -->
   <ng-container *ngTemplateOutlet="main"></ng-container>
 </app-container>
 <!-- Preview page -->
@@ -15,11 +15,19 @@
   <div class="container">
 
     <div class="row mt-1">
+
       <div class="col-4 offset-lg-4 text-center" style="font-size: small;">
         Categories : {{item.categories}}
       </div>
+
       <div class="col-2 offset-lg-2 float-end text-end justify-content-end">
         <app-export-data [itemIds]="[item.itemId]"></app-export-data>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-2 offset-lg-10 text-end justify-content-end" *ngIf="role=='admin'">
+        <button class="btn btn-primary" [routerLink]="['/item/full/', item.itemId]">Full View</button>
       </div>
     </div>
 
@@ -108,7 +116,7 @@
         <a class="nav-link active" data-bs-toggle="tab" href="#desc">Description</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#seller">Informations</a>
+        <a class="nav-link" data-bs-toggle="tab" href="#seller">Information</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" data-bs-toggle="tab" href="#map-con" (click)="resize()">Map</a>
@@ -120,12 +128,14 @@
       <div class="tab-pane container active" id="desc">
         {{item.description}}
       </div>
-      <!-- Informations -->
+      <!-- Information -->
       <div class="tab-pane container fade" id="seller">
 
         <div class="row">
           <div class="col-2">Seller:</div>
-          <div class="col" style="font-style: italic" [routerLink]="['/items/user/', item.sellerName]" style="cursor: pointer">{{item.sellerName}} </div>
+          <div class="col" >{{item.sellerName}}
+            <span [routerLink]="['/items/user/', item.sellerName]" style="cursor: pointer;font-style: italic;font-size: small">(see all items)</span>
+          </div>
         </div>
 
         <div class="row">

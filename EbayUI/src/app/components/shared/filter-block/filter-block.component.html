@@ -2,12 +2,13 @@
 <div class="container add-top">
   <div class="row">
     <div class="col">
-      <h5 type="button" data-bs-toggle="collapse" data-bs-target="#categoriesContext" aria-expanded="true" aria-controls="categoriesContext">
-        Filter by Category  &#X25E2;
+      <h5>
+        Filter by Category
       </h5>
     </div>
   </div>
-  <div class="row collapse show" *ngFor="let r of result" id="categoriesContext">
+  <div class="container" style="height: 25vh;overflow: scroll">
+  <div class="row" *ngFor="let r of result">
     <div class="col-9">
         {{r.category.name}}
     </div>
@@ -15,23 +16,26 @@
       <input type="checkbox" [(ngModel)]="r.isChecked" >
     </div>
   </div>
+  </div>
 </div>
 
 <div class="container add-top">
   <div class="row">
     <div class="col">
-      <h5 type="button" data-bs-toggle="collapse" data-bs-target="#locationsContext" aria-expanded="false" aria-controls="locationsContext">
-        Filter by Location &#X25E2;
+      <h5>
+        Filter by Location
       </h5>
     </div>
   </div>
-  <div class="row collapse show" *ngFor="let r of result1" id="locationsContext">
+  <div class="container" style="height: 25vh;overflow: scroll">
+  <div class="row" *ngFor="let r of result1" id="locationsContext">
     <div class="col-9">
       {{r.location}}
     </div>
     <div class="col align-self-center">
       <input type="checkbox" [(ngModel)]="r.isChecked" >
     </div>
+  </div>
   </div>
 </div>
 
@@ -60,5 +64,9 @@
       <button type="button" class="btn btn-secondary" (click)="search()">Search</button>
     </div>
   </div>
+  <div class="row justify-content-center add-top">
+    <div class="col-auto mb-5">
+      <button type="button" class="btn btn-outline-danger" (click)="search1()">Clear Filters</button>
+    </div>
+  </div>
 </div>
-

@@ -38,7 +38,8 @@ public class BidService
     /// <param name="bid">Item id and amount of bid </param>
     /// <param name="bidder">User that makes the bid </param>
     /// <exception cref="KeyNotFoundException">The item does'nt exists </exception>
-    /// <exception cref="Exception">Auction has not started or has been ended, item already sold, low amount of bid or bidder is the seller </exception>
+    /// <exception cref="Exception">Auction has not started or has been ended,
+    /// item already sold, low amount of bid or bidder is the seller </exception>
 
     public async Task SetNewBid(BidRequest bid, User? bidder)
     {
@@ -73,18 +74,10 @@ public class BidService
         _dbContext.Bids.Add(newBid);
         item.Price = bid.Amount;
         await _dbContext.SaveChangesAsync();
+        
+        
 
 
-    }
-
-    /// <summary>
-    /// get all bids that a user has make
-    /// </summary>
-    /// <param name="user">User that makes the request </param>
-    /// <returns>A list with all bids of the user</returns>
-    public async Task<List<Bid>> GetBids(User user)
-    {
-        return _dbContext.Bids.Where(i => i.UserId == user.UserId).ToList();
     }
 
     public async Task<PagedList<UserBidInfoDto>> GetUserBidInfo(BidderItemListQueryParameters dto, User user)

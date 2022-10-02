@@ -1,42 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
-using EbayAPI.Dtos;
 using AutoMapper;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
 using EbayAPI.Models;
 using EbayAPI.Services;
 using EbayAPI.Data;
 using EbayAPI.Dtos.MessageDtos;
 using EbayAPI.Helpers;
 using EbayAPI.Helpers.Authorize;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EbayAPI.Controllers
 {
     [ApiController]
-    [Helpers.Authorize.Authorize(Roles.User)]
+    [Authorize]
     [Produces("application/json")]
     [Route("message")]
     public class MessageController : ControllerBase
     {
-        private readonly ILogger<MessageController> _logger;
         private readonly EbayAPIDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly MessageService _messageService;
 
-        public MessageController(ILogger<MessageController> logger,
+        public MessageController(
             EbayAPIDbContext dbContext,
             IMapper mapper,
             MessageService messageService)
         {
-            _logger = logger;
             _dbContext = dbContext;
             _mapper = mapper;
             _messageService =  messageService;

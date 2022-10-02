@@ -65,7 +65,10 @@ export class ItemService {
 
   }
 
-  getItemDetails(_itemId: number): Observable<ItemDetails>{
+  getItemDetails(_itemId: number, preview: boolean): Observable<ItemDetails>{
+
+    if(preview)
+      return this.http.get<ItemDetails>(`${this.itemUrl}/${_itemId}/preview`, {});
     return this.http.get<ItemDetails>(`${this.itemUrl}/${_itemId}`, {});
   }
 

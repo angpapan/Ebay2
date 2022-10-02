@@ -11,13 +11,11 @@ using HostingEnvironmentExtensions = Microsoft.Extensions.Hosting.HostingEnviron
 namespace EbayAPI.Services;
 public class MessageService
 {
-    private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public MessageService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper)
+    public MessageService(EbayAPIDbContext dbContext, IMapper mapper)
     {
-        _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
     }
@@ -32,8 +30,6 @@ public class MessageService
     /// <exception cref="NotSupportedException"></exception>
     public async Task SendMessageAsync(SendMessageDto dto, User? sender)
     {
-        // TODO check if the two users had a successful transaction
-        
         if (sender == null)
         {
             throw new UnauthorizedAccessException("Please login to send a message.");

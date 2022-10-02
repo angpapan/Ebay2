@@ -18,6 +18,7 @@ export class NavMenuComponent implements OnInit {
   role: string | null = localStorage.getItem(storageItems.Role);
   newMessages: number = 0;
   username: string | null = localStorage.getItem(storageItems.Username);
+  enabled: string | null = localStorage.getItem(storageItems.Enabled);
   selectedCategory: number = 0;
   topCategories: Category[] = [];
   searchText: string = "";
@@ -33,7 +34,7 @@ export class NavMenuComponent implements OnInit {
       next: value => this.topCategories = value
     })
 
-    if(this.role === 'user'){
+    if(this.loggedIn && this.enabled === "true"){
       this.getNewMessages();
     }
 
@@ -41,13 +42,15 @@ export class NavMenuComponent implements OnInit {
   }
 
   getNewMessages() {
-    this.messageService.checkForNew().subscribe({
-      next: value => {
-        console.log(value);
-        this.newMessages = value;
-        setTimeout(() => {this.getNewMessages()}, 10000)
-      }
-    })
+    if(this.loggedIn && this.enabled === "true"){
+      this.messageService.checkForNew().subscribe({
+        next: value => {
+          console.log(value);
+          this.newMessages = value;
+          setTimeout(() => {this.getNewMessages()}, 10000)
+        }
+      })
+    }
   }
 
   collapse() {
@@ -70,9 +73,11 @@ export class NavMenuComponent implements OnInit {
     if(this.searchText !== ''){
       query = {search: this.searchText};
     }
-    if(this.selectedCategory !== 0){
+    if(Number(this.selectedCategory) !== 0){
       query = {...query, categories: this.selectedCategory};
     }
+
+    console.log(query);
 
 
     this.router.navigate(['/search'], {queryParams: query});

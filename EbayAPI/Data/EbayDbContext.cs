@@ -17,14 +17,7 @@ public class EbayAPIDbContext : DbContext
     public DbSet<UserVisitedItems> UserVisitedItems { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<UserBidLatent> UserBidLatents { get; set; }
-    public DbSet<UserViewLatent> UserViewLatents { get; set; }
     public DbSet<ItemBidLatent> ItemBidLatents { get; set; }
-    public DbSet<ItemViewLatent> ItemViewLatents { get; set; }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.EnableSensitiveDataLogging();
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,7 +25,7 @@ public class EbayAPIDbContext : DbContext
             .HasKey(nameof(EbayAPI.Models.ItemsCategories.ItemId), nameof(EbayAPI.Models.ItemsCategories.CategoryId));
 
         modelBuilder.Entity<UserVisitedItems>()
-            .HasKey(nameof(EbayAPI.Models.UserVisitedItems.UserId), nameof(EbayAPI.Models.UserVisitedItems.ItemId));
+            .HasKey(nameof(EbayAPI.Models.UserVisitedItems.UserId), nameof(EbayAPI.Models.UserVisitedItems.ItemId), nameof(EbayAPI.Models.UserVisitedItems.Dt));
 
         modelBuilder.Entity<Role>().HasData(
             new Role { RoleId = 1, Name = "Administrator" },
@@ -58,25 +51,6 @@ public class EbayAPIDbContext : DbContext
                 VATNumber ="123456789"
             }
         );
-
-
-    modelBuilder.Entity<Item>().HasData(
-            new Item {
-                ItemId = 133,
-                Name = "Hat",
-                BuyPrice = 15,
-                FirstBid = 12,
-                Location = "Athens",
-                Country = "Greece",
-                Description = "A very nice red hat",
-                Ends = new DateTime(2022-03-02),
-                Latitude = new decimal(1.3),
-                Longitude = new decimal(1.6),
-                SellerId = 1
-            }
-    );
-   
-
     }
     
 }
