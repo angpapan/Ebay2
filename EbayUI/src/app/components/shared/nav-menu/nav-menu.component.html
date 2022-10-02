@@ -85,6 +85,7 @@
               <span *ngIf="role === 'admin'">
                 <a class="dropdown-item" [routerLink]="['/users']">User List</a>
                 <a class="dropdown-item" [routerLink]="['/export-data']">Export Item Data</a>
+                <a class="dropdown-item" (click)="factorize()">Renew Recommendations</a>
               </span>
 
               <hr class="dropdown-divider">

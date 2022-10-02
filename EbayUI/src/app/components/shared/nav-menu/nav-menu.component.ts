@@ -5,7 +5,9 @@ import {storageItems} from "../../../model/storageItems";
 import {MessageService} from "../../../Services/message.service";
 import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../Services/category.service";
-import {Obj} from "@popperjs/core";
+import {SwalService} from "../../../Services/swal.service";
+import Swal from "sweetalert2";
+import {AdminService} from "../../../Services/admin.service";
 
 @Component({
   selector: 'app-nav-menu',
@@ -24,7 +26,8 @@ export class NavMenuComponent implements OnInit {
   searchText: string = "";
 
   constructor(private authSerive: AuthenticationService, private router: Router,
-              private messageService: MessageService, private categoryService: CategoryService) {}
+              private messageService: MessageService, private categoryService: CategoryService,
+              private swalService: SwalService, private adminService: AdminService) {}
 
   ngOnInit() {
     let token: string | null = localStorage.getItem(storageItems.Token);
@@ -81,5 +84,45 @@ export class NavMenuComponent implements OnInit {
 
 
     this.router.navigate(['/search'], {queryParams: query});
+  }
+
+  factorize(): void {
+    if(this.role !== "admin"){
+      Swal.fire({
+        ...this.swalService.BootstrapConfirmOnlyOptions,
+        icon: 'error',
+        title: 'Action not available!',
+        html: 'Sorry, you are not an administrator'
+      })
+      return;
     }
+
+
+    Swal.fire({
+      ...this.swalService.BootstrapOptions,
+      icon: 'question',
+      title: 'Recalculate Recommendations?',
+      html: `Are you sure you want to recalculate the recommendations? This action may take a lot of time.
+      <br/><br/>
+      By running recalculation this dialog will close and you will be notified when the calculation is finished.
+      `
+    }).then(result => {
+      if(result.isConfirmed){
+        this.adminService.factorize().subscribe({
+          next: response => {
+            Swal.fire({
+              ...this.swalService.BootstrapConfirmOnlyOptions,
+              title: 'Success',
+              html: `Recalculation was successful!`
+            })
+          }
+        })
+      }
+    })
+
+
+
+
+  }
+
 }

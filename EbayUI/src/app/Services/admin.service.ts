@@ -40,4 +40,9 @@ export class AdminService {
 
     return this.http.get<string>(this.adminUrl + `/extract?type=${type}${item_ids}`, requestOptions);
   }
+
+  factorize(): Observable<void> {
+    const url = this.adminUrl + `/factorize`;
+    return this.http.get<void>(url);
+  }
 }
