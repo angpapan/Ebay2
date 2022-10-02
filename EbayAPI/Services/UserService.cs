@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EbayAPI.Services;
 public class UserService
 {
+    // users hardcoded for simplicity, store in a db with hashed passwords in production applications
     private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;

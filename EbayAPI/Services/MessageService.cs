@@ -11,11 +11,13 @@ using HostingEnvironmentExtensions = Microsoft.Extensions.Hosting.HostingEnviron
 namespace EbayAPI.Services;
 public class MessageService
 {
+    private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public MessageService(EbayAPIDbContext dbContext, IMapper mapper)
+    public MessageService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper)
     {
+        _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
     }

@@ -16,13 +16,16 @@ using NuGet.Packaging;
 namespace EbayAPI.Services;
 public class ItemService
 {
+    // users hardcoded for simplicity, store in a db with hashed passwords in production applications
+    private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly RecommendationService _recommendationService;
     
-    public ItemService(EbayAPIDbContext dbContext, IMapper mapper,
+    public ItemService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper,
         RecommendationService recommendationService)
     {
+        _appSettings = appSettings.Value;
         _dbContext = dbContext;
         _mapper = mapper;
         _recommendationService = recommendationService;
@@ -147,14 +150,17 @@ public class ItemService
 
     public async Task<PagedList<Item>> GetSearchItemsList(ItemListQueryParameters dto)
     {
+        // TODO filter only for the active items !!!
         IQueryable<Item> items = _dbContext.Items
             .Include(i => i.ItemCategories)
-            .Include(i => i.Images)
+            .Include(i => i.Images)/*
             .Where(item =>
                 item.Ends > DateTime.Now &&
                 item.Started != null &&
                 (item.BuyPrice == null || item.Price < item.BuyPrice)
-            );
+                )
+            */
+            ;
 
         if(dto.MinPrice != null)
         {
@@ -479,7 +485,7 @@ public class ItemService
     public async Task<List<ItemBoxDto>> GetRecommendedItems(User user, int num)
     {
         //List<int>? itemIds = _recommendationService.GetRecommendations(user.UserId, num);
-        List<int>? itemIds = await _recommendationService.GetRecommendations(user.UserId, num);
+        List<int>? itemIds = await _recommendationService.GetRecommendations3(user.UserId, num);
         if (itemIds == null)
         {
             return new List<ItemBoxDto>();

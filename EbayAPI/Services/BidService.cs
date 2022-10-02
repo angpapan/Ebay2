@@ -80,6 +80,16 @@ public class BidService
 
     }
 
+    /// <summary>
+    /// get all bids that a user has make
+    /// </summary>
+    /// <param name="user">User that makes the request </param>
+    /// <returns>A list with all bids of the user</returns>
+    public async Task<List<Bid>> GetBids(User user)
+    {
+        return _dbContext.Bids.Where(i => i.UserId == user.UserId).ToList();
+    }
+
     public async Task<PagedList<UserBidInfoDto>> GetUserBidInfo(BidderItemListQueryParameters dto, User user)
     {
         List<UserBidInfoDto> lista = new List<UserBidInfoDto>();
