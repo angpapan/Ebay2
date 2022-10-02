@@ -103,7 +103,10 @@ export class NavMenuComponent implements OnInit {
       ...this.swalService.BootstrapOptions,
       icon: 'question',
       title: 'Recalculate Recommendations?',
-      html: `Are you sure you want to recalculate the recommendations? This action may take a lot of time.`
+      html: `Are you sure you want to recalculate the recommendations? This action may take a lot of time.
+      <br/><br/>
+      By running recalculation this dialog will close and you will be notified when the calculation is finished.
+      `
     }).then(result => {
       if(result.isConfirmed){
         this.adminService.factorize().subscribe({
