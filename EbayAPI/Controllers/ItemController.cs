@@ -1,5 +1,4 @@
 using AutoMapper;
-using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Helpers;
 using EbayAPI.Models;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using EbayAPI.Dtos.ItemDtos;
 using EbayAPI.Helpers.Authorize;
-using Microsoft.OpenApi.Any;
 
 namespace EbayAPI.Controllers
 {
@@ -19,17 +17,12 @@ namespace EbayAPI.Controllers
     public class ItemController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly EbayAPIDbContext _dbContext;
-        private readonly ILogger<ItemService> _logger;
         private readonly ItemService _itemService;
         
 
-        public ItemController(IMapper mapper, EbayAPIDbContext dbContext, ILogger<ItemService> logger,
-            ItemService itemService, RecommendationService recommendationService)
+        public ItemController(IMapper mapper, ItemService itemService)
         {
             _mapper = mapper;
-            _dbContext = dbContext;
-            _logger = logger;
             _itemService = itemService;
         }
 
@@ -74,9 +67,9 @@ namespace EbayAPI.Controllers
         
         
         /// <summary>
-        /// TODO add comment
+        /// Gets all the items a user sells
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="username">The username of the seller</param>
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpGet("user/{username}", Name = "GetItemsByUsername")]

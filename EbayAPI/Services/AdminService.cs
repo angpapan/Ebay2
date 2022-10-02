@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
@@ -7,24 +6,19 @@ using EbayAPI.Data;
 using EbayAPI.Dtos;
 using EbayAPI.Helpers;
 using EbayAPI.Models;
-using AutoMapper;
 using EbayAPI.Dtos.SerializationDtos;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EbayAPI.Services;
 public class AdminService
 {
-    private readonly AppSettings _appSettings;
     private readonly EbayAPIDbContext _dbContext;
     private readonly UserService _userService;
-    private readonly IMapper _mapper;
 
-    public AdminService(IOptions<AppSettings> appSettings, EbayAPIDbContext dbContext, IMapper mapper, UserService userService)
+    public AdminService(EbayAPIDbContext dbContext, UserService userService)
     {
-        _appSettings = appSettings.Value;
         _dbContext = dbContext;
-        _mapper = mapper;
         _userService = userService;
     }
 
@@ -137,7 +131,7 @@ public class AdminService
                 it.XmlId = item.ItemId; 
                 it.Name = item.Name;
                 it.Price = decimal.Parse(item.Currently, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
-                it.BuyPrice = item.BuyPrice != null ? decimal.Parse(item.BuyPrice, NumberStyles.AllowCurrencySymbol | NumberStyles.Number) : null;
+                it.BuyPrice = !item.BuyPrice.IsNullOrEmpty() ? decimal.Parse(item.BuyPrice, NumberStyles.AllowCurrencySymbol | NumberStyles.Number) : null;
                 it.FirstBid = decimal.Parse(item.FirstBid, NumberStyles.AllowCurrencySymbol | NumberStyles.Number);
                 it.Location = item.Location.Location;
                 it.Latitude = item.Location.Latitude != null ? decimal.Parse(item.Location.Latitude) : null;
@@ -247,7 +241,7 @@ public class AdminService
 
                         await _userService.Register(reg);
                         bidder = _dbContext.Users.SingleOrDefault(u => u.Username == bid.Bidder.Username);
-                        bidder.Enabled = true;
+                        bidder!.Enabled = true;
                     }
                     
                     bidder.BidderRating = bid.Bidder.Rating;

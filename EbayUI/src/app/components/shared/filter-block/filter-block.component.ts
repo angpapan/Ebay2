@@ -50,7 +50,6 @@ export class FilterBlockComponent implements OnInit {
     this.result1.forEach((v)=>v.isChecked=false);
     this.filterdPage = new ItemListRequest();
     this.router.navigate( [`search`], {queryParams:this.filterdPage.reduceParameters()}  ).then();
-
   }
 
 }

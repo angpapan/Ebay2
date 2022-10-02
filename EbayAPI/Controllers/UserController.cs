@@ -1,19 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 using EbayAPI.Dtos;
-using AutoMapper;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
 using EbayAPI.Models;
 using EbayAPI.Services;
-using EbayAPI.Data;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EbayAPI.Controllers
@@ -24,19 +12,10 @@ namespace EbayAPI.Controllers
     [Route("user")]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
-        private readonly EbayAPIDbContext _dbContext;
-        private readonly IMapper _mapper;
         private readonly UserService _userService;
 
-        public UserController(ILogger<UserController> logger,
-            EbayAPIDbContext dbContext,
-            IMapper mapper,
-            UserService userService)
+        public UserController(UserService userService)
         {
-            _logger = logger;
-            _dbContext = dbContext;
-            _mapper = mapper;
             _userService = userService;
         }
         
