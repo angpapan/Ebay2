@@ -11,7 +11,7 @@ using EbayAPI.Helpers.Authorize;
 namespace EbayAPI.Controllers
 {
     [ApiController]
-    [Authorize(Roles.User)]
+    [Authorize]
     [Produces("application/json")]
     [Route("message")]
     public class MessageController : ControllerBase
