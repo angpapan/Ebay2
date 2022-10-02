@@ -73,9 +73,11 @@ export class NavMenuComponent implements OnInit {
     if(this.searchText !== ''){
       query = {search: this.searchText};
     }
-    if(this.selectedCategory !== 0){
+    if(Number(this.selectedCategory) !== 0){
       query = {...query, categories: this.selectedCategory};
     }
+
+    console.log(query);
 
 
     this.router.navigate(['/search'], {queryParams: query});
