@@ -97,7 +97,6 @@ namespace EbayAPI.Controllers
         /// <param name="end">The xml file to stop importing</param>
         /// <returns></returns>
         [HttpPost("import-xmls", Name = "ImportDataSet")]
-        [AllowAnonymous]
         public async Task<IActionResult> ImportData(int start = 0, int end = 39)
         {
             if (end > 39 || end < 0 || start > 39 || start < 0)
