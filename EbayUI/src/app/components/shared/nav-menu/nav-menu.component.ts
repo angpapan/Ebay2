@@ -5,7 +5,6 @@ import {storageItems} from "../../../model/storageItems";
 import {MessageService} from "../../../Services/message.service";
 import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../Services/category.service";
-import {Obj} from "@popperjs/core";
 import {SwalService} from "../../../Services/swal.service";
 import Swal from "sweetalert2";
 import {AdminService} from "../../../Services/admin.service";
