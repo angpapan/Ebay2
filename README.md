@@ -1,3 +1,6 @@
+# About the project
+This repo is about creating a Web Application for an online auctions site as a project for Internet Technologies Course of UoA - DIT.
+
 # How to execute
 
 ## Init UI
